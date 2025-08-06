@@ -8,6 +8,9 @@ import TournamentsPage from "./pages/TournamentsPage";
 import RankingsPage from "./pages/RankingsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import BannersPage from "./pages/BannersPage";
+import PlayerFinderPage from "./pages/PlayerFinderPage";
+import CourtReservationsPage from "./pages/CourtReservationsPage";
 
 const routes = [
   {
@@ -41,6 +44,24 @@ const routes = [
     public: true
   },
   {
+    key: 'rankings',
+    path: '/rankings',
+    element: <RankingsPage />,
+    public: true
+  },
+  {
+    key: 'player-finder',
+    path: '/player-finder',
+    element: <PlayerFinderPage />,
+    public: true
+  },
+  {
+    key: 'court-reservations',
+    path: '/court-reservations',
+    element: <CourtReservationsPage />,
+    public: true
+  },
+  {
     key: 'dashboard',
     path: '/dashboard',
     element: <DashboardPage />,
@@ -53,15 +74,15 @@ const routes = [
     public: false
   },
   {
-    key: 'rankings',
-    path: '/rankings',
-    element: <RankingsPage />,
-    public: true
-  },
-  {
     key: 'admin',
     path: '/admin',
     element: <AdminPage />,
+    public: false
+  },
+  {
+    key: 'banners',
+    path: '/admin/banners',
+    element: <BannersPage />,
     public: false
   },
   {

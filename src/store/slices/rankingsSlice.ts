@@ -37,8 +37,8 @@ export const fetchRankings = createAsyncThunk(
 
 export const fetchTopPlayers = createAsyncThunk(
   'rankings/fetchTopPlayers',
-  async ({ limit, category, skillLevel }: { limit?: number; category?: string; skillLevel?: string }) => {
-    const response = await apiService.getTopPlayers(limit, category, skillLevel);
+  async (params: Partial<RankingsQueryParams>) => {
+    const response = await apiService.getTopPlayers(params);
     if (!response.success) throw new Error(response.message);
     return response.data;
   }

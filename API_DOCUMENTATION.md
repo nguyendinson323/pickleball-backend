@@ -23,9 +23,12 @@ This API documentation is specifically designed for React + TypeScript + Vite + 
 9. [Rankings](#rankings)
 10. [Notifications](#notifications)
 11. [Admin](#admin)
-12. [Statistics](#statistics)
-13. [Error Handling](#error-handling)
-14. [Frontend Integration Examples](#frontend-integration-examples)
+12. [Banners](#banners)
+13. [Player Finder](#player-finder)
+14. [Court Reservations](#court-reservations)
+15. [Statistics](#statistics)
+16. [Error Handling](#error-handling)
+17. [Frontend Integration Examples](#frontend-integration-examples)
 
 ---
 
@@ -328,6 +331,103 @@ interface FileUpload {
   created_at: string;
   updated_at: string;
 }
+
+// Banner Types - NEWLY ADDED
+interface Banner {
+  id: string;
+  title: string;
+  subtitle?: string;
+  image_url: string;
+  thumbnail_url?: string;
+  action_url?: string;
+  action_text?: string;
+  position: number;
+  is_active: boolean;
+  is_featured: boolean;
+  display_type: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  start_date?: string;
+  end_date?: string;
+  related_tournament_id?: string;
+  related_club_id?: string;
+  related_event_id?: string;
+  click_count: number;
+  view_count: number;
+  tags?: string[];
+  metadata?: object;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Player Finder Types - NEWLY ADDED
+interface PlayerFinder {
+  id: string;
+  searcher_id: string;
+  skill_level_min?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  skill_level_max?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  preferred_gender: 'male' | 'female' | 'any';
+  age_range_min?: number;
+  age_range_max?: number;
+  search_radius_km: number;
+  preferred_locations?: object;
+  match_type: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  availability_days?: number[];
+  availability_time_start?: string;
+  availability_time_end?: string;
+  contact_method: 'email' | 'phone' | 'whatsapp' | 'any';
+  auto_notify: boolean;
+  is_active: boolean;
+  last_search_date?: string;
+  total_matches_found: number;
+  matches_contacted: number;
+  successful_matches: number;
+  search_criteria?: object;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Court Reservation Types - NEWLY ADDED
+interface CourtReservation {
+  id: string;
+  court_id: string;
+  user_id: string;
+  club_id: string;
+  start_time: string;
+  end_time: string;
+  reservation_date: string;
+  duration_hours: number;
+  purpose?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'practice' | 'lesson' | 'other';
+  participants?: string[];
+  guest_count: number;
+  hourly_rate: number;
+  total_amount: number;
+  member_discount: number;
+  final_amount: number;
+  payment_status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+  payment_id?: string;
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show';
+  cancelled_at?: string;
+  cancelled_by?: string;
+  cancellation_reason?: string;
+  refund_amount: number;
+  special_requests?: string;
+  equipment_needed?: object;
+  notes?: string;
+  checked_in_at?: string;
+  checked_out_at?: string;
+  actual_start_time?: string;
+  actual_end_time?: string;
+  rating?: number;
+  feedback?: string;
+  booking_source: 'web' | 'mobile' | 'phone' | 'in_person';
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
+  updated_at: string;
+}
 ```
 
 ---
@@ -398,6 +498,49 @@ export const NOTIFICATIONS_FETCH_SUCCESS = 'NOTIFICATIONS_FETCH_SUCCESS';
 export const NOTIFICATIONS_FETCH_FAILURE = 'NOTIFICATIONS_FETCH_FAILURE';
 export const NOTIFICATION_MARK_READ = 'NOTIFICATION_MARK_READ';
 export const NOTIFICATION_MARK_ALL_READ = 'NOTIFICATION_MARK_ALL_READ';
+
+// Banner Actions
+export const BANNERS_FETCH_REQUEST = 'BANNERS_FETCH_REQUEST';
+export const BANNERS_FETCH_SUCCESS = 'BANNERS_FETCH_SUCCESS';
+export const BANNERS_FETCH_FAILURE = 'BANNERS_FETCH_FAILURE';
+export const BANNER_CREATE_REQUEST = 'BANNER_CREATE_REQUEST';
+export const BANNER_CREATE_SUCCESS = 'BANNER_CREATE_SUCCESS';
+export const BANNER_CREATE_FAILURE = 'BANNER_CREATE_FAILURE';
+export const BANNER_UPDATE_REQUEST = 'BANNER_UPDATE_REQUEST';
+export const BANNER_UPDATE_SUCCESS = 'BANNER_UPDATE_SUCCESS';
+export const BANNER_UPDATE_FAILURE = 'BANNER_UPDATE_FAILURE';
+export const BANNER_DELETE_REQUEST = 'BANNER_DELETE_REQUEST';
+export const BANNER_DELETE_SUCCESS = 'BANNER_DELETE_SUCCESS';
+export const BANNER_DELETE_FAILURE = 'BANNER_DELETE_FAILURE';
+export const BANNER_TOGGLE_STATUS = 'BANNER_TOGGLE_STATUS';
+export const BANNER_UPDATE_POSITION = 'BANNER_UPDATE_POSITION';
+export const BANNER_TRACK_VIEW = 'BANNER_TRACK_VIEW';
+export const BANNER_TRACK_CLICK = 'BANNER_TRACK_CLICK';
+
+// Player Finder Actions
+export const PLAYER_FINDER_SEARCH_REQUEST = 'PLAYER_FINDER_SEARCH_REQUEST';
+export const PLAYER_FINDER_SEARCH_SUCCESS = 'PLAYER_FINDER_SEARCH_SUCCESS';
+export const PLAYER_FINDER_SEARCH_FAILURE = 'PLAYER_FINDER_SEARCH_FAILURE';
+export const PLAYER_FINDER_NEARBY_REQUEST = 'PLAYER_FINDER_NEARBY_REQUEST';
+export const PLAYER_FINDER_NEARBY_SUCCESS = 'PLAYER_FINDER_NEARBY_SUCCESS';
+export const PLAYER_FINDER_NEARBY_FAILURE = 'PLAYER_FINDER_NEARBY_FAILURE';
+export const PLAYER_FINDER_PREFERENCES_REQUEST = 'PLAYER_FINDER_PREFERENCES_REQUEST';
+export const PLAYER_FINDER_PREFERENCES_SUCCESS = 'PLAYER_FINDER_PREFERENCES_SUCCESS';
+export const PLAYER_FINDER_PREFERENCES_FAILURE = 'PLAYER_FINDER_PREFERENCES_FAILURE';
+export const PLAYER_FINDER_UPDATE_PREFERENCES = 'PLAYER_FINDER_UPDATE_PREFERENCES';
+export const PLAYER_FINDER_TOGGLE_STATUS = 'PLAYER_FINDER_TOGGLE_STATUS';
+export const PLAYER_FINDER_SEND_MATCH_REQUEST = 'PLAYER_FINDER_SEND_MATCH_REQUEST';
+
+// Court Reservation Actions
+export const COURT_RESERVATION_CREATE_REQUEST = 'COURT_RESERVATION_CREATE_REQUEST';
+export const COURT_RESERVATION_CREATE_SUCCESS = 'COURT_RESERVATION_CREATE_SUCCESS';
+export const COURT_RESERVATION_CREATE_FAILURE = 'COURT_RESERVATION_CREATE_FAILURE';
+export const COURT_RESERVATION_FETCH_REQUEST = 'COURT_RESERVATION_FETCH_REQUEST';
+export const COURT_RESERVATION_FETCH_SUCCESS = 'COURT_RESERVATION_FETCH_SUCCESS';
+export const COURT_RESERVATION_FETCH_FAILURE = 'COURT_RESERVATION_FETCH_FAILURE';
+export const COURT_RESERVATION_CANCEL_REQUEST = 'COURT_RESERVATION_CANCEL_REQUEST';
+export const COURT_RESERVATION_CANCEL_SUCCESS = 'COURT_RESERVATION_CANCEL_SUCCESS';
+export const COURT_RESERVATION_CANCEL_FAILURE = 'COURT_RESERVATION_CANCEL_FAILURE';
 ```
 
 ---
@@ -1012,6 +1155,345 @@ interface UpdateUserRoleResponse extends ApiResponse<User> {}
 
 ---
 
+## Banners
+
+### Get Carousel Banners
+
+**GET** `/banners/carousel`
+
+```typescript
+interface CarouselBannersResponse extends ApiResponse<Banner[]> {}
+```
+
+**Example Request:**
+```typescript
+const getCarouselBanners = async (): Promise<CarouselBannersResponse> => {
+  const response = await fetch('/api/v1/banners/carousel');
+  return response.json();
+};
+```
+
+### Get Active Banners
+
+**GET** `/banners/active?display_type=carousel&target_audience=all`
+
+```typescript
+interface ActiveBannersQueryParams {
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+}
+
+interface ActiveBannersResponse extends ApiResponse<Banner[]> {}
+```
+
+### Get All Banners (Admin)
+
+**GET** `/banners?page=1&limit=10&display_type=carousel&is_active=true&search=championship`
+
+```typescript
+interface BannersQueryParams {
+  page?: number;
+  limit?: number;
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  is_active?: boolean;
+  is_featured?: boolean;
+  search?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
+interface BannersResponse extends PaginatedResponse<Banner> {}
+```
+
+### Create Banner (Admin)
+
+**POST** `/banners`
+
+```typescript
+interface CreateBannerRequest {
+  title: string;
+  subtitle?: string;
+  image_url: string;
+  thumbnail_url?: string;
+  action_url?: string;
+  action_text?: string;
+  position?: number;
+  is_active?: boolean;
+  is_featured?: boolean;
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  start_date?: string;
+  end_date?: string;
+  related_tournament_id?: string;
+  related_club_id?: string;
+  related_event_id?: string;
+  tags?: string[];
+  metadata?: object;
+  notes?: string;
+}
+
+interface CreateBannerResponse extends ApiResponse<Banner> {}
+```
+
+### Update Banner (Admin)
+
+**PUT** `/banners/:id`
+
+```typescript
+interface UpdateBannerRequest extends Partial<CreateBannerRequest> {}
+
+interface UpdateBannerResponse extends ApiResponse<Banner> {}
+```
+
+### Delete Banner (Admin)
+
+**DELETE** `/banners/:id`
+
+```typescript
+interface DeleteBannerResponse extends ApiResponse<{}> {}
+```
+
+### Toggle Banner Status (Admin)
+
+**PATCH** `/banners/:id/toggle`
+
+```typescript
+interface ToggleBannerResponse extends ApiResponse<Banner> {}
+```
+
+### Update Banner Position (Admin)
+
+**PATCH** `/banners/:id/position`
+
+```typescript
+interface UpdateBannerPositionRequest {
+  position: number;
+}
+
+interface UpdateBannerPositionResponse extends ApiResponse<Banner> {}
+```
+
+### Track Banner View
+
+**POST** `/banners/:id/view`
+
+```typescript
+interface TrackBannerViewResponse extends ApiResponse<{}> {}
+```
+
+### Track Banner Click
+
+**POST** `/banners/:id/click`
+
+```typescript
+interface TrackBannerClickResponse extends ApiResponse<{}> {}
+```
+
+### Get Banner Analytics (Admin)
+
+**GET** `/banners/analytics/overview?start_date=2024-01-01&end_date=2024-12-31`
+
+```typescript
+interface BannerAnalyticsResponse extends ApiResponse<{
+  total_banners: number;
+  total_views: number;
+  total_clicks: number;
+  click_through_rate: number;
+  top_performing_banners: Banner[];
+  banners_by_display_type: Record<string, { count: number; views: number; clicks: number }>;
+  banners_by_audience: Record<string, { count: number; views: number; clicks: number }>;
+}> {}
+```
+
+---
+
+## Player Finder
+
+### Search Players
+
+**GET** `/player-finder/search?latitude=20.6597&longitude=-103.3496&radius=50&skill_level=4.0&gender=male&age_min=25&age_max=45&match_type=singles&page=1&limit=20`
+
+```typescript
+interface SearchPlayersQueryParams {
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+  skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  gender?: 'male' | 'female' | 'any';
+  age_min?: number;
+  age_max?: number;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  page?: number;
+  limit?: number;
+}
+
+interface SearchPlayersResponse extends PaginatedResponse<User> {}
+```
+
+### Get Nearby Players
+
+**GET** `/player-finder/nearby?limit=10`
+
+```typescript
+interface NearbyPlayersResponse extends ApiResponse<Array<User & { distance_km: number }>> {}
+```
+
+### Get Player Finder Preferences
+
+**GET** `/player-finder/preferences`
+
+```typescript
+interface PlayerFinderPreferencesResponse extends ApiResponse<PlayerFinder | null> {}
+```
+
+### Update Player Finder Preferences
+
+**PUT** `/player-finder/preferences`
+
+```typescript
+interface UpdatePlayerFinderPreferencesRequest {
+  skill_level_min?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  skill_level_max?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  preferred_gender?: 'male' | 'female' | 'any';
+  age_range_min?: number;
+  age_range_max?: number;
+  search_radius_km?: number;
+  preferred_locations?: object;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  availability_days?: number[];
+  availability_time_start?: string;
+  availability_time_end?: string;
+  contact_method?: 'email' | 'phone' | 'whatsapp' | 'any';
+  auto_notify?: boolean;
+  notes?: string;
+}
+
+interface UpdatePlayerFinderPreferencesResponse extends ApiResponse<PlayerFinder> {}
+```
+
+### Toggle Player Finder Status
+
+**PATCH** `/player-finder/toggle`
+
+```typescript
+interface TogglePlayerFinderResponse extends ApiResponse<PlayerFinder> {}
+```
+
+### Get Player Finder Statistics
+
+**GET** `/player-finder/stats`
+
+```typescript
+interface PlayerFinderStatsResponse extends ApiResponse<{
+  total_matches_found: number;
+  matches_contacted: number;
+  successful_matches: number;
+  is_active: boolean;
+  last_search_date?: string;
+}> {}
+```
+
+### Send Match Request
+
+**POST** `/player-finder/match-request/:targetUserId`
+
+```typescript
+interface SendMatchRequestRequest {
+  message?: string;
+  preferred_date?: string;
+  preferred_time?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles';
+}
+
+interface SendMatchRequestResponse extends ApiResponse<{
+  target_user: {
+    id: string;
+    username: string;
+    full_name: string;
+  };
+  message?: string;
+  preferred_date?: string;
+  preferred_time?: string;
+  match_type?: string;
+}> {}
+```
+
+---
+
+## Court Reservations
+
+### Book Court
+
+**POST** `/courts/:id/book`
+
+```typescript
+interface BookCourtRequest {
+  start_time: string;
+  end_time: string;
+  purpose?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'practice' | 'lesson' | 'other';
+  participants?: string[];
+  guest_count?: number;
+  special_requests?: string;
+  equipment_needed?: object;
+  notes?: string;
+}
+
+interface BookCourtResponse extends ApiResponse<{
+  reservation: CourtReservation;
+  payment_required: boolean;
+  payment_amount: number;
+}> {}
+```
+
+**Example Request:**
+```typescript
+const bookCourt = async (courtId: string, bookingData: BookCourtRequest): Promise<BookCourtResponse> => {
+  const response = await fetch(`/api/v1/courts/${courtId}/book`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(bookingData),
+  });
+  return response.json();
+};
+```
+
+### Get Court Availability
+
+**GET** `/courts/:id/availability?date=2024-01-15&duration=2`
+
+```typescript
+interface CourtAvailabilityQueryParams {
+  date: string;
+  duration?: number;
+}
+
+interface CourtAvailabilityResponse extends ApiResponse<Array<{
+  start_time: string;
+  end_time: string;
+  available: boolean;
+}>> {}
+```
+
+### Get Court Bookings
+
+**GET** `/courts/:id/bookings?date=2024-01-15`
+
+```typescript
+interface CourtBookingsQueryParams {
+  date?: string;
+  status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show';
+}
+
+interface CourtBookingsResponse extends ApiResponse<CourtReservation[]> {}
+```
+
+---
+
 ## Statistics
 
 ### Get Platform Overview
@@ -1307,6 +1789,105 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify(registrationData),
     });
+  }
+
+  // Banner methods
+  async getCarouselBanners(): Promise<CarouselBannersResponse> {
+    return this.request<CarouselBannersResponse>('/banners/carousel');
+  }
+
+  async getActiveBanners(params: ActiveBannersQueryParams): Promise<ActiveBannersResponse> {
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<ActiveBannersResponse>(`/banners/active?${queryString}`);
+  }
+
+  async getBanners(params: BannersQueryParams): Promise<BannersResponse> {
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<BannersResponse>(`/banners?${queryString}`);
+  }
+
+  async createBanner(bannerData: CreateBannerRequest): Promise<CreateBannerResponse> {
+    return this.request<CreateBannerResponse>('/banners', {
+      method: 'POST',
+      body: JSON.stringify(bannerData),
+    });
+  }
+
+  async updateBanner(id: string, bannerData: UpdateBannerRequest): Promise<UpdateBannerResponse> {
+    return this.request<UpdateBannerResponse>(`/banners/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(bannerData),
+    });
+  }
+
+  async deleteBanner(id: string): Promise<DeleteBannerResponse> {
+    return this.request<DeleteBannerResponse>(`/banners/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async trackBannerView(id: string): Promise<TrackBannerViewResponse> {
+    return this.request<TrackBannerViewResponse>(`/banners/${id}/view`, {
+      method: 'POST',
+    });
+  }
+
+  async trackBannerClick(id: string): Promise<TrackBannerClickResponse> {
+    return this.request<TrackBannerClickResponse>(`/banners/${id}/click`, {
+      method: 'POST',
+    });
+  }
+
+  // Player Finder methods
+  async searchPlayers(params: SearchPlayersQueryParams): Promise<SearchPlayersResponse> {
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<SearchPlayersResponse>(`/player-finder/search?${queryString}`);
+  }
+
+  async getNearbyPlayers(limit: number = 10): Promise<NearbyPlayersResponse> {
+    return this.request<NearbyPlayersResponse>(`/player-finder/nearby?limit=${limit}`);
+  }
+
+  async getPlayerFinderPreferences(): Promise<PlayerFinderPreferencesResponse> {
+    return this.request<PlayerFinderPreferencesResponse>('/player-finder/preferences');
+  }
+
+  async updatePlayerFinderPreferences(preferences: UpdatePlayerFinderPreferencesRequest): Promise<UpdatePlayerFinderPreferencesResponse> {
+    return this.request<UpdatePlayerFinderPreferencesResponse>('/player-finder/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(preferences),
+    });
+  }
+
+  async togglePlayerFinderStatus(): Promise<TogglePlayerFinderResponse> {
+    return this.request<TogglePlayerFinderResponse>('/player-finder/toggle', {
+      method: 'PATCH',
+    });
+  }
+
+  async sendMatchRequest(targetUserId: string, requestData: SendMatchRequestRequest): Promise<SendMatchRequestResponse> {
+    return this.request<SendMatchRequestResponse>(`/player-finder/match-request/${targetUserId}`, {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
+  // Court Reservation methods
+  async bookCourt(courtId: string, bookingData: BookCourtRequest): Promise<BookCourtResponse> {
+    return this.request<BookCourtResponse>(`/courts/${courtId}/book`, {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
+  }
+
+  async getCourtAvailability(courtId: string, params: CourtAvailabilityQueryParams): Promise<CourtAvailabilityResponse> {
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<CourtAvailabilityResponse>(`/courts/${courtId}/availability?${queryString}`);
+  }
+
+  async getCourtBookings(courtId: string, params: CourtBookingsQueryParams): Promise<CourtBookingsResponse> {
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<CourtBookingsResponse>(`/courts/${courtId}/bookings?${queryString}`);
   }
 }
 

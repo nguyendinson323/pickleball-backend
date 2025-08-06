@@ -1,14 +1,17 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import usersReducer from './slices/usersSlice';
-import clubsReducer from './slices/clubsSlice';
-import tournamentsReducer from './slices/tournamentsSlice';
-import courtsReducer from './slices/courtsSlice';
-import paymentsReducer from './slices/paymentsSlice';
-import rankingsReducer from './slices/rankingsSlice';
-import notificationsReducer from './slices/notificationsSlice';
-import adminReducer from './slices/adminSlice';
-import statsReducer from './slices/statsSlice';
+import { configureStore } from '@reduxjs/toolkit'
+import authReducer from './slices/authSlice'
+import usersReducer from './slices/usersSlice'
+import clubsReducer from './slices/clubsSlice'
+import tournamentsReducer from './slices/tournamentsSlice'
+import courtsReducer from './slices/courtsSlice'
+import paymentsReducer from './slices/paymentsSlice'
+import rankingsReducer from './slices/rankingsSlice'
+import notificationsReducer from './slices/notificationsSlice'
+import adminReducer from './slices/adminSlice'
+import statsReducer from './slices/statsSlice'
+import bannersReducer from './slices/bannersSlice'
+import playerFinderReducer from './slices/playerFinderSlice'
+import courtReservationsReducer from './slices/courtReservationsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +25,9 @@ export const store = configureStore({
     notifications: notificationsReducer,
     admin: adminReducer,
     stats: statsReducer,
+    banners: bannersReducer,
+    playerFinder: playerFinderReducer,
+    courtReservations: courtReservationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

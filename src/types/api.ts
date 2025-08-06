@@ -22,7 +22,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   pagination: Pagination;
 }
 
-// User Types
+// User Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface User {
   id: string;
   user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'federation';
@@ -33,7 +33,7 @@ export interface User {
   last_name?: string;
   full_name?: string;
   date_of_birth?: string;
-  age?: number;
+  age?: number; // Virtual field
   gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   state?: string;
   city?: string;
@@ -43,8 +43,8 @@ export interface User {
   phone?: string;
   whatsapp?: string;
   skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
-  curp?: string;
-  rfc?: string;
+  curp?: string; // Mexican population registry
+  rfc?: string; // Mexican tax ID
   business_name?: string;
   contact_person?: string;
   job_title?: string;
@@ -66,7 +66,7 @@ export interface User {
   updated_at: string;
 }
 
-// Club Types
+// Club Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Club {
   id: string;
   name: string;
@@ -106,13 +106,11 @@ export interface Club {
   dress_code?: string;
   total_tournaments: number;
   total_matches: number;
-  courts?: any[];
-  tournaments?: any[];
   created_at: string;
   updated_at: string;
 }
 
-// Tournament Types
+// Tournament Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Tournament {
   id: string;
   name: string;
@@ -161,7 +159,7 @@ export interface Tournament {
   updated_at: string;
 }
 
-// Court Types
+// Court Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Court {
   id: string;
   name: string;
@@ -189,7 +187,7 @@ export interface Court {
   updated_at: string;
 }
 
-// Payment Types
+// Payment Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Payment {
   id: string;
   user_id: string;
@@ -216,7 +214,7 @@ export interface Payment {
   updated_at: string;
 }
 
-// Ranking Types
+// Ranking Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Ranking {
   id: string;
   user_id: string;
@@ -243,7 +241,7 @@ export interface Ranking {
   updated_at: string;
 }
 
-// Notification Types
+// Notification Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface Notification {
   id: string;
   user_id: string;
@@ -265,7 +263,7 @@ export interface Notification {
   updated_at: string;
 }
 
-// File Upload Types
+// File Upload Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface FileUpload {
   id: string;
   user_id?: string;
@@ -295,7 +293,104 @@ export interface FileUpload {
   updated_at: string;
 }
 
-// Request/Response Types
+// Banner Types - NEWLY ADDED
+export interface Banner {
+  id: string;
+  title: string;
+  subtitle?: string;
+  image_url: string;
+  thumbnail_url?: string;
+  action_url?: string;
+  action_text?: string;
+  position: number;
+  is_active: boolean;
+  is_featured: boolean;
+  display_type: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  start_date?: string;
+  end_date?: string;
+  related_tournament_id?: string;
+  related_club_id?: string;
+  related_event_id?: string;
+  click_count: number;
+  view_count: number;
+  tags?: string[];
+  metadata?: object;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Player Finder Types - NEWLY ADDED
+export interface PlayerFinder {
+  id: string;
+  searcher_id: string;
+  skill_level_min?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  skill_level_max?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  preferred_gender: 'male' | 'female' | 'any';
+  age_range_min?: number;
+  age_range_max?: number;
+  search_radius_km: number;
+  preferred_locations?: object;
+  match_type: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  availability_days?: number[];
+  availability_time_start?: string;
+  availability_time_end?: string;
+  contact_method: 'email' | 'phone' | 'whatsapp' | 'any';
+  auto_notify: boolean;
+  is_active: boolean;
+  last_search_date?: string;
+  total_matches_found: number;
+  matches_contacted: number;
+  successful_matches: number;
+  search_criteria?: object;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Court Reservation Types - NEWLY ADDED
+export interface CourtReservation {
+  id: string;
+  court_id: string;
+  user_id: string;
+  club_id: string;
+  start_time: string;
+  end_time: string;
+  reservation_date: string;
+  duration_hours: number;
+  purpose?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'practice' | 'lesson' | 'other';
+  participants?: string[];
+  guest_count: number;
+  hourly_rate: number;
+  total_amount: number;
+  member_discount: number;
+  final_amount: number;
+  payment_status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+  payment_id?: string;
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show';
+  cancelled_at?: string;
+  cancelled_by?: string;
+  cancellation_reason?: string;
+  refund_amount: number;
+  special_requests?: string;
+  equipment_needed?: object;
+  notes?: string;
+  checked_in_at?: string;
+  checked_out_at?: string;
+  actual_start_time?: string;
+  actual_end_time?: string;
+  rating?: number;
+  feedback?: string;
+  booking_source: 'web' | 'mobile' | 'phone' | 'in_person';
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Request/Response Types for Authentication
 export interface LoginRequest {
   email: string;
   password: string;
@@ -339,7 +434,7 @@ export interface RegisterResponse extends ApiResponse<{
 
 export interface ProfileResponse extends ApiResponse<User> {}
 
-// Query Parameters
+// Request/Response Types for Users
 export interface UsersQueryParams {
   page?: number;
   limit?: number;
@@ -350,6 +445,21 @@ export interface UsersQueryParams {
   search?: string;
 }
 
+export interface UpdateUserRequest {
+  first_name?: string;
+  last_name?: string;
+  state?: string;
+  city?: string;
+  phone?: string;
+  skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+}
+
+export interface UsersResponse extends PaginatedResponse<User> {}
+export interface PlayersResponse extends PaginatedResponse<User> {}
+export interface UserResponse extends ApiResponse<User> {}
+export interface UpdateUserResponse extends ApiResponse<User> {}
+
+// Request/Response Types for Clubs
 export interface ClubsQueryParams {
   page?: number;
   limit?: number;
@@ -361,71 +471,6 @@ export interface ClubsQueryParams {
   search?: string;
 }
 
-export interface TournamentsQueryParams {
-  page?: number;
-  limit?: number;
-  tournament_type?: 'local' | 'state' | 'national' | 'international' | 'exhibition' | 'league';
-  category?: 'singles' | 'doubles' | 'mixed_doubles' | 'team';
-  status?: 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'in_progress' | 'completed' | 'cancelled';
-  state?: string;
-  city?: string;
-  search?: string;
-}
-
-export interface CourtsQueryParams {
-  page?: number;
-  limit?: number;
-  club_id?: string;
-  court_type?: 'indoor' | 'outdoor' | 'covered';
-  surface?: 'concrete' | 'asphalt' | 'synthetic' | 'grass' | 'clay';
-  is_available?: boolean;
-  search?: string;
-}
-
-export interface PaymentsQueryParams {
-  page?: number;
-  limit?: number;
-  payment_type?: 'membership_fee' | 'tournament_registration' | 'court_rental' | 'equipment_purchase' | 'donation' | 'subscription_upgrade' | 'other';
-  status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
-  user_id?: string;
-  start_date?: string;
-  end_date?: string;
-}
-
-export interface RankingsQueryParams {
-  page?: number;
-  limit?: number;
-  category?: 'singles' | 'doubles' | 'mixed_doubles';
-  skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
-  state?: string;
-  search?: string;
-}
-
-export interface NotificationsQueryParams {
-  page?: number;
-  limit?: number;
-  type?: string;
-  unread_only?: boolean;
-}
-
-// Response Types
-export interface UsersResponse extends PaginatedResponse<User> {}
-export interface ClubsResponse extends PaginatedResponse<Club> {}
-export interface TournamentsResponse extends PaginatedResponse<Tournament> {}
-export interface CourtsResponse extends PaginatedResponse<Court> {}
-export interface PaymentsResponse extends PaginatedResponse<Payment> {}
-export interface RankingsResponse extends PaginatedResponse<Ranking> {}
-export interface NotificationsResponse extends PaginatedResponse<Notification> {}
-
-export interface UserResponse extends ApiResponse<User> {}
-export interface ClubResponse extends ApiResponse<Club> {}
-export interface TournamentResponse extends ApiResponse<Tournament> {}
-export interface CourtResponse extends ApiResponse<Court> {}
-export interface PaymentResponse extends ApiResponse<Payment> {}
-export interface RankingResponse extends ApiResponse<Ranking> {}
-export interface NotificationResponse extends ApiResponse<Notification> {}
-
-// Create/Update Request Types
 export interface CreateClubRequest {
   name: string;
   club_type: 'recreational' | 'competitive' | 'training' | 'mixed';
@@ -454,6 +499,24 @@ export interface CreateClubRequest {
   operating_hours?: object;
   club_rules?: string;
   dress_code?: string;
+}
+
+export interface ClubsResponse extends PaginatedResponse<Club> {}
+export interface ClubResponse extends ApiResponse<Club> {}
+export interface CreateClubResponse extends ApiResponse<Club> {}
+export interface ClubCourtsResponse extends ApiResponse<Court[]> {}
+export interface ClubTournamentsResponse extends ApiResponse<Tournament[]> {}
+
+// Request/Response Types for Tournaments
+export interface TournamentsQueryParams {
+  page?: number;
+  limit?: number;
+  tournament_type?: 'local' | 'state' | 'national' | 'international' | 'exhibition' | 'league';
+  category?: 'singles' | 'doubles' | 'mixed_doubles' | 'team';
+  status?: 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'in_progress' | 'completed' | 'cancelled';
+  state?: string;
+  city?: string;
+  search?: string;
 }
 
 export interface CreateTournamentRequest {
@@ -496,11 +559,26 @@ export interface TournamentRegistrationRequest {
   dietary_restrictions?: string;
 }
 
+export interface TournamentsResponse extends PaginatedResponse<Tournament> {}
+export interface UpcomingTournamentsResponse extends ApiResponse<Tournament[]> {}
+export interface TournamentResponse extends ApiResponse<Tournament> {}
+export interface CreateTournamentResponse extends ApiResponse<Tournament> {}
 export interface TournamentRegistrationResponse extends ApiResponse<{
   registration: any;
   payment_required: boolean;
   payment_amount?: number;
 }> {}
+
+// Request/Response Types for Courts
+export interface CourtsQueryParams {
+  page?: number;
+  limit?: number;
+  club_id?: string;
+  court_type?: 'indoor' | 'outdoor' | 'covered';
+  surface?: 'concrete' | 'asphalt' | 'synthetic' | 'grass' | 'clay';
+  is_available?: boolean;
+  search?: string;
+}
 
 export interface CreateCourtRequest {
   name: string;
@@ -525,13 +603,33 @@ export interface BookCourtRequest {
   start_time: string;
   end_time: string;
   purpose?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'practice' | 'lesson' | 'other';
+  participants?: string[];
+  guest_count?: number;
+  special_requests?: string;
+  equipment_needed?: object;
+  notes?: string;
 }
 
+export interface CourtsResponse extends PaginatedResponse<Court> {}
+export interface CourtResponse extends ApiResponse<Court> {}
+export interface CreateCourtResponse extends ApiResponse<Court> {}
 export interface BookCourtResponse extends ApiResponse<{
-  booking: any;
+  reservation: CourtReservation;
   payment_required: boolean;
-  payment_amount?: number;
+  payment_amount: number;
 }> {}
+
+// Request/Response Types for Payments
+export interface PaymentsQueryParams {
+  page?: number;
+  limit?: number;
+  payment_type?: 'membership_fee' | 'tournament_registration' | 'court_rental' | 'equipment_purchase' | 'donation' | 'subscription_upgrade' | 'other';
+  status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+  user_id?: string;
+  start_date?: string;
+  end_date?: string;
+}
 
 export interface CreatePaymentRequest {
   amount: number;
@@ -555,30 +653,189 @@ export interface ProcessPaymentRequest {
   };
 }
 
+export interface PaymentsResponse extends PaginatedResponse<Payment> {}
+export interface CreatePaymentResponse extends ApiResponse<Payment> {}
 export interface ProcessPaymentResponse extends ApiResponse<{
   payment: Payment;
   client_secret?: string;
 }> {}
 
-export interface UpdateUserRequest {
-  first_name?: string;
-  last_name?: string;
-  state?: string;
-  city?: string;
-  phone?: string;
+// Request/Response Types for Rankings
+export interface RankingsQueryParams {
+  page?: number;
+  limit?: number;
+  category?: 'singles' | 'doubles' | 'mixed_doubles';
   skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  state?: string;
+  search?: string;
 }
 
-export interface UpdateUserResponse extends ApiResponse<User> {}
+export interface RankingsResponse extends PaginatedResponse<Ranking> {}
+export interface TopPlayersResponse extends ApiResponse<Ranking[]> {}
+export interface UserRankingsResponse extends ApiResponse<Ranking[]> {}
 
+// Request/Response Types for Notifications
+export interface NotificationsQueryParams {
+  page?: number;
+  limit?: number;
+  type?: string;
+  unread_only?: boolean;
+}
+
+export interface NotificationsResponse extends PaginatedResponse<Notification> {}
 export interface MarkReadResponse extends ApiResponse<Notification> {}
-
 export interface MarkAllReadResponse extends ApiResponse<{
   updated_count: number;
 }> {}
 
-// Dashboard and Statistics Types
-export interface DashboardStats {
+// Request/Response Types for Banners
+export interface ActiveBannersQueryParams {
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+}
+
+export interface BannersQueryParams {
+  page?: number;
+  limit?: number;
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  is_active?: boolean;
+  is_featured?: boolean;
+  search?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
+export interface CreateBannerRequest {
+  title: string;
+  subtitle?: string;
+  image_url: string;
+  thumbnail_url?: string;
+  action_url?: string;
+  action_text?: string;
+  position?: number;
+  is_active?: boolean;
+  is_featured?: boolean;
+  display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification';
+  target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins';
+  start_date?: string;
+  end_date?: string;
+  related_tournament_id?: string;
+  related_club_id?: string;
+  related_event_id?: string;
+  tags?: string[];
+  metadata?: object;
+  notes?: string;
+}
+
+export interface UpdateBannerRequest extends Partial<CreateBannerRequest> {}
+
+export interface UpdateBannerPositionRequest {
+  position: number;
+}
+
+export interface CarouselBannersResponse extends ApiResponse<Banner[]> {}
+export interface ActiveBannersResponse extends ApiResponse<Banner[]> {}
+export interface BannersResponse extends PaginatedResponse<Banner> {}
+export interface CreateBannerResponse extends ApiResponse<Banner> {}
+export interface UpdateBannerResponse extends ApiResponse<Banner> {}
+export interface DeleteBannerResponse extends ApiResponse<{}> {}
+export interface ToggleBannerResponse extends ApiResponse<Banner> {}
+export interface UpdateBannerPositionResponse extends ApiResponse<Banner> {}
+export interface TrackBannerViewResponse extends ApiResponse<{}> {}
+export interface TrackBannerClickResponse extends ApiResponse<{}> {}
+export interface BannerAnalyticsResponse extends ApiResponse<{
+  total_banners: number;
+  total_views: number;
+  total_clicks: number;
+  click_through_rate: number;
+  top_performing_banners: Banner[];
+  banners_by_display_type: Record<string, { count: number; views: number; clicks: number }>;
+  banners_by_audience: Record<string, { count: number; views: number; clicks: number }>;
+}> {}
+
+// Request/Response Types for Player Finder
+export interface SearchPlayersQueryParams {
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+  skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  gender?: 'male' | 'female' | 'any';
+  age_min?: number;
+  age_max?: number;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  page?: number;
+  limit?: number;
+}
+
+export interface UpdatePlayerFinderPreferencesRequest {
+  skill_level_min?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  skill_level_max?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  preferred_gender?: 'male' | 'female' | 'any';
+  age_range_min?: number;
+  age_range_max?: number;
+  search_radius_km?: number;
+  preferred_locations?: object;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles' | 'any';
+  availability_days?: number[];
+  availability_time_start?: string;
+  availability_time_end?: string;
+  contact_method?: 'email' | 'phone' | 'whatsapp' | 'any';
+  auto_notify?: boolean;
+  notes?: string;
+}
+
+export interface SendMatchRequestRequest {
+  message?: string;
+  preferred_date?: string;
+  preferred_time?: string;
+  match_type?: 'singles' | 'doubles' | 'mixed_doubles';
+}
+
+export interface SearchPlayersResponse extends PaginatedResponse<User> {}
+export interface NearbyPlayersResponse extends ApiResponse<Array<User & { distance_km: number }>> {}
+export interface PlayerFinderPreferencesResponse extends ApiResponse<PlayerFinder | null> {}
+export interface UpdatePlayerFinderPreferencesResponse extends ApiResponse<PlayerFinder> {}
+export interface TogglePlayerFinderResponse extends ApiResponse<PlayerFinder> {}
+export interface PlayerFinderStatsResponse extends ApiResponse<{
+  total_matches_found: number;
+  matches_contacted: number;
+  successful_matches: number;
+  is_active: boolean;
+  last_search_date?: string;
+}> {}
+export interface SendMatchRequestResponse extends ApiResponse<{
+  target_user: {
+    id: string;
+    username: string;
+    full_name: string;
+  };
+  message?: string;
+  preferred_date?: string;
+  preferred_time?: string;
+  match_type?: string;
+}> {}
+
+// Request/Response Types for Court Reservations
+export interface CourtAvailabilityQueryParams {
+  date: string;
+  duration?: number;
+}
+
+export interface CourtBookingsQueryParams {
+  date?: string;
+  status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show';
+}
+
+export interface CourtAvailabilityResponse extends ApiResponse<Array<{
+  start_time: string;
+  end_time: string;
+  available: boolean;
+}>> {}
+export interface CourtBookingsResponse extends ApiResponse<CourtReservation[]> {}
+
+// Request/Response Types for Admin
+export interface DashboardStatsResponse extends ApiResponse<{
   total_users: number;
   total_clubs: number;
   total_tournaments: number;
@@ -587,26 +844,28 @@ export interface DashboardStats {
   new_users_this_month: number;
   upcoming_tournaments: number;
   pending_payments: number;
+}> {}
+
+export interface UpdateUserRoleRequest {
+  role: 'user' | 'moderator' | 'admin' | 'super_admin';
 }
 
-export interface DashboardStatsResponse extends ApiResponse<DashboardStats> {}
+export interface AdminUsersResponse extends PaginatedResponse<User> {}
+export interface UpdateUserRoleResponse extends ApiResponse<User> {}
 
-export interface OverviewStats {
+// Request/Response Types for Statistics
+export interface OverviewStatsResponse extends ApiResponse<{
   total_users: number;
   total_clubs: number;
   total_tournaments: number;
   total_revenue: number;
   active_memberships: number;
-}
+}> {}
 
-export interface OverviewStatsResponse extends ApiResponse<OverviewStats> {}
-
-export interface UserStats {
+export interface UserStatsResponse extends ApiResponse<{
   total_users: number;
   new_users_this_month: number;
   active_users: number;
   users_by_type: Record<string, number>;
   users_by_state: Record<string, number>;
-}
-
-export interface UserStatsResponse extends ApiResponse<UserStats> {} 
+}> {} 
