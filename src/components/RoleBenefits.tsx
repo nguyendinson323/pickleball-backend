@@ -1,6 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building, Handshake, GraduationCap, MapPin } from "lucide-react";
+import playersImg from "@/assets/players-community.jpg";
+import clubsImg from "@/assets/clubs-facility.jpg";
+import partnersImg from "@/assets/partners-business.jpg";
+import coachesImg from "@/assets/coaches-training.jpg";
+import statesImg from "@/assets/states-management.jpg";
 
 const RoleBenefits = () => {
   const roles = [
@@ -8,6 +13,7 @@ const RoleBenefits = () => {
       id: "players",
       label: "Players",
       icon: User,
+      image: playersImg,
       highlights: [
         "Official national rankings and skill verification",
         "Tournament entry and registration management",
@@ -20,6 +26,7 @@ const RoleBenefits = () => {
       id: "clubs",
       label: "Clubs",
       icon: Building,
+      image: clubsImg,
       highlights: [
         "Court booking and facility management",
         "Custom club microsite with branding",
@@ -32,6 +39,7 @@ const RoleBenefits = () => {
       id: "partners",
       label: "Partners",
       icon: Handshake,
+      image: partnersImg,
       highlights: [
         "Promote courts and facilities nationwide",
         "Monetize reservations and bookings",
@@ -44,6 +52,7 @@ const RoleBenefits = () => {
       id: "coaches",
       label: "Coaches",
       icon: GraduationCap,
+      image: coachesImg,
       highlights: [
         "Official coaching credentials and certifications",
         "Student discovery and connection platform",
@@ -56,6 +65,7 @@ const RoleBenefits = () => {
       id: "states",
       label: "States",
       icon: MapPin,
+      image: statesImg,
       highlights: [
         "Oversee clubs and regional activities",
         "State-wide tournament management",
@@ -83,7 +93,7 @@ const RoleBenefits = () => {
                 <TabsTrigger
                   key={role.id}
                   value={role.id}
-                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/20 transition-colors duration-200"
                 >
                   <Icon className="w-4 h-4" />
                   <span className="hidden sm:inline">{role.label}</span>
@@ -96,19 +106,25 @@ const RoleBenefits = () => {
             const Icon = role.icon;
             return (
               <TabsContent key={role.id} value={role.id}>
-                <Card className="shadow-medium">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-primary" />
+                <Card className="shadow-medium hover:shadow-strong transition-all duration-300 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src={role.image} 
+                      alt={`${role.label} community`}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-2xl">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-white" />
                       </div>
                       Benefits for {role.label}
                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                  <CardContent className="p-6">
                     <ul className="grid md:grid-cols-2 gap-4">
                       {role.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start gap-3">
+                        <li key={index} className="flex items-start gap-3 hover:bg-accent/10 p-2 rounded-lg transition-colors duration-200">
                           <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
                           <span className="text-muted-foreground">{highlight}</span>
                         </li>
