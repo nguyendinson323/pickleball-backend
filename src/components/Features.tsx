@@ -1,37 +1,49 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, BarChart3, MapPin, Search, Shield, Globe } from "lucide-react";
+import tournamentManagementImg from "@/assets/tournament-management.jpg";
+import rankingSystemImg from "@/assets/ranking-system.jpg";
+import courtReservationsImg from "@/assets/court-reservations.jpg";
+import playerFinderImg from "@/assets/player-finder.jpg";
+import credentialingImg from "@/assets/credentialing.jpg";
+import micrositesImg from "@/assets/microsites.jpg";
 
 const Features = () => {
   const features = [
     {
       icon: Calendar,
       title: "Tournament Management",
-      description: "Organize and manage events with comprehensive tools for scheduling, registration, and results tracking."
+      description: "Organize and manage events with comprehensive tools for scheduling, registration, and results tracking.",
+      image: tournamentManagementImg
     },
     {
       icon: BarChart3,
       title: "Ranking System",
-      description: "Transparent, level-based points system that accurately reflects player skills and tournament performance."
+      description: "Transparent, level-based points system that accurately reflects player skills and tournament performance.",
+      image: rankingSystemImg
     },
     {
       icon: MapPin,
       title: "Court Reservations",
-      description: "Book and manage court schedules with real-time availability and automated confirmation systems."
+      description: "Book and manage court schedules with real-time availability and automated confirmation systems.",
+      image: courtReservationsImg
     },
     {
       icon: Search,
       title: "Nearby Player Finder",
-      description: "Discover players by location, skill level, and playing preferences to build your local community."
+      description: "Discover players by location, skill level, and playing preferences to build your local community.",
+      image: playerFinderImg
     },
     {
       icon: Shield,
       title: "Credentialing & Affiliation",
-      description: "Verified IDs and membership management for players, coaches, and officials at all levels."
+      description: "Verified IDs and membership management for players, coaches, and officials at all levels.",
+      image: credentialingImg
     },
     {
       icon: Globe,
       title: "Microsites",
-      description: "Custom public pages for clubs and partners to showcase facilities, events, and community activities."
+      description: "Custom public pages for clubs and partners to showcase facilities, events, and community activities.",
+      image: micrositesImg
     }
   ];
 
@@ -48,11 +60,19 @@ const Features = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card key={index} className="group hover:shadow-medium transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 mb-4 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-6 h-6 text-primary" />
+              <Card key={index} className="group hover:shadow-medium transition-all duration-300 overflow-hidden">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={feature.image} 
+                    alt={feature.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-4 left-4 w-10 h-10 bg-primary/90 rounded-lg flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
+                </div>
+                <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </CardContent>
