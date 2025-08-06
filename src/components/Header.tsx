@@ -21,12 +21,11 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
-              NPF
+              <img src="logo.jpeg" alt="logo" className="w-[60px] max-w-none" />
             </div>
-            <span className="hidden sm:block font-semibold text-lg">
-              National Pickleball Federation
+            <span className="sm:hidden font-semibold text-lg">
+              <img src="logo.jpeg" alt="logo" className="w-[60px] max-w-none" />
             </span>
-            <span className="sm:hidden font-semibold text-lg">NPF</span>
           </div>
 
           {/* Desktop Navigation */}

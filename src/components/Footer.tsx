@@ -21,20 +21,9 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Column 1: Logo and Copyright */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
-                NPF
-              </div>
-              <span className="font-semibold text-lg">
-                National Pickleball Federation
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              © 2025 National Pickleball Federation. All rights reserved.
-            </p>
+          <div className="flex h-full w-8 items-center rounded-md text-primary-foreground font-bold text-sm">
+            <img src="logo.jpeg" alt="logo" className="w-[160px] max-w-none" />
           </div>
-
           {/* Column 2: Quick Links */}
           <div>
             <h3 className="font-semibold mb-4">Quick Links</h3>
@@ -75,7 +64,7 @@ const Footer = () => {
                 </a>
               </div>
             </div>
-            
+
             <div className="mt-6">
               <h4 className="font-medium mb-3">Follow Us</h4>
               <div className="flex space-x-3">

@@ -58,11 +58,6 @@ const Overview = () => {
                     alt={feature.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-4">
-                    <div className="w-12 h-12 bg-primary/90 rounded-xl flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>

@@ -68,12 +68,14 @@ const Features = () => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-4 left-4 w-10 h-10 bg-primary/90 rounded-lg flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
                 </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <CardContent className="p-6 relative">
+                  {/* <div className="absolute top-2 right-4 w-10 h-10 bg-primary/90 rounded-lg flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div> */}
+                  <div className="w-full flex justtify-between">
+                    <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                  </div>
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>
