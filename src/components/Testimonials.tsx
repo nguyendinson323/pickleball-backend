@@ -87,163 +87,143 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section className="py-16 lg:py-24">
+    <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4">
-        <motion.div 
-          className="text-center max-w-3xl mx-auto mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={getAnimationVariants('up', 0.8, 0.2)}
-        >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+        <div className="text-center mb-12">
+          <motion.h2 
+            className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
             What Our Community Says
-          </h2>
-        </motion.div>
+          </motion.h2>
+          <motion.p 
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            Join thousands of players, coaches, and facility managers who trust our platform
+          </motion.p>
+        </div>
 
-                <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={getAnimationVariants('up', 0.7, 0.4)}
-        >
-          <div className="relative">
-            {/* Carousel Container */}
-            <div className="w-full max-w-6xl mx-auto overflow-hidden">
-              <motion.div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{
-                  transform: `translateX(-${current * (100 / 3)}%)`,
-                  width: `${testimonials.length * (100 / 3)}%`
-                }}
+        <div className="relative max-w-4xl mx-auto">
+          {/* Carousel Container */}
+          <div className="relative overflow-hidden rounded-2xl bg-white shadow-xl">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="p-8 lg:p-12"
               >
-                {testimonials.map((testimonial, index) => {
-                  const config = animationConfigs.testimonials[index % animationConfigs.testimonials.length];
-                  return (
-                    <div key={index} className="w-1/3 px-4">
-                      <motion.div
-                        variants={getAnimationVariants(config.direction, config.duration, config.delay)}
-                        whileHover={{ 
-                          scale: 1.02,
-                          transition: { duration: 0.2 }
-                        }}
-                      >
-                        <Card className="shadow-medium hover:shadow-strong transition-all duration-300 group h-full">
-                          <CardContent className="p-6 h-full flex flex-col">
-                            <div className="flex items-center gap-4 mb-4">
-                              <motion.img 
-                                src={testimonial.image} 
-                                alt={testimonial.author}
-                                className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300"
-                                whileHover={{ 
-                                  scale: 1.1,
-                                  transition: { duration: 0.2 }
-                                }}
-                              />
-                              <div className="flex">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                  <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, scale: 0 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: i * 0.1 }}
-                                  >
-                                    <Star className="w-4 h-4 fill-accent text-accent" />
-                                  </motion.div>
-                                ))}
-                              </div>
-                            </div>
-                            <blockquote className="text-muted-foreground mb-6 leading-relaxed flex-grow">
-                              "{testimonial.quote}"
-                            </blockquote>
-                            <div className="border-t pt-4 mt-auto">
-                              <div className="font-semibold">{testimonial.author}</div>
-                              <div className="text-sm text-muted-foreground">{testimonial.title}</div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
+                <div className="flex flex-col lg:flex-row items-center gap-8">
+                  {/* Testimonial Image */}
+                  <div className="flex-shrink-0">
+                    <motion.div
+                      className="w-24 h-24 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-4 ring-blue-100"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <img
+                        src={testimonials[current].image}
+                        alt={testimonials[current].author}
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Testimonial Content */}
+                  <div className="flex-1 text-center lg:text-left">
+                    {/* Stars */}
+                    <div className="flex justify-center lg:justify-start mb-4">
+                      {[...Array(testimonials[current].rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-5 h-5 text-yellow-400 fill-current"
+                        />
+                      ))}
                     </div>
-                  );
-                })}
+
+                    {/* Quote */}
+                    <blockquote className="text-lg lg:text-xl text-gray-700 mb-6 italic leading-relaxed">
+                      "{testimonials[current].quote}"
+                    </blockquote>
+
+                    {/* Author Info */}
+                    <div>
+                      <cite className="not-italic">
+                        <div className="font-semibold text-gray-900 text-lg">
+                          {testimonials[current].author}
+                        </div>
+                        <div className="text-gray-600">
+                          {testimonials[current].title}
+                        </div>
+                      </cite>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
-            </div>
-            
-            {/* Custom Navigation Controls */}
-            <div className="absolute -top-12 right-0 flex items-center gap-2">
-              <motion.button
-                onClick={togglePlayPause}
-                className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors duration-200"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <AnimatePresence mode="wait">
-                  {isPlaying ? (
-                    <motion.div
-                      key="pause"
-                      initial={{ opacity: 0, rotate: -90 }}
-                      animate={{ opacity: 1, rotate: 0 }}
-                      exit={{ opacity: 0, rotate: 90 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Pause className="w-4 h-4" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="play"
-                      initial={{ opacity: 0, rotate: -90 }}
-                      animate={{ opacity: 1, rotate: 0 }}
-                      exit={{ opacity: 0, rotate: 90 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Play className="w-4 h-4" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-              
-              <motion.button
+            </AnimatePresence>
+
+            {/* Navigation Controls */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-4">
+              <button
                 onClick={handlePrevious}
-                className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors duration-200"
-                whileHover={{ scale: 1.1, x: -2 }}
-                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+                aria-label="Previous testimonial"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </motion.button>
-              
-              <motion.button
-                onClick={handleNext}
-                className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors duration-200"
-                whileHover={{ scale: 1.1, x: 2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </motion.button>
+                <ChevronLeft className="w-6 h-6 text-gray-700" />
+              </button>
             </div>
 
-            {/* Progress Indicators */}
-            <div className="flex justify-center mt-8 gap-2">
-              {testimonials.map((_, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    current === index 
-                      ? 'bg-primary scale-125' 
-                      : 'bg-primary/30 hover:bg-primary/50'
-                  }`}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                />
-              ))}
+            <div className="absolute top-1/2 -translate-y-1/2 right-4">
+              <button
+                onClick={handleNext}
+                className="p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-700" />
+              </button>
             </div>
-            
-            {/* Debug Info */}
-            <div className="text-center mt-4 text-sm text-gray-500">
-              Current: {current} | Playing: {isPlaying ? 'Yes' : 'No'}
+
+            {/* Play/Pause Button */}
+            <div className="absolute top-4 right-4">
+              <button
+                onClick={togglePlayPause}
+                className="p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+                aria-label={isPlaying ? "Pause carousel" : "Play carousel"}
+              >
+                {isPlaying ? (
+                  <Pause className="w-5 h-5 text-gray-700" />
+                ) : (
+                  <Play className="w-5 h-5 text-gray-700" />
+                )}
+              </button>
             </div>
           </div>
-        </motion.div>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-8 gap-2">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  index === current
+                    ? "bg-blue-600 scale-125"
+                    : "bg-gray-300 hover:bg-gray-400"
+                }`}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
