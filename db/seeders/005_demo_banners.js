@@ -1,226 +1,110 @@
+/**
+ * Seeder: Demo Banners
+ * 
+ * This seeder creates sample banners for testing and development.
+ * 
+ * @author Pickleball Federation Team
+ * @version 1.0.0
+ */
+
 'use strict';
 
-const { v4: uuidv4 } = require('uuid');
-
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const now = new Date();
+
     const banners = [
+      // Elite Club Championship Banner
       {
-        id: uuidv4(),
-        title: 'Welcome to Pickleball Federation',
-        subtitle: 'Join the fastest growing sport in America',
-        description: 'Discover the exciting world of pickleball with our comprehensive platform for players, clubs, and tournaments.',
-        image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=400&fit=crop',
-        link_url: '/about',
+        id: '990e8400-e29b-41d4-a716-446655440001',
+        title: 'Elite Club Championship 2024',
+        subtitle: 'Join the most prestigious tournament of the year',
+        image_url: 'https://example.com/banners/elite_championship_2024.jpg',
+        thumbnail_url: 'https://example.com/banners/thumbnails/elite_championship_2024_thumb.jpg',
+        action_url: '/tournaments/880e8400-e29b-41d4-a716-446655440001',
+        action_text: 'Register Now',
         position: 1,
-        status: 'active',
-        type: 'carousel',
+        is_active: true,
+        is_featured: true,
+        display_type: 'carousel',
         target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
+        start_date: new Date(2024, 4, 1, 0, 0, 0), // May 1, 2024
+        end_date: new Date(2024, 5, 10, 23, 59, 59), // June 10, 2024
+        related_tournament_id: '880e8400-e29b-41d4-a716-446655440001',
+        related_club_id: '660e8400-e29b-41d4-a716-446655440001',
+        click_count: 156,
+        view_count: 1247,
+        tags: JSON.stringify(['tournament', 'championship', 'elite', '2024']),
+        metadata: JSON.stringify({
+          priority: 'high',
+          category: 'tournament',
+          season: 'summer'
+        }),
+        notes: 'Main promotional banner for Elite Club Championship',
+        created_at: now,
+        updated_at: now
       },
+
+      // Community Tournament Banner
       {
-        id: uuidv4(),
-        title: 'Find Your Perfect Match',
-        subtitle: 'Connect with players near you',
-        description: 'Use our advanced player finder to discover nearby players, schedule matches, and improve your game.',
-        image_url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&h=400&fit=crop',
-        link_url: '/player-finder',
+        id: '990e8400-e29b-41d4-a716-446655440002',
+        title: 'Community Spring Tournament',
+        subtitle: 'Fun tournament for all skill levels - Everyone welcome!',
+        image_url: 'https://example.com/banners/community_spring_2024.jpg',
+        thumbnail_url: 'https://example.com/banners/thumbnails/community_spring_2024_thumb.jpg',
+        action_url: '/tournaments/880e8400-e29b-41d4-a716-446655440002',
+        action_text: 'Learn More',
         position: 2,
-        status: 'active',
-        type: 'carousel',
+        is_active: true,
+        is_featured: false,
+        display_type: 'carousel',
         target_audience: 'players',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
+        start_date: new Date(2024, 2, 1, 0, 0, 0), // March 1, 2024
+        end_date: new Date(2024, 3, 15, 23, 59, 59), // April 15, 2024
+        related_tournament_id: '880e8400-e29b-41d4-a716-446655440002',
+        related_club_id: '660e8400-e29b-41d4-a716-446655440002',
+        click_count: 89,
+        view_count: 567,
+        tags: JSON.stringify(['community', 'spring', 'recreational', 'beginner-friendly']),
+        metadata: JSON.stringify({
+          priority: 'medium',
+          category: 'community',
+          season: 'spring'
+        }),
+        notes: 'Community-focused tournament banner',
+        created_at: now,
+        updated_at: now
       },
+
+      // Youth Championship Banner
       {
-        id: uuidv4(),
-        title: 'Book Courts Instantly',
-        subtitle: 'Reserve your court time online',
-        description: 'Easy court booking system with real-time availability and instant confirmation.',
-        image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=400&fit=crop',
-        link_url: '/courts',
+        id: '990e8400-e29b-41d4-a716-446655440003',
+        title: 'Youth Pickleball Championship',
+        subtitle: 'Developing the next generation of pickleball stars',
+        image_url: 'https://example.com/banners/youth_championship_2024.jpg',
+        thumbnail_url: 'https://example.com/banners/thumbnails/youth_championship_2024_thumb.jpg',
+        action_url: '/tournaments/880e8400-e29b-41d4-a716-446655440003',
+        action_text: 'Register Youth',
         position: 3,
-        status: 'active',
-        type: 'carousel',
+        is_active: true,
+        is_featured: true,
+        display_type: 'carousel',
         target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Join Upcoming Tournaments',
-        subtitle: 'Compete and climb the rankings',
-        description: 'Register for tournaments, track your progress, and compete with players from around the region.',
-        image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop',
-        link_url: '/tournaments',
-        position: 4,
-        status: 'active',
-        type: 'carousel',
-        target_audience: 'players',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Premium Membership Benefits',
-        subtitle: 'Unlock exclusive features',
-        description: 'Get access to advanced analytics, priority booking, exclusive tournaments, and premium support.',
-        image_url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop',
-        link_url: '/premium',
-        position: 5,
-        status: 'active',
-        type: 'promotional',
-        target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'New Club Registration',
-        subtitle: 'Join our growing network',
-        description: 'Register your club and connect with players in your area. Get access to tournament hosting and player management tools.',
-        image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=400&fit=crop',
-        link_url: '/clubs/register',
-        position: 6,
-        status: 'active',
-        type: 'promotional',
-        target_audience: 'club_owners',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Spring Tournament Series',
-        subtitle: 'Registration now open',
-        description: 'Join our spring tournament series with events for all skill levels. Prizes and rankings points available.',
-        image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop',
-        link_url: '/tournaments/spring-series',
-        position: 7,
-        status: 'active',
-        type: 'event',
-        target_audience: 'players',
-        start_date: new Date('2024-03-01'),
-        end_date: new Date('2024-05-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Coaching Certification Program',
-        subtitle: 'Become a certified coach',
-        description: 'Complete our coaching certification program and start teaching pickleball to players of all levels.',
-        image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=400&fit=crop',
-        link_url: '/coaching/certification',
-        position: 8,
-        status: 'active',
-        type: 'promotional',
-        target_audience: 'coaches',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Equipment Store',
-        subtitle: 'Get the best gear',
-        description: 'Shop for premium pickleball equipment, paddles, balls, and accessories from top brands.',
-        image_url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop',
-        link_url: '/store',
-        position: 9,
-        status: 'active',
-        type: 'promotional',
-        target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Community Guidelines',
-        subtitle: 'Play fair, have fun',
-        description: 'Learn about our community guidelines and how to be a great pickleball ambassador.',
-        image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=400&fit=crop',
-        link_url: '/guidelines',
-        position: 10,
-        status: 'active',
-        type: 'informational',
-        target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Mobile App Coming Soon',
-        subtitle: 'Play on the go',
-        description: 'Our mobile app is coming soon! Get notifications, book courts, and find players from your phone.',
-        image_url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop',
-        link_url: '/mobile-app',
-        position: 11,
-        status: 'active',
-        type: 'announcement',
-        target_audience: 'all',
-        start_date: new Date('2024-01-01'),
-        end_date: new Date('2024-06-30'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        id: uuidv4(),
-        title: 'Holiday Tournament Special',
-        subtitle: 'Limited time offer',
-        description: 'Special holiday tournament with reduced entry fees and bonus ranking points for all participants.',
-        image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop',
-        link_url: '/tournaments/holiday-special',
-        position: 12,
-        status: 'active',
-        type: 'event',
-        target_audience: 'players',
-        start_date: new Date('2024-12-01'),
-        end_date: new Date('2024-12-31'),
-        click_count: 0,
-        view_count: 0,
-        created_at: new Date(),
-        updated_at: new Date()
+        start_date: new Date(2024, 6, 1, 0, 0, 0), // July 1, 2024
+        end_date: new Date(2024, 7, 5, 23, 59, 59), // August 5, 2024
+        related_tournament_id: '880e8400-e29b-41d4-a716-446655440003',
+        related_club_id: '660e8400-e29b-41d4-a716-446655440003',
+        click_count: 234,
+        view_count: 892,
+        tags: JSON.stringify(['youth', 'championship', 'development', 'future-stars']),
+        metadata: JSON.stringify({
+          priority: 'high',
+          category: 'youth',
+          season: 'summer'
+        }),
+        notes: 'Youth development tournament banner',
+        created_at: now,
+        updated_at: now
       }
     ];
 

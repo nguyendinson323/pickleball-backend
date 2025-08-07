@@ -10,7 +10,7 @@
 
 const { Sequelize } = require('sequelize');
 const logger = require('./logger');
-
+require('dotenv').config()
 // Database configuration based on environment
 const config = {
   development: {

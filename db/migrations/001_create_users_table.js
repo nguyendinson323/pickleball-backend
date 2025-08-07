@@ -156,6 +156,36 @@ module.exports = {
         type: Sequelize.STRING(50),
         allowNull: true
       },
+      // Organization specific fields
+      business_name: {
+        type: Sequelize.STRING(200),
+        allowNull: true
+      },
+      contact_person: {
+        type: Sequelize.STRING(200),
+        allowNull: true
+      },
+      job_title: {
+        type: Sequelize.STRING(100),
+        allowNull: true
+      },
+      curp: {
+        type: Sequelize.STRING(18),
+        allowNull: true,
+        unique: true
+      },
+      rfc: {
+        type: Sequelize.STRING(13),
+        allowNull: true
+      },
+      verification_documents: {
+        type: Sequelize.JSON,
+        allowNull: true
+      },
+      notes: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
       preferences: {
         type: Sequelize.JSON,
         allowNull: true
