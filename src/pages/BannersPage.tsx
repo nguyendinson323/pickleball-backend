@@ -10,6 +10,8 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { animationConfigs, getAnimationVariants } from '../lib/animations';
 
 const BannersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -101,20 +103,30 @@ const BannersPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
+      <motion.div 
+        className="flex justify-between items-center mb-6"
+        initial="hidden"
+        animate="visible"
+        variants={getAnimationVariants('up', 0.7, 0.1)}
+      >
         <h1 className="text-3xl font-bold">Banner Management</h1>
         <Button onClick={() => setShowCreateForm(true)}>Create New Banner</Button>
-      </div>
+      </motion.div>
 
       {showCreateForm && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{editingBanner ? 'Edit Banner' : 'Create New Banner'}</CardTitle>
-            <CardDescription>
-              {editingBanner ? 'Update banner information' : 'Add a new banner to the system'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={getAnimationVariants('up', 0.8, 0.2)}
+        >
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>{editingBanner ? 'Edit Banner' : 'Create New Banner'}</CardTitle>
+              <CardDescription>
+                {editingBanner ? 'Update banner information' : 'Add a new banner to the system'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -229,63 +241,86 @@ const BannersPage: React.FC = () => {
             </form>
           </CardContent>
         </Card>
+        </motion.div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {banners.map((banner) => (
-          <Card key={banner.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{banner.title}</CardTitle>
-                  <CardDescription>{banner.subtitle}</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={banner.is_active ? "default" : "secondary"}
-                    onClick={() => handleToggleStatus(banner.id)}
-                  >
-                    {banner.is_active ? 'Active' : 'Inactive'}
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Display Type:</span>
-                  <span className="font-medium">{banner.display_type}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Target Audience:</span>
-                  <span className="font-medium">{banner.target_audience}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Position:</span>
-                  <span className="font-medium">{banner.position}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Views:</span>
-                  <span className="font-medium">{banner.view_count}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Clicks:</span>
-                  <span className="font-medium">{banner.click_count}</span>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button size="sm" onClick={() => handleEdit(banner)}>
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(banner.id)}>
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.3
+            }
+          }
+        }}
+      >
+        {banners.map((banner, index) => {
+          const config = animationConfigs.banners[index % 4];
+          return (
+            <motion.div
+              key={banner.id}
+              variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+            >
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{banner.title}</CardTitle>
+                      <CardDescription>{banner.subtitle}</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={banner.is_active ? "default" : "secondary"}
+                        onClick={() => handleToggleStatus(banner.id)}
+                      >
+                        {banner.is_active ? 'Active' : 'Inactive'}
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Display Type:</span>
+                      <span className="font-medium">{banner.display_type}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Target Audience:</span>
+                      <span className="font-medium">{banner.target_audience}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Position:</span>
+                      <span className="font-medium">{banner.position}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Views:</span>
+                      <span className="font-medium">{banner.view_count}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Clicks:</span>
+                      <span className="font-medium">{banner.click_count}</span>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button size="sm" onClick={() => handleEdit(banner)}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(banner.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
+      </motion.div>
     </div>
   );
 };

@@ -9,6 +9,8 @@ import { Label } from '../components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { toast } from 'sonner'
+import { motion } from 'framer-motion'
+import { animationConfigs, getAnimationVariants } from '../lib/animations'
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -56,18 +58,56 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Create your account
-          </CardTitle>
-          <CardDescription className="text-center">
-            Join the pickleball federation community
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.1
+            }
+          }
+        }}
+      >
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <motion.div
+              variants={getAnimationVariants('up', 0.7, 0.2)}
+            >
+              <CardTitle className="text-2xl font-bold text-center">
+                Create your account
+              </CardTitle>
+            </motion.div>
+            <motion.div
+              variants={getAnimationVariants('up', 0.7, 0.3)}
+            >
+              <CardDescription className="text-center">
+                Join the pickleball federation community
+              </CardDescription>
+            </motion.div>
+          </CardHeader>
+          <CardContent>
+            <motion.form 
+              onSubmit={handleSubmit} 
+              className="space-y-4"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.4
+                  }
+                }
+              }}
+            >
+            <motion.div 
+              className="space-y-2"
+              variants={getAnimationVariants('left', 0.6, 0.1)}
+            >
               <Label htmlFor="user_type">Account Type</Label>
               <Select value={formData.user_type} onValueChange={(value) => handleSelectChange('user_type', value)}>
                 <SelectTrigger>
@@ -81,9 +121,12 @@ const RegisterPage = () => {
                   <SelectItem value="state">State</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </motion.div>
             
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              variants={getAnimationVariants('right', 0.7, 0.2)}
+            >
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
@@ -93,9 +136,12 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 placeholder="Choose a username"
               />
-            </div>
+            </motion.div>
 
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              variants={getAnimationVariants('left', 0.6, 0.3)}
+            >
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -106,9 +152,12 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 placeholder="Enter your email"
               />
-            </div>
+            </motion.div>
 
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              variants={getAnimationVariants('right', 0.7, 0.4)}
+            >
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
@@ -119,9 +168,12 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 placeholder="Create a password"
               />
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <motion.div 
+              className="grid grid-cols-2 gap-4"
+              variants={getAnimationVariants('up', 0.8, 0.5)}
+            >
               <div className="space-y-2">
                 <Label htmlFor="first_name">First Name</Label>
                 <Input
@@ -142,9 +194,12 @@ const RegisterPage = () => {
                   placeholder="Last name"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <motion.div 
+              className="grid grid-cols-2 gap-4"
+              variants={getAnimationVariants('down', 0.5, 0.6)}
+            >
               <div className="space-y-2">
                 <Label htmlFor="state">State</Label>
                 <Input
@@ -165,9 +220,12 @@ const RegisterPage = () => {
                   placeholder="City"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              variants={getAnimationVariants('left', 0.6, 0.7)}
+            >
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
@@ -176,10 +234,13 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 placeholder="Phone number"
               />
-            </div>
+            </motion.div>
 
             {formData.user_type === 'player' && (
-              <div className="space-y-2">
+              <motion.div 
+                className="space-y-2"
+                variants={getAnimationVariants('up', 0.8, 0.8)}
+              >
                 <Label htmlFor="skill_level">Skill Level</Label>
                 <Select value={formData.skill_level} onValueChange={(value) => handleSelectChange('skill_level', value)}>
                   <SelectTrigger>
@@ -194,23 +255,31 @@ const RegisterPage = () => {
                     <SelectItem value="5.0">5.0 - Professional</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </motion.div>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create account'}
-            </Button>
-          </form>
-          <div className="mt-4 text-center">
+            <motion.div
+              variants={getAnimationVariants('up', 0.7, 0.9)}
+            >
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating account...' : 'Create account'}
+              </Button>
+            </motion.div>
+          </motion.form>
+          <motion.div 
+            className="mt-4 text-center"
+            variants={getAnimationVariants('up', 0.6, 1.0)}
+          >
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
               <Link to="/login" className="text-blue-600 hover:text-blue-500">
                 Sign in
               </Link>
             </p>
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
+      </motion.div>
     </div>
   )
 }

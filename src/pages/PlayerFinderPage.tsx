@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Slider } from '../components/ui/slider';
 import { Switch } from '../components/ui/switch';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { animationConfigs, getAnimationVariants } from '../lib/animations';
 
 const PlayerFinderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -93,7 +95,12 @@ const PlayerFinderPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
+      <motion.div 
+        className="flex justify-between items-center mb-6"
+        initial="hidden"
+        animate="visible"
+        variants={getAnimationVariants('up', 0.7, 0.1)}
+      >
         <h1 className="text-3xl font-bold">Player Finder</h1>
         <div className="flex gap-2">
           <Button onClick={() => setShowPreferences(true)}>Preferences</Button>
@@ -104,15 +111,20 @@ const PlayerFinderPage: React.FC = () => {
             {preferences?.is_active ? 'Active' : 'Inactive'}
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Search Section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Find Players</CardTitle>
-          <CardDescription>Search for players based on your criteria</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={getAnimationVariants('up', 0.8, 0.2)}
+      >
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Find Players</CardTitle>
+            <CardDescription>Search for players based on your criteria</CardDescription>
+          </CardHeader>
+          <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
             <div>
               <Label htmlFor="skill_level">Skill Level</Label>
@@ -205,16 +217,22 @@ const PlayerFinderPage: React.FC = () => {
             Search Players
           </Button>
         </CardContent>
-      </Card>
+        </Card>
+      </motion.div>
 
       {/* Preferences Modal */}
       {showPreferences && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Player Finder Preferences</CardTitle>
-            <CardDescription>Set your preferences for finding players</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={getAnimationVariants('up', 0.8, 0.3)}
+        >
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Player Finder Preferences</CardTitle>
+              <CardDescription>Set your preferences for finding players</CardDescription>
+            </CardHeader>
+            <CardContent>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <Label htmlFor="skill_level_min">Min Skill Level</Label>
@@ -310,82 +328,132 @@ const PlayerFinderPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
       )}
 
       {/* Search Results */}
       {searchResults.length > 0 && (
-        <div className="mb-6">
+        <motion.div 
+          className="mb-6"
+          initial="hidden"
+          animate="visible"
+          variants={getAnimationVariants('up', 0.7, 0.4)}
+        >
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {searchResults.map((player) => (
-              <Card key={player.id}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{player.full_name || player.username}</CardTitle>
-                  <CardDescription>
-                    {player.city}, {player.state} • Skill: {player.skill_level}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Age:</span>
-                      <span>{player.age || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Gender:</span>
-                      <span>{player.gender || 'N/A'}</span>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => handleSendMatchRequest(player.id)}
-                    >
-                      Send Match Request
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.5
+                }
+              }
+            }}
+          >
+            {searchResults.map((player, index) => {
+              const config = animationConfigs.playerFinder.results[index % 3];
+              return (
+                <motion.div
+                  key={player.id}
+                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{player.full_name || player.username}</CardTitle>
+                      <CardDescription>
+                        {player.city}, {player.state} • Skill: {player.skill_level}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Age:</span>
+                          <span>{player.age || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Gender:</span>
+                          <span>{player.gender || 'N/A'}</span>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => handleSendMatchRequest(player.id)}
+                        >
+                          Send Match Request
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Nearby Players */}
       {nearbyPlayers.length > 0 && (
-        <div>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={getAnimationVariants('up', 0.8, 0.6)}
+        >
           <h2 className="text-2xl font-bold mb-4">Nearby Players</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {nearbyPlayers.map((player) => (
-              <Card key={player.id}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{player.full_name || player.username}</CardTitle>
-                  <CardDescription>
-                    {player.city}, {player.state} • {player.distance_km.toFixed(1)}km away
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Skill Level:</span>
-                      <span>{player.skill_level}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Age:</span>
-                      <span>{player.age || 'N/A'}</span>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => handleSendMatchRequest(player.id)}
-                    >
-                      Send Match Request
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.7
+                }
+              }
+            }}
+          >
+            {nearbyPlayers.map((player, index) => {
+              const config = animationConfigs.playerFinder.nearby[index % 3];
+              return (
+                <motion.div
+                  key={player.id}
+                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{player.full_name || player.username}</CardTitle>
+                      <CardDescription>
+                        {player.city}, {player.state} • {player.distance_km.toFixed(1)}km away
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Skill Level:</span>
+                          <span>{player.skill_level}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Age:</span>
+                          <span>{player.age || 'N/A'}</span>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => handleSendMatchRequest(player.id)}
+                        >
+                          Send Match Request
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

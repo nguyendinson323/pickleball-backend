@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../components/ui/carousel';
 import { Badge } from '../components/ui/badge';
 import { Calendar, Users, Trophy, MapPin, Star, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { animationConfigs, getAnimationVariants } from '../lib/animations';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -121,75 +123,83 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle>Player Finder</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Find players near you based on skill level, location, and availability
-                </p>
-                <Button asChild variant="outline">
-                  <Link to="/player-finder">Find Players</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                </div>
-                <CardTitle>Court Reservations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Book courts at your favorite clubs with real-time availability
-                </p>
-                <Button asChild variant="outline">
-                  <Link to="/court-reservations">Book Courts</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                  <Trophy className="w-6 h-6 text-purple-600" />
-                </div>
-                <CardTitle>Tournaments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Discover and register for tournaments across the country
-                </p>
-                <Button asChild variant="outline">
-                  <Link to="/tournaments">View Tournaments</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                  <Star className="w-6 h-6 text-orange-600" />
-                </div>
-                <CardTitle>Rankings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Track your progress and see where you rank among players
-                </p>
-                <Button asChild variant="outline">
-                  <Link to="/rankings">View Rankings</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+                        <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: {
+                      staggerChildren: 0.1,
+                      delayChildren: 0.2
+                    }
+                  }
+                }}
+              >
+                {[
+                  {
+                    icon: Users,
+                    title: "Player Finder",
+                    description: "Find players near you based on skill level, location, and availability",
+                    link: "/player-finder",
+                    color: "blue"
+                  },
+                  {
+                    icon: MapPin,
+                    title: "Court Reservations",
+                    description: "Book courts at your favorite clubs with real-time availability",
+                    link: "/court-reservations",
+                    color: "green"
+                  },
+                  {
+                    icon: Trophy,
+                    title: "Tournaments",
+                    description: "Discover and register for tournaments across the country",
+                    link: "/tournaments",
+                    color: "purple"
+                  },
+                  {
+                    icon: Star,
+                    title: "Rankings",
+                    description: "Track your progress and see where you rank among players",
+                    link: "/rankings",
+                    color: "orange"
+                  }
+                ].map((feature, index) => {
+                  const Icon = feature.icon;
+                  const config = animationConfigs.features[index];
+                  return (
+                    <motion.div
+                      key={index}
+                      variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                    >
+                      <Card className="text-center hover:shadow-lg transition-shadow">
+                        <CardHeader>
+                          <div className={`mx-auto w-12 h-12 bg-${feature.color}-100 rounded-full flex items-center justify-center mb-4`}>
+                            <Icon className={`w-6 h-6 text-${feature.color}-600`} />
+                          </div>
+                          <CardTitle>{feature.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-600 mb-4">
+                            {feature.description}
+                          </p>
+                          <Button asChild variant="outline">
+                            <Link to={feature.link}>
+                              {feature.title === "Player Finder" ? "Find Players" :
+                               feature.title === "Court Reservations" ? "Book Courts" :
+                               feature.title === "Tournaments" ? "View Tournaments" : "View Rankings"}
+                            </Link>
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
         </div>
       </section>
 
@@ -204,9 +214,30 @@ const HomePage: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingTournaments.map((tournament) => (
-                <Card key={tournament.id} className="hover:shadow-lg transition-shadow">
+                            <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.1,
+                        delayChildren: 0.2
+                      }
+                    }
+                  }}
+                >
+                  {upcomingTournaments.map((tournament, index) => {
+                    const config = animationConfigs.tournaments[index % animationConfigs.tournaments.length];
+                    return (
+                      <motion.div
+                        key={tournament.id}
+                        variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                      >
+                        <Card className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="secondary">{tournament.tournament_type}</Badge>
@@ -243,8 +274,10 @@ const HomePage: React.FC = () => {
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
           </div>
         </section>
       )}

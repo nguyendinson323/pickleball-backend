@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building, Handshake, GraduationCap, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { animationConfigs, getAnimationVariants } from "@/lib/animations";
 import playersImg from "@/assets/players-community.jpg";
 import clubsImg from "@/assets/clubs-facility.jpg";
 import partnersImg from "@/assets/partners-business.jpg";
@@ -85,57 +87,97 @@ const RoleBenefits = () => {
           </h2>
         </div>
 
-        <Tabs defaultValue="players" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-8">
-            {roles.map((role) => {
-              const Icon = role.icon;
-              return (
-                <TabsTrigger
-                  key={role.id}
-                  value={role.id}
-                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-accent/20 transition-colors duration-200"
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{role.label}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-
-          {roles.map((role) => {
+        <div className="space-y-8">
+          {roles.map((role, index) => {
             const Icon = role.icon;
+            const isEven = index % 2 === 0;
+            
+            const imageConfig = animationConfigs.roleBenefits.images[index];
+            const contentConfig = animationConfigs.roleBenefits.content[index];
+            
             return (
-              <TabsContent key={role.id} value={role.id}>
-                <Card className="shadow-medium hover:shadow-strong transition-all duration-300 overflow-hidden">
-                  <div className="relative h-64 overflow-hidden">
-                    <img 
-                      src={role.image} 
-                      alt={`${role.label} community`}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-2xl">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      Benefits for {role.label}
-                    </CardTitle>
-                  </div>
-                  <CardContent className="p-6">
-                    <ul className="grid md:grid-cols-2 gap-4">
-                      {role.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start gap-3 hover:bg-accent/10 p-2 rounded-lg transition-colors duration-200">
-                          <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              <motion.div
+                key={role.id}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                className="flex flex-col lg:flex-row transition-all duration-300 overflow-hidden"
+              >
+                {isEven ? (
+                  <>
+                    <motion.div 
+                      className="relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden"
+                      variants={getAnimationVariants(imageConfig.direction, imageConfig.duration, imageConfig.delay, 'image')}
+                    >
+                      <img 
+                        src={role.image} 
+                        alt={`${role.label} community`}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl">
+                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                          <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                        </div>
+                        <span className="hidden sm:inline">Benefits for {role.label}</span>
+                        <span className="sm:hidden">{role.label}</span>
+                      </CardTitle>
+                    </motion.div>
+                    <motion.div 
+                      className="flex-1 p-4 lg:p-6 flex flex-col justify-center"
+                      variants={getAnimationVariants(contentConfig.direction, contentConfig.duration, contentConfig.delay, 'content')}
+                    >
+                      <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-primary">Key Benefits</h3>
+                      <ul className="space-y-2 lg:space-y-3">
+                        {role.highlights.map((highlight, index) => (
+                          <li key={index} className="flex items-start gap-2 lg:gap-3 hover:bg-accent/10 p-2 lg:p-3 rounded-lg transition-colors duration-200">
+                            <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-sm lg:text-base text-muted-foreground">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  </>
+                ) : (
+                  <>
+                    <motion.div 
+                      className="flex-1 p-4 lg:p-6 flex flex-col justify-center"
+                      variants={getAnimationVariants(contentConfig.direction, contentConfig.duration, contentConfig.delay, 'content')}
+                    >
+                      <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-primary">Key Benefits</h3>
+                      <ul className="space-y-2 lg:space-y-3">
+                        {role.highlights.map((highlight, index) => (
+                          <li key={index} className="flex items-start gap-2 lg:gap-3 hover:bg-accent/10 p-2 lg:p-3 rounded-lg transition-colors duration-200">
+                            <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-sm lg:text-base text-muted-foreground">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                    <motion.div 
+                      className="relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden"
+                      variants={getAnimationVariants(imageConfig.direction, imageConfig.duration, imageConfig.delay, 'image')}
+                    >
+                      <img 
+                        src={role.image} 
+                        alt={`${role.label} community`}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl">
+                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                          <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                        </div>
+                        <span className="hidden sm:inline">Benefits for {role.label}</span>
+                        <span className="sm:hidden">{role.label}</span>
+                      </CardTitle>
+                    </motion.div>
+                  </>
+                )}
+              </motion.div>
             );
           })}
-        </Tabs>
+        </div>
       </div>
     </section>
   );

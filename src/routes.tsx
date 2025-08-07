@@ -11,11 +11,18 @@ import NotFoundPage from "./pages/NotFoundPage";
 import BannersPage from "./pages/BannersPage";
 import PlayerFinderPage from "./pages/PlayerFinderPage";
 import CourtReservationsPage from "./pages/CourtReservationsPage";
+import LandingPage from "./pages/Index";
 
 const routes = [
   {
-    key: 'home',
+    key: 'root',
     path: '/',
+    element: <LandingPage />,
+    public: true
+  },
+  {
+    key: 'home',
+    path: '/home',
     element: <HomePage />,
     public: true
   },

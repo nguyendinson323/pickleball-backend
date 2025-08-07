@@ -11,6 +11,8 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Calendar } from '../components/ui/calendar';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { animationConfigs, getAnimationVariants } from '../lib/animations';
 
 const CourtReservationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -99,84 +101,139 @@ const CourtReservationsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Court Reservations</h1>
+      <motion.h1 
+        className="text-3xl font-bold mb-6"
+        initial="hidden"
+        animate="visible"
+        variants={getAnimationVariants('up', 0.7, 0.1)}
+      >
+        Court Reservations
+      </motion.h1>
 
       {/* Court Selection */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Select a Court</CardTitle>
-          <CardDescription>Choose a court to view availability and make reservations</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {courts.map((court) => (
-              <Card 
-                key={court.id} 
-                className={`cursor-pointer transition-colors ${
-                  selectedCourt?.id === court.id ? 'border-primary bg-primary/5' : ''
-                }`}
-                onClick={() => setSelectedCourt(court)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg">{court.name}</CardTitle>
-                  <CardDescription>
-                    {court.club_name} • {court.court_type} • {court.surface}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Status:</span>
-                      <span className={court.is_available ? 'text-green-600' : 'text-red-600'}>
-                        {court.is_available ? 'Available' : 'Unavailable'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Hourly Rate:</span>
-                      <span>${court.hourly_rate || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Member Rate:</span>
-                      <span>${court.member_rate || 'N/A'}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={getAnimationVariants('up', 0.8, 0.2)}
+      >
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Select a Court</CardTitle>
+            <CardDescription>Choose a court to view availability and make reservations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.3
+                  }
+                }
+              }}
+            >
+            {courts.map((court, index) => {
+              const config = animationConfigs.courtReservations.courts[index % 4];
+              return (
+                <motion.div
+                  key={court.id}
+                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                >
+                  <Card 
+                    className={`cursor-pointer transition-colors ${
+                      selectedCourt?.id === court.id ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    onClick={() => setSelectedCourt(court)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-lg">{court.name}</CardTitle>
+                      <CardDescription>
+                        {court.club_name} • {court.court_type} • {court.surface}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Status:</span>
+                          <span className={court.is_available ? 'text-green-600' : 'text-red-600'}>
+                            {court.is_available ? 'Available' : 'Unavailable'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Hourly Rate:</span>
+                          <span>${court.hourly_rate || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Member Rate:</span>
+                          <span>${court.member_rate || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </CardContent>
       </Card>
+      </motion.div>
 
       {selectedCourt && (
         <>
           {/* Date Selection */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Select Date</CardTitle>
-              <CardDescription>Choose a date to view court availability</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-md border"
-                disabled={(date) => date < new Date()}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Availability and Booking */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Availability */}
-            <Card>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={getAnimationVariants('up', 0.8, 0.4)}
+          >
+            <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Court Availability</CardTitle>
-                <CardDescription>
-                  {selectedDate?.toLocaleDateString()} • {selectedCourt.name}
-                </CardDescription>
+                <CardTitle>Select Date</CardTitle>
+                <CardDescription>Choose a date to view court availability</CardDescription>
               </CardHeader>
               <CardContent>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-md border"
+                  disabled={(date) => date < new Date()}
+                />
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Availability and Booking */}
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.5
+                }
+              }
+            }}
+          >
+            {/* Availability */}
+            <motion.div
+              variants={getAnimationVariants('left', 0.7, 0.1)}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Court Availability</CardTitle>
+                  <CardDescription>
+                    {selectedDate?.toLocaleDateString()} • {selectedCourt.name}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
                 <div className="space-y-2">
                   {generateTimeSlots().map((slot) => {
                     const isAvailable = isTimeSlotAvailable(slot.startTime, slot.endTime);
@@ -348,7 +405,8 @@ const CourtReservationsPage: React.FC = () => {
                 </CardContent>
               </Card>
             )}
-          </div>
+          </motion.div>
+        </motion.div>
         </>
       )}
     </div>
