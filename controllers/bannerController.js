@@ -10,9 +10,9 @@
 
 const { Op } = require('sequelize');
 const createError = require('http-errors');
-const Banner = require('../models/Banner');
-const Tournament = require('../models/Tournament');
-const Club = require('../models/Club');
+const Banner = require('../db/models/Banner');
+const Tournament = require('../db/models/Tournament');
+const Club = require('../db/models/Club');
 const { HTTP_STATUS, API_MESSAGES } = require('../config/constants');
 const logger = require('../config/logger');
 const { asyncHandler } = require('../middlewares/errorHandler');

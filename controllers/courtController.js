@@ -9,8 +9,8 @@
  */
 
 const { Op } = require('sequelize');
-const { Court, Club, Match } = require('../models');
-const CourtReservation = require('../models/CourtReservation');
+const { Court, Club, Match } = require('../db/models');
+const CourtReservation = require('../db/models/CourtReservation');
 const { createError } = require('../middlewares/errorHandler');
 const { API_MESSAGES, HTTP_STATUS, COURT_TYPES, COURT_SURFACES, PAGINATION } = require('../config/constants');
 const logger = require('../config/logger');

@@ -11,7 +11,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { User } = require('../models');
+const { User } = require('../db/models');
 const { 
   API_MESSAGES, 
   HTTP_STATUS, 

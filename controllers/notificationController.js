@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-const { Notification, User } = require('../models');
+const { Notification, User } = require('../db/models');
 const { createError } = require('../middlewares/errorHandler');
 const { API_MESSAGES, HTTP_STATUS, NOTIFICATION_TYPES, PAGINATION } = require('../config/constants');
 const { sendEmail } = require('../services/emailService');

@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-const { Club, User, Court, Tournament } = require('../models');
+const { Club, User, Court, Tournament } = require('../db/models');
 const { createError } = require('../middlewares/errorHandler');
 const { API_MESSAGES, HTTP_STATUS, CLUB_TYPES, PAGINATION } = require('../config/constants');
 const logger = require('../config/logger');

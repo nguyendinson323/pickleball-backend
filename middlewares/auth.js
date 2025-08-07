@@ -9,7 +9,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User } = require('../db/models');
 const { USER_ROLES, API_MESSAGES, HTTP_STATUS } = require('../config/constants');
 const logger = require('../config/logger');
 

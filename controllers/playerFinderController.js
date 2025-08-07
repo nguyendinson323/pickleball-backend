@@ -10,8 +10,8 @@
 
 const { Op } = require('sequelize');
 const createError = require('http-errors');
-const PlayerFinder = require('../models/PlayerFinder');
-const User = require('../models/User');
+const PlayerFinder = require('../db/models/PlayerFinder');
+const User = require('../db/models/User');
 const { HTTP_STATUS, API_MESSAGES } = require('../config/constants');
 const logger = require('../config/logger');
 const { asyncHandler } = require('../middlewares/errorHandler');

@@ -15,8 +15,8 @@ const logger = require('./logger');
 const config = {
   development: {
     username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'pickleball_federation_dev',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'pickleball',
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
@@ -35,8 +35,8 @@ const config = {
   },
   test: {
     username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'pickleball_federation_test',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'pickleball',
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
