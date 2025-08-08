@@ -10,8 +10,9 @@
 
 const { User, Club, Tournament, Payment, Notification, Ranking } = require('../db/models');
 const { createError } = require('../middlewares/errorHandler');
-const { API_MESSAGES, HTTP_STATUS, USER_ROLES, USER_TYPES, PAGINATION } = require('../config/constants');
+const { API_MESSAGES, HTTP_STATUS, USER_TYPES, PAGINATION } = require('../config/constants');
 const logger = require('../config/logger');
+const { Op } = require('sequelize');
 
 /**
  * Get dashboard statistics
@@ -23,7 +24,7 @@ const getDashboardStats = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
@@ -34,11 +35,11 @@ const getDashboardStats = async (req, res) => {
     const totalPayments = await Payment.count();
 
     const activeUsers = await User.count({
-      where: { membership_status: 'active' }
+      where: { is_active: true }
     });
 
-    const pendingUsers = await User.count({
-      where: { membership_status: 'pending' }
+    const verifiedUsers = await User.count({
+      where: { is_verified: true }
     });
 
     const successfulPayments = await Payment.count({
@@ -58,7 +59,7 @@ const getDashboardStats = async (req, res) => {
       users: {
         total: totalUsers,
         active: activeUsers,
-        pending: pendingUsers
+        verified: verifiedUsers
       },
       clubs: {
         total: totalClubs
@@ -96,13 +97,14 @@ const getSystemUsers = async (req, res) => {
       page = 1,
       limit = PAGINATION.DEFAULT_LIMIT,
       user_type,
-      role,
       membership_status,
+      is_active,
+      is_verified,
       search
     } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
@@ -113,31 +115,31 @@ const getSystemUsers = async (req, res) => {
       whereClause.user_type = user_type;
     }
     
-    if (role) {
-      whereClause.role = role;
-    }
-    
     if (membership_status) {
       whereClause.membership_status = membership_status;
     }
     
+    if (is_active !== undefined) {
+      whereClause.is_active = is_active === 'true';
+    }
+    
+    if (is_verified !== undefined) {
+      whereClause.is_verified = is_verified === 'true';
+    }
+    
     if (search) {
-      whereClause[sequelize.Op.or] = [
-        { username: { [sequelize.Op.iLike]: `%${search}%` } },
-        { email: { [sequelize.Op.iLike]: `%${search}%` } },
-        { first_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { last_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { full_name: { [sequelize.Op.iLike]: `%${search}%` } }
+      whereClause[Op.or] = [
+        { username: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } },
+        { full_name: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
-    // Calculate pagination
     const offset = (page - 1) * limit;
-    
-    // Get users with pagination
+
     const { count, rows: users } = await User.findAndCountAll({
       where: whereClause,
-      attributes: { exclude: ['password', 'email_verification_token', 'password_reset_token'] },
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] },
       order: [['created_at', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
@@ -147,7 +149,7 @@ const getSystemUsers = async (req, res) => {
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_USERS_RETRIEVED,
+      message: API_MESSAGES.SUCCESS.USERS_RETRIEVED,
       data: {
         users,
         pagination: {
@@ -165,63 +167,23 @@ const getSystemUsers = async (req, res) => {
 };
 
 /**
- * Update user role
- * @route PUT /api/v1/admin/users/:id/role
- * @access Private (Super Admin)
- */
-const updateUserRole = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { user } = req;
-    const { role } = req.body;
-
-    // Check if user is super admin
-    if (user.role !== 'super_admin') {
-      throw createError.forbidden('Only super admins can update user roles');
-    }
-
-    if (!role || !Object.values(USER_ROLES).includes(role)) {
-      throw createError.badRequest('Valid role is required');
-    }
-
-    const userToUpdate = await User.findByPk(id);
-    if (!userToUpdate) {
-      throw createError.notFound('User not found');
-    }
-
-    // Prevent updating own role
-    if (userToUpdate.id === user.id) {
-      throw createError.badRequest('Cannot update your own role');
-    }
-
-    // Update user role
-    await userToUpdate.update({ role });
-
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.USER_ROLE_UPDATED,
-      data: { user: userToUpdate }
-    });
-  } catch (error) {
-    logger.error('Error in updateUserRole:', error);
-    throw error;
-  }
-};
-
-/**
- * Update user membership status
+ * Update user membership
  * @route PUT /api/v1/admin/users/:id/membership
  * @access Private (Admin)
  */
 const updateUserMembership = async (req, res) => {
   try {
-    const { id } = req.params;
     const { user } = req;
-    const { membership_status } = req.body;
+    const { id } = req.params;
+    const { membership_status, membership_expires_at } = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
+    }
+
+    if (!membership_status) {
+      throw createError.validation('Membership status is required');
     }
 
     const userToUpdate = await User.findByPk(id);
@@ -229,13 +191,21 @@ const updateUserMembership = async (req, res) => {
       throw createError.notFound('User not found');
     }
 
-    // Update membership status
-    await userToUpdate.update({ membership_status });
+    const updateData = {
+      membership_status,
+      membership_expires_at
+    };
+
+    await User.update(updateData, { where: { id } });
+
+    const updatedUser = await User.findByPk(id, {
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] }
+    });
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USER_MEMBERSHIP_UPDATED,
-      data: { user: userToUpdate }
+      data: { user: updatedUser }
     });
   } catch (error) {
     logger.error('Error in updateUserMembership:', error);
@@ -251,21 +221,26 @@ const updateUserMembership = async (req, res) => {
 const getSystemLogs = async (req, res) => {
   try {
     const { user } = req;
-    const { level, start_date, end_date, limit = 100 } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement log retrieval logic
-    // This would involve reading from log files or a log database
-
-    const logs = [];
+    // This would typically connect to a logging service
+    // For now, return a placeholder response
+    const logs = [
+      {
+        timestamp: new Date(),
+        level: 'info',
+        message: 'System logs endpoint accessed',
+        user_id: user.id
+      }
+    ];
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_LOGS_RETRIEVED,
+      message: API_MESSAGES.SUCCESS.LOGS_RETRIEVED,
       data: { logs }
     });
   } catch (error) {
@@ -284,26 +259,31 @@ const getSystemHealth = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement system health checks
-    // This would involve checking database connectivity, external services, etc.
+    // Check database connection
+    let dbStatus = 'healthy';
+    try {
+      await User.count();
+    } catch (error) {
+      dbStatus = 'unhealthy';
+    }
 
     const health = {
       status: 'healthy',
-      database: 'connected',
-      email_service: 'connected',
-      payment_service: 'connected',
-      uptime: process.uptime(),
-      memory_usage: process.memoryUsage(),
-      timestamp: new Date()
+      timestamp: new Date(),
+      services: {
+        database: dbStatus,
+        api: 'healthy'
+      },
+      uptime: process.uptime()
     };
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_HEALTH_RETRIEVED,
+      message: API_MESSAGES.SUCCESS.HEALTH_RETRIEVED,
       data: { health }
     });
   } catch (error) {
@@ -322,32 +302,23 @@ const getSystemSettings = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement system settings retrieval
-    // This would involve reading from a settings table or configuration files
-
+    // This would typically fetch from a settings table
     const settings = {
-      federation_name: process.env.FEDERATION_NAME || 'Mexican Pickleball Federation',
-      federation_email: process.env.FEDERATION_EMAIL || 'info@pickleballfederation.com',
-      membership_fees: {
-        basic: 500,
-        premium: 1000
-      },
-      tournament_fees: {
-        local: 200,
-        state: 400,
-        national: 800
-      },
-      system_maintenance: false,
-      registration_enabled: true
+      maintenance_mode: false,
+      registration_enabled: true,
+      email_verification_required: true,
+      max_login_attempts: 5,
+      lockout_duration: 30, // minutes
+      session_timeout: 24 // hours
     };
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_SETTINGS_RETRIEVED,
+      message: API_MESSAGES.SUCCESS.SETTINGS_RETRIEVED,
       data: { settings }
     });
   } catch (error) {
@@ -359,24 +330,24 @@ const getSystemSettings = async (req, res) => {
 /**
  * Update system settings
  * @route PUT /api/v1/admin/settings
- * @access Private (Super Admin)
+ * @access Private (Admin)
  */
 const updateSystemSettings = async (req, res) => {
   try {
     const { user } = req;
     const settings = req.body;
 
-    // Check if user is super admin
-    if (user.role !== 'super_admin') {
-      throw createError.forbidden('Only super admins can update system settings');
+    // Check if user is admin
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
+      throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement system settings update
-    // This would involve updating a settings table or configuration files
+    // This would typically update a settings table
+    // For now, just return success
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_SETTINGS_UPDATED,
+      message: API_MESSAGES.SUCCESS.SETTINGS_UPDATED,
       data: { settings }
     });
   } catch (error) {
@@ -386,28 +357,34 @@ const updateSystemSettings = async (req, res) => {
 };
 
 /**
- * Get admin activity log
+ * Get admin activity
  * @route GET /api/v1/admin/activity
  * @access Private (Admin)
  */
 const getAdminActivity = async (req, res) => {
   try {
     const { user } = req;
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = PAGINATION.DEFAULT_LIMIT } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement admin activity log retrieval
-    // This would involve reading from an activity log table
-
-    const activities = [];
+    // This would typically fetch from an activity log table
+    const activities = [
+      {
+        id: 1,
+        admin_id: user.id,
+        action: 'viewed_dashboard',
+        details: 'Accessed admin dashboard',
+        timestamp: new Date()
+      }
+    ];
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.ADMIN_ACTIVITY_RETRIEVED,
+      message: API_MESSAGES.SUCCESS.ACTIVITY_RETRIEVED,
       data: { activities }
     });
   } catch (error) {
@@ -424,27 +401,24 @@ const getAdminActivity = async (req, res) => {
 const exportSystemData = async (req, res) => {
   try {
     const { user } = req;
-    const { data_type, format = 'json' } = req.query;
+    const { type } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement data export logic
-    // This would involve exporting data based on data_type and format
-
+    // This would typically generate and return a file
     const exportData = {
-      data_type,
-      format,
-      export_date: new Date(),
-      exported_by: user.id
+      type: type || 'users',
+      timestamp: new Date(),
+      data: []
     };
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_DATA_EXPORTED,
-      data: { export_data: exportData }
+      message: API_MESSAGES.SUCCESS.DATA_EXPORTED,
+      data: { export: exportData }
     });
   } catch (error) {
     logger.error('Error in exportSystemData:', error);
@@ -455,32 +429,34 @@ const exportSystemData = async (req, res) => {
 /**
  * Perform system maintenance
  * @route POST /api/v1/admin/maintenance
- * @access Private (Super Admin)
+ * @access Private (Admin)
  */
 const performSystemMaintenance = async (req, res) => {
   try {
     const { user } = req;
-    const { maintenance_type } = req.body;
+    const { action } = req.body;
 
-    // Check if user is super admin
-    if (user.role !== 'super_admin') {
-      throw createError.forbidden('Only super admins can perform system maintenance');
+    // Check if user is admin
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
+      throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement system maintenance logic
-    // This would involve various maintenance tasks like cleanup, optimization, etc.
+    if (!action) {
+      throw createError.validation('Maintenance action is required');
+    }
 
-    const maintenanceResult = {
-      type: maintenance_type,
+    // This would typically perform various maintenance tasks
+    const result = {
+      action,
       status: 'completed',
       timestamp: new Date(),
-      performed_by: user.id
+      details: `Maintenance action '${action}' completed successfully`
     };
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      message: API_MESSAGES.SUCCESS.SYSTEM_MAINTENANCE_COMPLETED,
-      data: { maintenance_result: maintenanceResult }
+      message: API_MESSAGES.SUCCESS.MAINTENANCE_COMPLETED,
+      data: { result }
     });
   } catch (error) {
     logger.error('Error in performSystemMaintenance:', error);
@@ -491,7 +467,6 @@ const performSystemMaintenance = async (req, res) => {
 module.exports = {
   getDashboardStats,
   getSystemUsers,
-  updateUserRole,
   updateUserMembership,
   getSystemLogs,
   getSystemHealth,

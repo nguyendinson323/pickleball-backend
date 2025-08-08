@@ -10,8 +10,9 @@
 
 const { User, Club, Tournament, Payment, Ranking } = require('../db/models');
 const { createError } = require('../middlewares/errorHandler');
-const { API_MESSAGES, HTTP_STATUS, USER_TYPES, USER_ROLES, PAGINATION } = require('../config/constants');
+const { API_MESSAGES, HTTP_STATUS, USER_TYPES, PAGINATION } = require('../config/constants');
 const logger = require('../config/logger');
+const { Op } = require('sequelize');
 
 /**
  * Get paginated list of users
@@ -50,12 +51,10 @@ const getUsers = async (req, res) => {
     }
     
     if (search) {
-      whereClause[sequelize.Op.or] = [
-        { username: { [sequelize.Op.iLike]: `%${search}%` } },
-        { email: { [sequelize.Op.iLike]: `%${search}%` } },
-        { first_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { last_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { full_name: { [sequelize.Op.iLike]: `%${search}%` } }
+      whereClause[Op.or] = [
+        { username: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } },
+        { full_name: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
@@ -65,7 +64,7 @@ const getUsers = async (req, res) => {
     // Get users with pagination
     const { count, rows: users } = await User.findAndCountAll({
       where: whereClause,
-      attributes: { exclude: ['password', 'email_verification_token', 'password_reset_token'] },
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] },
       order: [['created_at', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
@@ -100,32 +99,26 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user } = req;
 
-    // Check if user is requesting their own profile or is admin
-    if (user.id !== id && !['admin', 'super_admin'].includes(user.role)) {
-      throw createError.forbidden('Access denied');
-    }
-
-    const userData = await User.findByPk(id, {
-      attributes: { exclude: ['password', 'email_verification_token', 'password_reset_token'] },
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] },
       include: [
         {
           model: Club,
           as: 'club',
-          attributes: ['id', 'name', 'club_type', 'state', 'city']
+          attributes: ['id', 'business_name', 'state', 'city']
         }
       ]
     });
 
-    if (!userData) {
+    if (!user) {
       throw createError.notFound('User not found');
     }
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USER_RETRIEVED,
-      data: { user: userData }
+      data: { user }
     });
   } catch (error) {
     logger.error('Error in getUserById:', error);
@@ -134,38 +127,78 @@ const getUserById = async (req, res) => {
 };
 
 /**
- * Update user profile
+ * Update user
  * @route PUT /api/v1/users/:id
- * @access Private (Owner/Admin)
+ * @access Private (Admin)
  */
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user } = req;
-    const updateData = req.body;
+    const {
+      full_name,
+      date_of_birth,
+      gender,
+      phone,
+      profile_photo,
+      bio,
+      skill_level,
+      state,
+      city,
+      address,
+      latitude,
+      longitude,
+      timezone,
+      business_name,
+      contact_person,
+      job_title,
+      curp,
+      rfc,
+      website,
+      membership_status,
+      membership_expires_at,
+      is_active,
+      is_verified,
+      club_id
+    } = req.body;
 
-    // Check if user is updating their own profile or is admin
-    if (user.id !== id && !['admin', 'super_admin'].includes(user.role)) {
-      throw createError.forbidden('Access denied');
-    }
+    const user = await User.findByPk(id);
 
-    const userToUpdate = await User.findByPk(id);
-    if (!userToUpdate) {
+    if (!user) {
       throw createError.notFound('User not found');
     }
 
-    // Remove sensitive fields from update data
-    delete updateData.password;
-    delete updateData.email;
-    delete updateData.role;
-    delete updateData.user_type;
+    // Prepare update data
+    const updateData = {};
+    
+    if (full_name !== undefined) updateData.full_name = full_name;
+    if (date_of_birth !== undefined) updateData.date_of_birth = date_of_birth;
+    if (gender !== undefined) updateData.gender = gender;
+    if (phone !== undefined) updateData.phone = phone;
+    if (profile_photo !== undefined) updateData.profile_photo = profile_photo;
+    if (bio !== undefined) updateData.bio = bio;
+    if (skill_level !== undefined) updateData.skill_level = skill_level;
+    if (state !== undefined) updateData.state = state;
+    if (city !== undefined) updateData.city = city;
+    if (address !== undefined) updateData.address = address;
+    if (latitude !== undefined) updateData.latitude = latitude;
+    if (longitude !== undefined) updateData.longitude = longitude;
+    if (timezone !== undefined) updateData.timezone = timezone;
+    if (business_name !== undefined) updateData.business_name = business_name;
+    if (contact_person !== undefined) updateData.contact_person = contact_person;
+    if (job_title !== undefined) updateData.job_title = job_title;
+    if (curp !== undefined) updateData.curp = curp;
+    if (rfc !== undefined) updateData.rfc = rfc;
+    if (website !== undefined) updateData.website = website;
+    if (membership_status !== undefined) updateData.membership_status = membership_status;
+    if (membership_expires_at !== undefined) updateData.membership_expires_at = membership_expires_at;
+    if (is_active !== undefined) updateData.is_active = is_active;
+    if (is_verified !== undefined) updateData.is_verified = is_verified;
+    if (club_id !== undefined) updateData.club_id = club_id;
 
-    // Update user
-    await userToUpdate.update(updateData);
+    await User.update(updateData, { where: { id } });
 
-    // Get updated user data
     const updatedUser = await User.findByPk(id, {
-      attributes: { exclude: ['password', 'email_verification_token', 'password_reset_token'] }
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] }
     });
 
     res.status(HTTP_STATUS.OK).json({
@@ -180,7 +213,7 @@ const updateUser = async (req, res) => {
 };
 
 /**
- * Delete user
+ * Delete user (soft delete)
  * @route DELETE /api/v1/users/:id
  * @access Private (Admin)
  */
@@ -188,18 +221,14 @@ const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const userToDelete = await User.findByPk(id);
-    if (!userToDelete) {
+    const user = await User.findByPk(id);
+
+    if (!user) {
       throw createError.notFound('User not found');
     }
 
-    // Check if user is trying to delete themselves
-    if (req.user.id === id) {
-      throw createError.badRequest('Cannot delete your own account');
-    }
-
-    // Soft delete user
-    await userToDelete.destroy();
+    // Soft delete
+    await User.destroy({ where: { id } });
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -218,44 +247,69 @@ const deleteUser = async (req, res) => {
  */
 const searchUsers = async (req, res) => {
   try {
-    const { q, user_type, state, skill_level, limit = 20 } = req.query;
+    const {
+      q,
+      user_type,
+      skill_level,
+      state,
+      city,
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT
+    } = req.query;
 
     if (!q) {
-      throw createError.badRequest('Search query is required');
+      throw createError.validation('Search query is required');
     }
 
     const whereClause = {
-      [sequelize.Op.or]: [
-        { username: { [sequelize.Op.iLike]: `%${q}%` } },
-        { first_name: { [sequelize.Op.iLike]: `%${q}%` } },
-        { last_name: { [sequelize.Op.iLike]: `%${q}%` } },
-        { full_name: { [sequelize.Op.iLike]: `%${q}%` } }
-      ]
+      [Op.or]: [
+        { username: { [Op.iLike]: `%${q}%` } },
+        { full_name: { [Op.iLike]: `%${q}%` } },
+        { email: { [Op.iLike]: `%${q}%` } }
+      ],
+      is_active: true
     };
 
     if (user_type) {
       whereClause.user_type = user_type;
     }
 
-    if (state) {
-      whereClause.state = state;
-    }
-
     if (skill_level) {
       whereClause.skill_level = skill_level;
     }
 
-    const users = await User.findAll({
+    if (state) {
+      whereClause.state = state;
+    }
+
+    if (city) {
+      whereClause.city = city;
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows: users } = await User.findAndCountAll({
       where: whereClause,
-      attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'user_type', 'state', 'skill_level', 'profile_image'],
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] },
+      order: [['created_at', 'DESC']],
       limit: parseInt(limit),
-      order: [['full_name', 'ASC']]
+      offset: parseInt(offset)
     });
+
+    const totalPages = Math.ceil(count / limit);
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USERS_SEARCHED,
-      data: { users }
+      data: {
+        users,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: count,
+          pages: totalPages
+        }
+      }
     });
   } catch (error) {
     logger.error('Error in searchUsers:', error);
@@ -264,39 +318,47 @@ const searchUsers = async (req, res) => {
 };
 
 /**
- * Get list of players
+ * Get players
  * @route GET /api/v1/users/players
- * @access Public
+ * @access Private
  */
 const getPlayers = async (req, res) => {
   try {
-    const { page = 1, limit = 20, state, skill_level, search } = req.query;
+    const {
+      skill_level,
+      state,
+      city,
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT
+    } = req.query;
 
-    const whereClause = { user_type: USER_TYPES.PLAYER };
-    
-    if (state) {
-      whereClause.state = state;
-    }
-    
+    const whereClause = {
+      user_type: 'player',
+      is_active: true
+    };
+
     if (skill_level) {
       whereClause.skill_level = skill_level;
     }
-    
-    if (search) {
-      whereClause[sequelize.Op.or] = [
-        { username: { [sequelize.Op.iLike]: `%${search}%` } },
-        { first_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { last_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { full_name: { [sequelize.Op.iLike]: `%${search}%` } }
-      ];
+
+    if (state) {
+      whereClause.state = state;
+    }
+
+    if (city) {
+      whereClause.city = city;
     }
 
     const offset = (page - 1) * limit;
-    
+
     const { count, rows: players } = await User.findAndCountAll({
       where: whereClause,
-      attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'state', 'skill_level', 'profile_image', 'membership_status'],
-      order: [['full_name', 'ASC']],
+      attributes: [
+        'id', 'username', 'full_name', 'profile_photo', 'bio', 'skill_level',
+        'state', 'city', 'latitude', 'longitude', 'membership_status',
+        'created_at'
+      ],
+      order: [['created_at', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
@@ -318,40 +380,52 @@ const getPlayers = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in getPlayers:', error);
-    throw createError.server('Failed to retrieve players');
+    throw error;
   }
 };
 
 /**
- * Get list of coaches
+ * Get coaches
  * @route GET /api/v1/users/coaches
- * @access Public
+ * @access Private
  */
 const getCoaches = async (req, res) => {
   try {
-    const { page = 1, limit = 20, state, search } = req.query;
+    const {
+      skill_level,
+      state,
+      city,
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT
+    } = req.query;
 
-    const whereClause = { user_type: USER_TYPES.COACH };
-    
+    const whereClause = {
+      user_type: 'coach',
+      is_active: true
+    };
+
+    if (skill_level) {
+      whereClause.skill_level = skill_level;
+    }
+
     if (state) {
       whereClause.state = state;
     }
-    
-    if (search) {
-      whereClause[sequelize.Op.or] = [
-        { username: { [sequelize.Op.iLike]: `%${search}%` } },
-        { first_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { last_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { full_name: { [sequelize.Op.iLike]: `%${search}%` } }
-      ];
+
+    if (city) {
+      whereClause.city = city;
     }
 
     const offset = (page - 1) * limit;
-    
+
     const { count, rows: coaches } = await User.findAndCountAll({
       where: whereClause,
-      attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'state', 'profile_image', 'membership_status', 'certification_level'],
-      order: [['full_name', 'ASC']],
+      attributes: [
+        'id', 'username', 'full_name', 'profile_photo', 'bio', 'skill_level',
+        'state', 'city', 'latitude', 'longitude', 'website', 'membership_status',
+        'created_at'
+      ],
+      order: [['created_at', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
@@ -373,43 +447,47 @@ const getCoaches = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in getCoaches:', error);
-    throw createError.server('Failed to retrieve coaches');
+    throw error;
   }
 };
 
 /**
- * Get list of clubs
+ * Get clubs
  * @route GET /api/v1/users/clubs
- * @access Public
+ * @access Private
  */
 const getClubs = async (req, res) => {
   try {
-    const { page = 1, limit = 20, state, city, club_type, has_courts } = req.query;
+    const {
+      state,
+      city,
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT
+    } = req.query;
 
-    const whereClause = { user_type: USER_TYPES.CLUB };
-    
+    const whereClause = {
+      user_type: 'club',
+      is_active: true
+    };
+
     if (state) {
       whereClause.state = state;
     }
-    
+
     if (city) {
       whereClause.city = city;
     }
-    
-    if (club_type) {
-      whereClause.club_type = club_type;
-    }
-    
-    if (has_courts !== undefined) {
-      whereClause.has_courts = has_courts === 'true';
-    }
 
     const offset = (page - 1) * limit;
-    
+
     const { count, rows: clubs } = await User.findAndCountAll({
       where: whereClause,
-      attributes: ['id', 'username', 'club_name', 'club_type', 'state', 'city', 'profile_image', 'membership_status', 'has_courts', 'subscription_plan'],
-      order: [['club_name', 'ASC']],
+      attributes: [
+        'id', 'username', 'business_name', 'profile_photo', 'bio',
+        'state', 'city', 'address', 'latitude', 'longitude', 'website',
+        'contact_person', 'job_title', 'membership_status', 'created_at'
+      ],
+      order: [['created_at', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
@@ -431,71 +509,56 @@ const getClubs = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in getClubs:', error);
-    throw createError.server('Failed to retrieve clubs');
+    throw error;
   }
 };
 
 /**
  * Get user statistics
- * @route GET /api/v1/users/:id/stats
- * @access Private
+ * @route GET /api/v1/users/stats
+ * @access Private (Admin)
  */
 const getUserStats = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { user } = req;
+    const totalUsers = await User.count();
+    const activeUsers = await User.count({ where: { is_active: true } });
+    const verifiedUsers = await User.count({ where: { is_verified: true } });
 
-    // Check if user is requesting their own stats or is admin
-    if (user.id !== id && !['admin', 'super_admin'].includes(user.role)) {
-      throw createError.forbidden('Access denied');
-    }
+    const userTypeStats = await User.findAll({
+      attributes: [
+        'user_type',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['user_type']
+    });
 
-    const userData = await User.findByPk(id);
-    if (!userData) {
-      throw createError.notFound('User not found');
-    }
+    const membershipStats = await User.findAll({
+      attributes: [
+        'membership_status',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['membership_status']
+    });
 
-    // Get user statistics based on user type
-    let stats = {};
+    const stateStats = await User.findAll({
+      attributes: [
+        'state',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      where: { state: { [Op.ne]: null } },
+      group: ['state'],
+      order: [[sequelize.fn('COUNT', sequelize.col('id')), 'DESC']],
+      limit: 10
+    });
 
-    if (userData.user_type === USER_TYPES.PLAYER) {
-      // Get tournament participations
-      const tournamentCount = await TournamentRegistration.count({
-        where: { user_id: id }
-      });
-
-      // Get ranking data
-      const rankings = await Ranking.findAll({
-        where: { user_id: id, is_current: true }
-      });
-
-      // Get payment history
-      const payments = await Payment.findAll({
-        where: { user_id: id },
-        attributes: ['amount', 'payment_type', 'status', 'created_at']
-      });
-
-      stats = {
-        tournaments_participated: tournamentCount,
-        rankings: rankings,
-        total_payments: payments.length,
-        total_spent: payments.reduce((sum, payment) => sum + parseFloat(payment.amount), 0)
-      };
-    } else if (userData.user_type === USER_TYPES.CLUB) {
-      // Get club statistics
-      const memberCount = await User.count({
-        where: { club_id: id }
-      });
-
-      const tournamentCount = await Tournament.count({
-        where: { organizer_id: id }
-      });
-
-      stats = {
-        members: memberCount,
-        tournaments_organized: tournamentCount
-      };
-    }
+    const stats = {
+      total: totalUsers,
+      active: activeUsers,
+      verified: verifiedUsers,
+      byType: userTypeStats,
+      byMembership: membershipStats,
+      byState: stateStats
+    };
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
