@@ -1,9 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, UsersQueryParams, DashboardStats } from '../../types/api';
+import { User, UsersQueryParams, UpdateUserRoleRequest } from '../../types/api';
 import { apiService } from '../../services/api';
 
 interface AdminState {
-  dashboardStats: DashboardStats | null;
+  dashboardStats: {
+    total_users: number;
+    total_clubs: number;
+    total_tournaments: number;
+    total_revenue: number;
+    active_memberships: number;
+    new_users_this_month: number;
+    upcoming_tournaments: number;
+    pending_payments: number;
+  } | null;
   adminUsers: User[];
   loading: boolean;
   error: string | null;
@@ -45,7 +54,7 @@ export const fetchAdminUsers = createAsyncThunk(
 export const updateUserRole = createAsyncThunk(
   'admin/updateUserRole',
   async ({ userId, role }: { userId: string; role: string }) => {
-    const response = await apiService.updateUserRole(userId, role);
+    const response = await apiService.updateUserRole(userId, { role: role as 'user' | 'moderator' | 'admin' | 'super_admin' });
     if (!response.success) throw new Error(response.message);
     return response.data;
   }

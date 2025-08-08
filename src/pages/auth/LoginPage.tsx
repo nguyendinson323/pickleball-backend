@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
-import { AppDispatch, RootState } from '../store'
-import { loginUser } from '../store/slices/authSlice'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { AppDispatch, RootState } from '../../store'
+import { loginUser } from '../../store/slices/authSlice'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { Label } from '../../components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
-import { animationConfigs, getAnimationVariants } from '../lib/animations'
+import { animationConfigs, getAnimationVariants } from '../../lib/animations'
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -132,7 +132,7 @@ const LoginPage = () => {
             >
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
-                <Link to="/register" className="text-blue-600 hover:text-blue-500">
+                <Link to="/register/select-type" className="text-blue-600 hover:text-blue-500">
                   Sign up
                 </Link>
               </p>

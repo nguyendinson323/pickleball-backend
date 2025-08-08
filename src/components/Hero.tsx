@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { animationConfigs, getAnimationVariants } from "@/lib/animations";
 import heroImage from "/img/9.jpg";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate()
   return (
     <section className="py-16 lg:py-24 bg-gradient-to-br from-background to-muted">
       <div className="container mx-auto px-4">
@@ -57,7 +59,7 @@ const Hero = () => {
                 animationConfigs.hero.cta.delay
               )}
             >
-              <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
+              <Button size="lg" onClick={() => navigate('/register/select-type')}  className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
                 Join the Federation
               </Button>
             </motion.div>

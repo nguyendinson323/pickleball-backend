@@ -1,8 +1,10 @@
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import SelectUserTypePage from "./pages/auth/SelectUserTypePage";
+import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
+import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
 import DashboardPage from "./pages/DashboardPage";
-import ProfilePage from "./pages/ProfilePage";
+import ProfilePage from "./pages/auth/ProfilePage";
 import ClubsPage from "./pages/ClubsPage";
 import TournamentsPage from "./pages/TournamentsPage";
 import RankingsPage from "./pages/RankingsPage";
@@ -11,13 +13,13 @@ import NotFoundPage from "./pages/NotFoundPage";
 import BannersPage from "./pages/BannersPage";
 import PlayerFinderPage from "./pages/PlayerFinderPage";
 import CourtReservationsPage from "./pages/CourtReservationsPage";
-import LandingPage from "./pages/Index";
+import Index from "./pages/Index";
 
 const routes = [
   {
     key: 'root',
     path: '/',
-    element: <LandingPage />,
+    element: <Index />,
     public: true
   },
   {
@@ -35,7 +37,25 @@ const routes = [
   {
     key: 'register',
     path: '/register',
-    element: <RegisterPage />,
+    element: <SelectUserTypePage />,
+    public: true
+  },
+  {
+    key: 'register-select-type',
+    path: '/register/select-type',
+    element: <SelectUserTypePage />,
+    public: true
+  },
+  {
+    key: 'register-required-fields',
+    path: '/register/required-fields',
+    element: <RequiredFieldsPage />,
+    public: true
+  },
+  {
+    key: 'register-optional-fields',
+    path: '/register/optional-fields',
+    element: <OptionalFieldsPage />,
     public: true
   },
   {
