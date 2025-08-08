@@ -76,10 +76,10 @@ const User = sequelize.define('User', {
     comment: 'User biography'
   },
   user_type: {
-    type: DataTypes.ENUM('player', 'coach', 'club', 'partner', 'admin', 'super_admin'),
+    type: DataTypes.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin', 'super_admin'),
     allowNull: false,
     defaultValue: 'player',
-    comment: 'Type of user: player, coach, club, partner, admin, super_admin'
+    comment: 'Type of user: player, coach, club, partner, state, admin, super_admin'
   },
   skill_level: {
     type: DataTypes.ENUM('2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5'),

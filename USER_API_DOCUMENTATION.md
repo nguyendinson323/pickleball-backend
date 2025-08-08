@@ -182,6 +182,42 @@
 
 ---
 
+### State Registration
+**Endpoint:** `POST /api/auth/register`
+**User Type:** `state`
+
+**Required Fields:**
+```json
+{
+  "username": "string (3-50 chars, alphanumeric + underscore)",
+  "email": "string (valid email format)",
+  "password": "string (min 6 chars)",
+  "business_name": "string (max 200 chars)",
+  "user_type": "state"
+}
+```
+
+**Optional Fields:**
+```json
+{
+  "phone": "string (max 20 chars)",
+  "profile_photo": "string (max 500 chars)",
+  "bio": "text",
+  "contact_person": "string (max 200 chars)",
+  "job_title": "string (max 100 chars)",
+  "state": "string (max 100 chars)",
+  "city": "string (max 100 chars)",
+  "address": "text",
+  "latitude": "decimal (10,8)",
+  "longitude": "decimal (11,8)",
+  "timezone": "string (max 50 chars)",
+  "rfc": "string (max 13 chars)",
+  "website": "string (max 255 chars)"
+}
+```
+
+---
+
 ### Super Admin Registration
 **Endpoint:** `POST /api/auth/register`
 **User Type:** `super_admin`

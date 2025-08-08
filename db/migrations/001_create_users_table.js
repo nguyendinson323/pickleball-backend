@@ -58,7 +58,7 @@ module.exports = {
         allowNull: true
       },
       user_type: {
-        type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'admin', 'super_admin'),
+        type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin', 'super_admin'),
         allowNull: false,
         defaultValue: 'player'
       },

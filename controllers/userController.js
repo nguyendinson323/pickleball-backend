@@ -514,6 +514,71 @@ const getClubs = async (req, res) => {
 };
 
 /**
+ * Get states
+ * @route GET /api/v1/users/states
+ * @access Private
+ */
+const getStates = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT,
+      state,
+      city
+    } = req.query;
+
+    // Build where clause
+    const whereClause = {
+      user_type: 'state',
+      is_active: true
+    };
+
+    if (state) {
+      whereClause.state = { [Op.iLike]: `%${state}%` };
+    }
+
+    if (city) {
+      whereClause.city = { [Op.iLike]: `%${city}%` };
+    }
+
+    // Calculate pagination
+    const offset = (page - 1) * limit;
+
+    // Get states with pagination
+    const { count, rows: states } = await User.findAndCountAll({
+      where: whereClause,
+      attributes: [
+        'id', 'username', 'business_name', 'profile_photo', 'bio',
+        'state', 'city', 'address', 'latitude', 'longitude', 'website',
+        'contact_person', 'job_title', 'membership_status', 'created_at'
+      ],
+      order: [['created_at', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset)
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: API_MESSAGES.SUCCESS.STATES_RETRIEVED,
+      data: {
+        states,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: count,
+          pages: totalPages
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error in getStates:', error);
+    throw error;
+  }
+};
+
+/**
  * Get user statistics
  * @route GET /api/v1/users/stats
  * @access Private (Admin)
@@ -580,5 +645,6 @@ module.exports = {
   getPlayers,
   getCoaches,
   getClubs,
+  getStates,
   getUserStats
 }; 

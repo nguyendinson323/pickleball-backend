@@ -110,7 +110,7 @@ const register = async (req, res) => {
       }
     }
     
-    if (['club', 'partner'].includes(user_type)) {
+    if (['club', 'partner', 'state'].includes(user_type)) {
       if (!business_name) {
         throw createError.validation('business_name is required for this user type');
       }

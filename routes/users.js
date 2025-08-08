@@ -110,6 +110,15 @@ router.get('/clubs',
 );
 
 /**
+ * @route   GET /users/states
+ * @desc    Get list of states
+ * @access  Public
+ */
+router.get('/states', 
+  asyncHandler(userController.getStates)
+);
+
+/**
  * @route   GET /users/:id/stats
  * @desc    Get user statistics
  * @access  Private

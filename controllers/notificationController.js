@@ -422,6 +422,8 @@ const sendSystemNotification = async (req, res) => {
       userQuery.user_type = 'club';
     } else if (target_users === 'partners') {
       userQuery.user_type = 'partner';
+    } else if (target_users === 'states') {
+      userQuery.user_type = 'state';
     }
 
     // Get target users
