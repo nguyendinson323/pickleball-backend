@@ -50,7 +50,7 @@ const Club = sequelize.define('Club', {
 
   contact_email: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
     validate: {
       isEmail: true
     },

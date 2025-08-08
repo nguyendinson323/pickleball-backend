@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { User } = require('../db/models');
+const { Op } = require('sequelize');
 const { 
   API_MESSAGES, 
   HTTP_STATUS, 
@@ -74,16 +75,41 @@ const register = async (req, res) => {
       rfc,
       website
     } = req.body;
-
-    // Check if user already exists
+    
+    // Log received data for debugging
+    logger.info('Registration attempt:', {
+      user_type,
+      username,
+      email,
+      hasPassword: !!password,
+      hasFirstName: !!first_name,
+      hasLastName: !!last_name,
+      hasDateOfBirth: !!date_of_birth,
+      hasBusinessName: !!business_name,
+      hasContactPerson: !!contact_person
+    });
+    
+    // Validate basic required fields
+    const basicRequiredFields = [];
+    if (!user_type) basicRequiredFields.push('user_type');
+    if (!username) basicRequiredFields.push('username');
+    if (!email) basicRequiredFields.push('email');
+    if (!password) basicRequiredFields.push('password');
+    
+    if (basicRequiredFields.length > 0) {
+      throw createError.validation(`Missing required fields: ${basicRequiredFields.join(', ')}`);
+    }
+    
+// Check if user already exists
     const existingUser = await User.findOne({
       where: {
-        [User.sequelize.Op.or]: [
+        [Op.or]: [
           { email: email.toLowerCase() },
           { username: username.toLowerCase() }
         ]
       }
     });
+
 
     if (existingUser) {
       throw createError.conflict(
@@ -94,16 +120,43 @@ const register = async (req, res) => {
 
     // Validate user type specific requirements
     if (user_type === USER_TYPES.PLAYER || user_type === USER_TYPES.COACH) {
-      if (!first_name || !last_name || !date_of_birth) {
-        throw createError.validation('First name, last name, and date of birth are required for players and coaches');
+      const missingFields = [];
+      if (!first_name) missingFields.push('first_name');
+      if (!last_name) missingFields.push('last_name');
+      if (!date_of_birth) missingFields.push('date_of_birth');
+      
+      if (missingFields.length > 0) {
+        logger.error('Validation failed for player/coach:', {
+          user_type,
+          first_name: !!first_name,
+          last_name: !!last_name,
+          date_of_birth: !!date_of_birth,
+          missingFields,
+          receivedData: { first_name, last_name, date_of_birth }
+        });
+        throw createError.validation(`Missing required fields for ${user_type}: ${missingFields.join(', ')}`);
       }
     }
 
     if (user_type === USER_TYPES.CLUB || user_type === USER_TYPES.PARTNER || user_type === USER_TYPES.STATE) {
-      if (!business_name || !contact_person) {
-        throw createError.validation('Business name and contact person are required for organizations');
+      const missingFields = [];
+      if (!business_name) missingFields.push('business_name');
+      if (!contact_person) missingFields.push('contact_person');
+      
+      if (missingFields.length > 0) {
+        logger.error('Validation failed for organization:', {
+          user_type,
+          business_name: !!business_name,
+          contact_person: !!contact_person,
+          missingFields,
+          receivedData: { business_name, contact_person }
+        });
+        throw createError.validation(`Missing required fields for ${user_type}: ${missingFields.join(', ')}`);
       }
     }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
 
     // Generate email verification token
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
@@ -114,7 +167,7 @@ const register = async (req, res) => {
       user_type,
       username: username.toLowerCase(),
       email: email.toLowerCase(),
-      password,
+      password_hash: passwordHash,
       first_name,
       last_name,
       date_of_birth,
@@ -129,8 +182,8 @@ const register = async (req, res) => {
       rfc,
       website,
       email_verification_token: emailVerificationToken,
-      email_verification_expires: emailVerificationExpires,
-      role: user_type === USER_TYPES.FEDERATION ? USER_ROLES.SUPER_ADMIN : USER_ROLES.USER
+      email_verification_expires_at: emailVerificationExpires,
+      role: user_type === 'super_admin' ? 'super_admin' : 'user'
     });
 
     // Send verification email
@@ -244,7 +297,6 @@ const login = async (req, res) => {
       membership_status: user.membership_status,
       email_verified: user.email_verified,
       is_active: user.is_active,
-      subscription_plan: user.subscription_plan,
       role: user.role
     };
 
@@ -339,8 +391,8 @@ const verifyEmail = async (req, res) => {
     const user = await User.findOne({
       where: {
         email_verification_token: token,
-        email_verification_expires: {
-          [User.sequelize.Op.gt]: new Date()
+        email_verification_expires_at: {
+          [Op.gt]: new Date()
         }
       }
     });
@@ -352,7 +404,7 @@ const verifyEmail = async (req, res) => {
     // Mark email as verified
     user.email_verified = true;
     user.email_verification_token = null;
-    user.email_verification_expires = null;
+    user.email_verification_expires_at = null;
     await user.save();
 
     logger.info(`Email verified for user: ${user.email}`);
@@ -390,7 +442,7 @@ const requestPasswordReset = async (req, res) => {
     const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     user.password_reset_token = resetToken;
-    user.password_reset_expires = resetExpires;
+    user.password_reset_expires_at = resetExpires;
     await user.save();
 
     // Send password reset email
@@ -433,8 +485,8 @@ const resetPassword = async (req, res) => {
     const user = await User.findOne({
       where: {
         password_reset_token: token,
-        password_reset_expires: {
-          [User.sequelize.Op.gt]: new Date()
+        password_reset_expires_at: {
+          [Op.gt]: new Date()
         }
       }
     });
@@ -443,10 +495,11 @@ const resetPassword = async (req, res) => {
       throw createError.badRequest('Invalid or expired reset token');
     }
 
-    // Update password
-    user.password = password;
+    // Hash and update password
+    const passwordHash = await bcrypt.hash(password, 12);
+    user.password_hash = passwordHash;
     user.password_reset_token = null;
-    user.password_reset_expires = null;
+    user.password_reset_expires_at = null;
     user.login_attempts = 0;
     user.locked_until = null;
     await user.save();
@@ -488,19 +541,15 @@ const getProfile = async (req, res) => {
       city: user.city,
       address: user.address,
       phone: user.phone,
-      whatsapp: user.whatsapp,
       skill_level: user.skill_level,
       curp: user.curp,
       business_name: user.business_name,
       contact_person: user.contact_person,
       rfc: user.rfc,
       website: user.website,
-      social_media: user.social_media,
       profile_photo: user.profile_photo,
-      logo: user.logo,
       membership_status: user.membership_status,
       membership_expires_at: user.membership_expires_at,
-      subscription_plan: user.subscription_plan,
       email_verified: user.email_verified,
       is_active: user.is_active,
       is_verified: user.is_verified,
@@ -532,13 +581,12 @@ const updateProfile = async (req, res) => {
     const updateData = req.body;
 
     // Remove fields that shouldn't be updated via this endpoint
-    delete updateData.password;
+    delete updateData.password_hash;
     delete updateData.email;
     delete updateData.username;
     delete updateData.user_type;
     delete updateData.role;
     delete updateData.membership_status;
-    delete updateData.subscription_plan;
 
     // Update user
     await user.update(updateData);

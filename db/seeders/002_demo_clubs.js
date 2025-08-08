@@ -130,7 +130,8 @@ module.exports = {
         total_tournaments: 6,
         total_revenue: 45000.00,
         social_media: JSON.stringify({
-          facebook: 'https://facebook.com/communitypickleball'
+          facebook: 'https://facebook.com/communitypickleball',
+          instagram: 'https://instagram.com/communitypickleball'
         }),
         created_at: now,
         updated_at: now
@@ -139,65 +140,66 @@ module.exports = {
       // Resort Pickleball Club
       {
         id: '660e8400-e29b-41d4-a716-446655440003',
-        name: 'Tijuana Resort Pickleball Club',
-        description: 'Luxury resort pickleball club with ocean views',
+        name: 'Resort Pickleball Club',
+        description: 'Luxury resort pickleball club with premium facilities and services',
         club_type: 'resort',
         owner_id: '550e8400-e29b-41d4-a716-446655440001', // superadmin
         contact_person: 'Carlos Rodríguez',
         phone: '+52-55-3456-7890',
-        email: 'info@tijuanapickleball.com',
-        website: 'https://tijuanapickleball.com',
+        email: 'info@resortpickleball.com',
+        website: 'https://resortpickleball.com',
         logo_url: 'https://example.com/logos/resort_club.jpg',
         banner_url: 'https://example.com/banners/resort_club.jpg',
-        address: 'Blvd. Agua Caliente 890, Tijuana, Baja California',
-        state: 'Baja California',
-        city: 'Tijuana',
-        zip_code: '22000',
+        address: 'Carretera Costera 789, Puerto Vallarta, Jalisco',
+        state: 'Jalisco',
+        city: 'Puerto Vallarta',
+        zip_code: '48300',
         country: 'Mexico',
-        latitude: 32.5149,
-        longitude: -117.0382,
+        latitude: 20.6534,
+        longitude: -105.2253,
         operating_hours: JSON.stringify({
-          monday: { open: '07:00', close: '23:00' },
-          tuesday: { open: '07:00', close: '23:00' },
-          wednesday: { open: '07:00', close: '23:00' },
-          thursday: { open: '07:00', close: '23:00' },
-          friday: { open: '07:00', close: '23:00' },
-          saturday: { open: '08:00', close: '22:00' },
-          sunday: { open: '08:00', close: '21:00' }
+          monday: { open: '07:00', close: '21:00' },
+          tuesday: { open: '07:00', close: '21:00' },
+          wednesday: { open: '07:00', close: '21:00' },
+          thursday: { open: '07:00', close: '21:00' },
+          friday: { open: '07:00', close: '21:00' },
+          saturday: { open: '07:00', close: '20:00' },
+          sunday: { open: '07:00', close: '19:00' }
         }),
         amenities: JSON.stringify([
           'Indoor Courts',
           'Outdoor Courts',
-          'Ocean View',
           'Pro Shop',
+          'Luxury Locker Rooms',
           'Spa Services',
           'Restaurant',
           'Bar',
           'Swimming Pool',
           'Fitness Center',
-          'Equipment Rental',
-          'Professional Coaching'
+          'Tennis Courts',
+          'Golf Course',
+          'Beach Access'
         ]),
         membership_fees: JSON.stringify({
           monthly: 2500,
           quarterly: 6500,
-          yearly: 22000,
-          day_pass: 300
+          yearly: 25000,
+          day_pass: 400
         }),
-        court_count: 6,
+        court_count: 12,
         is_verified: true,
         is_featured: true,
         is_active: true,
         rating: 4.9,
         review_count: 67,
-        total_members: 95,
-        total_tournaments: 8,
-        total_revenue: 220000.00,
+        total_members: 200,
+        total_tournaments: 18,
+        total_revenue: 350000.00,
         social_media: JSON.stringify({
-          facebook: 'https://facebook.com/tijuanapickleball',
-          instagram: 'https://instagram.com/tijuanapickleball',
-          twitter: 'https://twitter.com/tijuanapickleball',
-          youtube: 'https://youtube.com/tijuanapickleball'
+          facebook: 'https://facebook.com/resortpickleball',
+          instagram: 'https://instagram.com/resortpickleball',
+          twitter: 'https://twitter.com/resortpickleball',
+          youtube: 'https://youtube.com/resortpickleball'
         }),
         created_at: now,
         updated_at: now

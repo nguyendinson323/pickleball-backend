@@ -35,15 +35,15 @@ module.exports = {
       },
       first_name: {
         type: Sequelize.STRING(100),
-        allowNull: false
+        allowNull: true
       },
       last_name: {
         type: Sequelize.STRING(100),
-        allowNull: false
+        allowNull: true
       },
       full_name: {
         type: Sequelize.STRING(200),
-        allowNull: false
+        allowNull: true
       },
       date_of_birth: {
         type: Sequelize.DATEONLY,
@@ -178,6 +178,10 @@ module.exports = {
         type: Sequelize.STRING(13),
         allowNull: true
       },
+      website: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
       verification_documents: {
         type: Sequelize.JSON,
         allowNull: true
@@ -192,6 +196,10 @@ module.exports = {
       },
       metadata: {
         type: Sequelize.JSON,
+        allowNull: true
+      },
+      club_id: {
+        type: Sequelize.UUID,
         allowNull: true
       },
       created_at: {

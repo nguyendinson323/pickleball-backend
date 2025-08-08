@@ -20,7 +20,7 @@ require('dotenv').config();
 // Import custom modules
 const { sequelize } = require('./config/database');
 const logger = require('./config/logger');
-const errorHandler = require('./middlewares/errorHandler');
+const { errorHandler } = require('./middlewares/errorHandler');
 const notFoundHandler = require('./middlewares/notFoundHandler');
 
 // Import centralized routes
@@ -47,7 +47,7 @@ app.use(helmet({
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://pickleballfederation.com', 'https://www.pickleballfederation.com']
-    : ['http://localhost:3000', 'http://localhost:3001'],
+    : [process.env.FRONTEND_URL, 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -67,7 +67,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Compression middleware
-app.use(compression());
+// app.use(compression());
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -114,11 +114,11 @@ const startServer = async () => {
     await sequelize.authenticate();
     logger.info('Database connection established successfully.');
 
-    // Sync database models (in development)
-    if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
-      logger.info('Database models synchronized.');
-    }
+    // Sync database models (in development) - disabled to avoid conflicts with existing data
+    // if (process.env.NODE_ENV === 'development') {
+    //   await sequelize.sync({ alter: true });
+    //   logger.info('Database models synchronized.');
+    // }
 
     // Start server
     app.listen(PORT, () => {

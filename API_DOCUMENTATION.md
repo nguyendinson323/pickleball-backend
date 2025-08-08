@@ -557,17 +557,19 @@ interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  first_name?: string;
-  last_name?: string;
-  date_of_birth?: string;
+  // Required for players and coaches
+  first_name?: string; // Required if user_type is 'player' or 'coach'
+  last_name?: string; // Required if user_type is 'player' or 'coach'
+  date_of_birth?: string; // Required if user_type is 'player' or 'coach'
   gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   state?: string;
   city?: string;
   phone?: string;
   skill_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
   curp?: string;
-  business_name?: string;
-  contact_person?: string;
+  // Required for organizations (clubs, partners, state)
+  business_name?: string; // Required if user_type is 'club', 'partner', or 'state'
+  contact_person?: string; // Required if user_type is 'club', 'partner', or 'state'
   rfc?: string;
   website?: string;
 }
@@ -581,7 +583,43 @@ interface RegisterResponse extends ApiResponse<{
 }> {}
 ```
 
-**Example Request:**
+**Example Requests:**
+
+**Player Registration:**
+```json
+{
+  "user_type": "player",
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "securepassword123",
+  "first_name": "John",
+  "last_name": "Doe",
+  "date_of_birth": "1990-05-15",
+  "gender": "male",
+  "state": "Jalisco",
+  "city": "Guadalajara",
+  "phone": "+52-55-1234-5678",
+  "skill_level": "3.5"
+}
+```
+
+**Club Registration:**
+```json
+{
+  "user_type": "club",
+  "username": "elite_club",
+  "email": "info@eliteclub.com",
+  "password": "securepassword123",
+  "business_name": "Elite Pickleball Club",
+  "contact_person": "Maria Rodriguez",
+  "phone": "+52-55-4567-8901",
+  "state": "Jalisco",
+  "city": "Guadalajara",
+  "website": "https://eliteclub.com"
+}
+```
+
+**TypeScript Example:**
 ```typescript
 const registerUser = async (userData: RegisterRequest): Promise<RegisterResponse> => {
   const response = await fetch('/api/v1/auth/register', {
