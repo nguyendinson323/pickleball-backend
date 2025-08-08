@@ -26,7 +26,7 @@ const emailTemplates = {
           <h1>Welcome to Pickleball Federation!</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.name},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>Welcome to the Pickleball Federation! We're excited to have you join our community.</p>
           <p>Your account has been successfully created. To get started:</p>
           <ul>
@@ -41,7 +41,7 @@ const emailTemplates = {
     `
   }),
 
-  verification: (data) => ({
+  emailVerification: (data) => ({
     subject: 'Verify Your Email - Pickleball Federation',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -49,7 +49,7 @@ const emailTemplates = {
           <h1>Verify Your Email</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.name},</h2>
+          <h2>Hello ${data.username},</h2>
           <p>Thank you for registering with Pickleball Federation! Please verify your email address to complete your registration.</p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${data.verificationUrl}" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
@@ -65,6 +65,55 @@ const emailTemplates = {
     `
   }),
 
+  verification: (data) => ({
+    subject: 'Verify Your Email - Pickleball Federation',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #2196F3; color: white; padding: 20px; text-align: center;">
+          <h1>Verify Your Email</h1>
+        </div>
+        <div style="padding: 20px;">
+          <h2>Hello ${data.full_name || data.username},</h2>
+          <p>Thank you for registering with Pickleball Federation! Please verify your email address to complete your registration.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.verificationUrl}" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Verify Email Address
+            </a>
+          </div>
+          <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; color: #666;">${data.verificationUrl}</p>
+          <p>This link will expire in 24 hours.</p>
+          <p>Best regards,<br>The Pickleball Federation Team</p>
+        </div>
+      </div>
+    `
+  }),
+
+  passwordReset: (data) => ({
+    subject: 'Reset Your Password - Pickleball Federation',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #FF9800; color: white; padding: 20px; text-align: center;">
+          <h1>Reset Your Password</h1>
+        </div>
+        <div style="padding: 20px;">
+          <h2>Hello ${data.username},</h2>
+          <p>We received a request to reset your password. Click the button below to create a new password:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.resetUrl}" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Reset Password
+            </a>
+          </div>
+          <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; color: #666;">${data.resetUrl}</p>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request a password reset, you can safely ignore this email.</p>
+          <p>Best regards,<br>The Pickleball Federation Team</p>
+        </div>
+      </div>
+    `
+  }),
+
   password_reset: (data) => ({
     subject: 'Reset Your Password - Pickleball Federation',
     html: `
@@ -73,7 +122,7 @@ const emailTemplates = {
           <h1>Reset Your Password</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.name},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>We received a request to reset your password. Click the button below to create a new password:</p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${data.resetUrl}" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
@@ -98,7 +147,7 @@ const emailTemplates = {
           <h1>Tournament Registration Confirmed</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.playerName},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>Your registration for <strong>${data.tournamentName}</strong> has been confirmed!</p>
           <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
             <h3>Tournament Details:</h3>
@@ -123,7 +172,7 @@ const emailTemplates = {
           <h1>Payment Confirmed</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.name},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>Your payment has been successfully processed!</p>
           <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
             <h3>Payment Details:</h3>
@@ -147,7 +196,7 @@ const emailTemplates = {
           <h1>Membership Renewal Reminder</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.name},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>Your Pickleball Federation membership will expire on <strong>${data.expiryDate}</strong>.</p>
           <p>To continue enjoying all the benefits of membership, please renew before the expiration date.</p>
           <div style="text-align: center; margin: 30px 0;">
@@ -170,7 +219,7 @@ const emailTemplates = {
           <h1>Tournament Update</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.playerName},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>There has been an update to <strong>${data.tournamentName}</strong>:</p>
           <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
             <h3>Update Details:</h3>
@@ -194,7 +243,7 @@ const emailTemplates = {
           <h1>New Match Request</h1>
         </div>
         <div style="padding: 20px;">
-          <h2>Hello ${data.receiverName},</h2>
+          <h2>Hello ${data.full_name || data.username},</h2>
           <p>You have received a match request from <strong>${data.senderName}</strong>!</p>
           <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
             <h3>Match Details:</h3>
@@ -212,6 +261,28 @@ const emailTemplates = {
               Decline Request
             </a>
           </div>
+          <p>Best regards,<br>The Pickleball Federation Team</p>
+        </div>
+      </div>
+    `
+  }),
+
+  system_notification: (data) => ({
+    subject: `${data.title} - Pickleball Federation`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #2196F3; color: white; padding: 20px; text-align: center;">
+          <h1>System Notification</h1>
+        </div>
+        <div style="padding: 20px;">
+          <h2>Hello ${data.full_name || data.username},</h2>
+          <p>You have received a system notification from Pickleball Federation:</p>
+          <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
+            <h3>${data.title}</h3>
+            <p style="white-space: pre-wrap;">${data.message}</p>
+            ${data.priority === 'urgent' ? '<p style="color: #f44336; font-weight: bold;">⚠️ This is an urgent notification</p>' : ''}
+          </div>
+          <p>Please log in to your account to view more details.</p>
           <p>Best regards,<br>The Pickleball Federation Team</p>
         </div>
       </div>
@@ -253,6 +324,8 @@ const sendEmail = async (options) => {
       throw new Error(`Template '${template}' not found`);
     }
 
+    console.log("kkkkkkkkkk");
+    
     // Prepare SendGrid message
     const msg = {
       to: to,
@@ -275,7 +348,7 @@ const sendEmail = async (options) => {
     return response;
 
   } catch (error) {
-    logger.error('Failed to send email:', error);
+    // logger.error('Failed to send email:', error);
     throw error;
   }
 };
@@ -307,7 +380,7 @@ const sendBulkEmail = async (recipients, template, data) => {
         name: process.env.SENDGRID_FROM_NAME
       },
       subject: emailContent.subject,
-      html: emailContent.html.replace(/\${data\.name}/g, recipient.name || 'there')
+      html: emailContent.html.replace(/\${data\.(full_name|username)}/g, recipient.full_name || recipient.username || 'there')
     }));
 
     // Send emails in batches (SendGrid allows max 1000 per request)
@@ -344,7 +417,8 @@ const testEmailService = async (testEmail) => {
       to: testEmail,
       template: 'welcome',
       data: {
-        name: 'Test User'
+        full_name: 'Test User',
+        username: 'testuser'
       }
     });
 

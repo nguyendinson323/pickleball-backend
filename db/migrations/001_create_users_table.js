@@ -33,14 +33,6 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      first_name: {
-        type: Sequelize.STRING(100),
-        allowNull: true
-      },
-      last_name: {
-        type: Sequelize.STRING(100),
-        allowNull: true
-      },
       full_name: {
         type: Sequelize.STRING(200),
         allowNull: true
@@ -69,11 +61,6 @@ module.exports = {
         type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'admin', 'super_admin'),
         allowNull: false,
         defaultValue: 'player'
-      },
-      role: {
-        type: Sequelize.ENUM('user', 'moderator', 'admin', 'super_admin'),
-        allowNull: false,
-        defaultValue: 'user'
       },
       skill_level: {
         type: Sequelize.ENUM('2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5'),
@@ -233,10 +220,6 @@ module.exports = {
       name: 'users_user_type_index'
     });
 
-    await queryInterface.addIndex('users', ['role'], {
-      name: 'users_role_index'
-    });
-
     await queryInterface.addIndex('users', ['skill_level'], {
       name: 'users_skill_level_index'
     });
@@ -259,14 +242,6 @@ module.exports = {
 
     await queryInterface.addIndex('users', ['is_active'], {
       name: 'users_is_active_index'
-    });
-
-    await queryInterface.addIndex('users', ['email_verified'], {
-      name: 'users_email_verified_index'
-    });
-
-    await queryInterface.addIndex('users', ['last_login'], {
-      name: 'users_last_login_index'
     });
 
     await queryInterface.addIndex('users', ['created_at'], {

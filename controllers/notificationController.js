@@ -123,8 +123,7 @@ const markNotificationAsRead = async (req, res) => {
       throw createError.forbidden('Access denied');
     }
 
-    // Mark as read
-    await notification.markAsRead();
+    await notification.update({ is_read: true });
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -146,18 +145,9 @@ const markAllNotificationsAsRead = async (req, res) => {
   try {
     const { user } = req;
 
-    // Update all unread notifications for the user
     const result = await Notification.update(
-      { 
-        is_read: true,
-        read_at: new Date()
-      },
-      {
-        where: {
-          user_id: user.id,
-          is_read: false
-        }
-      }
+      { is_read: true },
+      { where: { user_id: user.id, is_read: false } }
     );
 
     res.status(HTTP_STATUS.OK).json({
@@ -191,7 +181,6 @@ const deleteNotification = async (req, res) => {
       throw createError.forbidden('Access denied');
     }
 
-    // Soft delete notification
     await notification.destroy();
 
     res.status(HTTP_STATUS.OK).json({
@@ -205,7 +194,7 @@ const deleteNotification = async (req, res) => {
 };
 
 /**
- * Send notification
+ * Send notification to users
  * @route POST /api/v1/notifications/send
  * @access Private (Admin)
  */
@@ -215,23 +204,24 @@ const sendNotification = async (req, res) => {
     const { user_ids, type, title, message, priority = 'normal', send_email = false } = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
     if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0) {
-      throw createError.badRequest('User IDs are required');
+      throw createError.validation('User IDs array is required');
     }
 
     if (!type || !title || !message) {
-      throw createError.badRequest('Type, title, and message are required');
+      throw createError.validation('Type, title, and message are required');
     }
 
+    // Create notifications and send emails
     const notifications = [];
     const emailPromises = [];
 
-    // Create notifications for each user
     for (const userId of user_ids) {
+      // Create notification
       const notification = await Notification.create({
         user_id: userId,
         type,
@@ -252,9 +242,14 @@ const sendNotification = async (req, res) => {
         if (userData && userData.email) {
           const emailPromise = sendEmail({
             to: userData.email,
-            subject: title,
-            text: message,
-            html: `<p>${message}</p>`
+            template: 'system_notification',
+            data: {
+              username: userData.username,
+              full_name: userData.full_name,
+              title: title,
+              message: message,
+              priority: priority
+            }
           }).catch(error => {
             logger.error(`Failed to send email to ${userData.email}:`, error);
           });
@@ -339,15 +334,12 @@ const getNotificationPreferences = async (req, res) => {
   try {
     const { user } = req;
 
-    // TODO: Implement notification preferences
-    // For now, return default preferences
-    const preferences = {
+    // Get user preferences (stored in user.preferences)
+    const preferences = user.preferences?.notifications || {
       email_notifications: true,
-      sms_notifications: false,
       push_notifications: true,
       tournament_updates: true,
-      payment_notifications: true,
-      membership_reminders: true,
+      match_requests: true,
       marketing_emails: false
     };
 
@@ -372,13 +364,25 @@ const updateNotificationPreferences = async (req, res) => {
     const { user } = req;
     const preferences = req.body;
 
-    // TODO: Implement notification preferences update
-    // This would involve updating user settings or a separate preferences table
+    // Update user preferences
+    const currentPreferences = user.preferences || {};
+    const updatedPreferences = {
+      ...currentPreferences,
+      notifications: {
+        ...currentPreferences.notifications,
+        ...preferences
+      }
+    };
+
+    await User.update(
+      { preferences: updatedPreferences },
+      { where: { id: user.id } }
+    );
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.NOTIFICATION_PREFERENCES_UPDATED,
-      data: { preferences }
+      data: { preferences: updatedPreferences.notifications }
     });
   } catch (error) {
     logger.error('Error in updateNotificationPreferences:', error);
@@ -394,15 +398,15 @@ const updateNotificationPreferences = async (req, res) => {
 const sendSystemNotification = async (req, res) => {
   try {
     const { user } = req;
-    const { type, title, message, target_users = 'all' } = req.body;
+    const { type, title, message, target_users = 'all', send_email = false } = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (!['admin', 'super_admin'].includes(user.user_type)) {
       throw createError.forbidden('Access denied');
     }
 
     if (!type || !title || !message) {
-      throw createError.badRequest('Type, title, and message are required');
+      throw createError.validation('Type, title, and message are required');
     }
 
     let userQuery = {};
@@ -416,25 +420,28 @@ const sendSystemNotification = async (req, res) => {
       userQuery.user_type = 'coach';
     } else if (target_users === 'clubs') {
       userQuery.user_type = 'club';
+    } else if (target_users === 'partners') {
+      userQuery.user_type = 'partner';
     }
 
     // Get target users
-    const targetUserIds = await User.findAll({
+    const targetUsers = await User.findAll({
       where: userQuery,
-      attributes: ['id']
+      attributes: ['id', 'email', 'username', 'full_name']
     });
 
-    const userIds = targetUserIds.map(user => user.id);
-
-    if (userIds.length === 0) {
+    if (targetUsers.length === 0) {
       throw createError.badRequest('No users found for the specified criteria');
     }
 
-    // Create notifications
+    // Create notifications and send emails
     const notifications = [];
-    for (const userId of userIds) {
+    const emailPromises = [];
+
+    for (const targetUser of targetUsers) {
+      // Create notification
       const notification = await Notification.create({
-        user_id: userId,
+        user_id: targetUser.id,
         type,
         title,
         message,
@@ -447,6 +454,30 @@ const sendSystemNotification = async (req, res) => {
       });
 
       notifications.push(notification);
+
+      // Send email if requested
+      if (send_email && targetUser.email) {
+        const emailPromise = sendEmail({
+          to: targetUser.email,
+          template: 'system_notification',
+          data: {
+            username: targetUser.username,
+            full_name: targetUser.full_name,
+            title: title,
+            message: message,
+            priority: 'normal'
+          }
+        }).catch(error => {
+          logger.error(`Failed to send system notification email to ${targetUser.email}:`, error);
+        });
+
+        emailPromises.push(emailPromise);
+      }
+    }
+
+    // Wait for all emails to be sent
+    if (emailPromises.length > 0) {
+      await Promise.all(emailPromises);
     }
 
     res.status(HTTP_STATUS.CREATED).json({
@@ -454,7 +485,8 @@ const sendSystemNotification = async (req, res) => {
       message: API_MESSAGES.SUCCESS.SYSTEM_NOTIFICATION_SENT,
       data: {
         notifications_created: notifications.length,
-        target_users: userIds.length
+        emails_sent: emailPromises.length,
+        target_users: targetUsers.length
       }
     });
   } catch (error) {

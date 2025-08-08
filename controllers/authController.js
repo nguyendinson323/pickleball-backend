@@ -79,19 +79,19 @@ const register = async (req, res) => {
       rfc,
       website
     } = req.body;
-    
+
     // Log received data for debugging
-    logger.info('Registration attempt:', {
-      user_type,
-      username,
-      email,
-      hasPassword: !!password,
-      hasFullName: !!full_name,
-      hasDateOfBirth: !!date_of_birth,
-      hasBusinessName: !!business_name,
-      hasContactPerson: !!contact_person
-    });
-    
+    // logger.info('Registration attempt:', {
+    //   user_type,
+    //   username,
+    //   email,
+    //   hasPassword: !!password,
+    //   hasFullName: !!full_name,
+    //   hasDateOfBirth: !!date_of_birth,
+    //   hasBusinessName: !!business_name,
+    //   hasContactPerson: !!contact_person
+    // });
+
     // Validate basic required fields
     const basicRequiredFields = [];
     if (!user_type) basicRequiredFields.push('user_type');
@@ -179,7 +179,6 @@ const register = async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: 'Verify Your Email - Pickleball Federation',
         template: 'emailVerification',
         data: {
           username: user.username,
@@ -468,7 +467,6 @@ const requestPasswordReset = async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: 'Password Reset - Pickleball Federation',
         template: 'passwordReset',
         data: {
           username: user.username,

@@ -126,14 +126,6 @@ const refreshTokenValidation = [
 ];
 
 const updateProfileValidation = [
-  body('first_name')
-    .optional()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('First name must be 2-100 characters'),
-  body('last_name')
-    .optional()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Last name must be 2-100 characters'),
   body('date_of_birth')
     .optional()
     .isISO8601()
@@ -154,10 +146,6 @@ const updateProfileValidation = [
     .optional()
     .matches(/^[\+]?[1-9][\d]{0,15}$/)
     .withMessage('Valid phone number is required'),
-  body('whatsapp')
-    .optional()
-    .matches(/^[\+]?[1-9][\d]{0,15}$/)
-    .withMessage('Valid WhatsApp number is required'),
   body('skill_level')
     .optional()
     .isIn(['2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5'])

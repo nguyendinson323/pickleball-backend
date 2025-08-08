@@ -115,7 +115,7 @@ const getPaymentById = async (req, res) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'email']
+          attributes: ['id', 'username', 'full_name', 'email']
         }
       ]
     });

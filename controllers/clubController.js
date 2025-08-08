@@ -114,7 +114,7 @@ const getClubById = async (req, res) => {
         {
           model: User,
           as: 'owner',
-          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'email', 'phone']
+          attributes: ['id', 'username', 'full_name', 'email', 'phone']
         },
         {
           model: Court,

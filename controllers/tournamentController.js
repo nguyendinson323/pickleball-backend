@@ -115,7 +115,7 @@ const getTournamentById = async (req, res) => {
         {
           model: User,
           as: 'organizer',
-          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'email', 'phone']
+          attributes: ['id', 'username', 'full_name', 'email', 'phone']
         },
         {
           model: TournamentRegistration,
@@ -124,7 +124,7 @@ const getTournamentById = async (req, res) => {
             {
               model: User,
               as: 'participant',
-              attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'skill_level']
+              attributes: ['id', 'username', 'full_name', 'skill_level']
             }
           ]
         }
@@ -174,7 +174,7 @@ const createTournament = async (req, res) => {
         {
           model: User,
           as: 'organizer',
-          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name']
+          attributes: ['id', 'username', 'full_name']
         }
       ]
     });
