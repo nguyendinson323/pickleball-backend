@@ -1,0 +1,61 @@
+Developing the association's website, including registering players, clubs, leagues, tournaments, grouping them by state, player rankings, etc.
+
+can you make a site as good as the ones you mentioned as part of your resume?
+
+ok so i am looking for a very complete application like the ones you showed me
+
+but i dont know if its to large for one person
+
+as i want this done quite fast
+how long would it take to develop all that
+
+https://courtreserve.com/pickleball
+
+my excel only contains the basic, but i will like to add ways to monetise
+like having a site that handles courts etc like courtserve.com
+also having the leagues tournaments etc tht you have in your sites
+i guess your sites are complete
+so thats what we have to discuss what to keep what to add
+and consider i need to add league, clubs, players rankings, tournaments, etc and i want to make the courtreserve to monetize
+of course i consider your porposal an estimate
+and we can adjust latter
+so dont worry much about that now i want something outstanding, i am a developer myself started in 1991
+also will need NDA from you and intelectual property rights of whatever we do
+
+Hi Azlan, I wanted to ask if you have any kind of diagram or schema for how the ranking system will function. Specifically, will the points be assigned automatically through the tournament system you're developing, or will the tournament results need to be manually entered into the system through an admin panel?
+
+Hi, great question. I’m thinking the ranking system to support both options for flexibility,
+
+Hi Azlan, I wanted to ask if you have any kind of diagram or schema for how the ranking system will function. Specifically, will the points be assigned automatically through the tournament system you're developing, or will the tournament results need to be manually entered into the system through an admin panel?
+
+I don't consider it necessary; what I wanted to know was whether we would have the ability to modify the point values assigned to each tournament depending on the needs of each one
+
+It’s also important that not all tournaments contribute points to the ranking system, since there will be events where most participants are foreigners or they are exhibition tournaments.
+
+I also wanted to share a table with you so you can keep it in mind—it's a rough outline of how we plan to manage the point allocation system for winners, depending on each player's level of play. I'm not sure if it works similarly to what you have planned.
+
+What I wanted you to keep in mind for now is that there will be 6 categories or skill levels, meaning the 2.5 players are the least skilled, and the 5+ players are the professional ones (this is represented by the green bar at the top of the chart)
+
+On the left side are the types of tournaments, and the value in front of each one is the number of points the winner of that tournament will receive.
+
+What I wanted to know is whether the system you’re planning to develop works in a similar way or if it’s even better—so I can decide whether to base the project on your system or have you develop it entirely according to each client’s specific needs
+
+Regarding the structure you’re currently working on, I’d like to add a functionality that is very important for us.
+This feature allows all athletes who register on the platform to find nearby players to play with—either people in their same area or state, or even when they travel to another state, they can find players in that location.
+The system should send a notification (via text message and email) to the person interested in playing, once the system finds a nearby match, and notify both players.(important)
+
+I’m going to share this page with you so you can review it and see how this functionality works.
+It also allows athletes to find coaches near them, for those who want to learn how to play pickleball
+
+https://www.playyourcourt.com/tennis-community
+
+I’ve been researching the development of this functionality, and in some cases it requires API integration with Google, which can generate a cost per use.
+We would like to know if there’s any method to implement it without incurring costs, and if not, then we’ll need to consider that this feature will have a cost—or that it could be included as part of a premium feature package for players
+
+Let me check the topic of text messages with Jorge to see if it's a necessary functionality or if we can put it on hold for now.
+
+
+
+
+
+
