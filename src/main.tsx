@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { store } from './store'
 import App from './App.tsx'
 import './index.css'
+import './lib/animations'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

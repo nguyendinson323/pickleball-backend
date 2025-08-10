@@ -1,0 +1,22 @@
+Here’s the **after-login tab structure** for a typical **Player account**, separated into **Free** and **Premium** levels (you can adapt this model for Coaches, Clubs, etc.):
+
+---
+
+### 🎾 **Player Dashboard Tabs – After Login**
+
+| Tab Name          | Description                                                           | Free | Premium / Elite |
+| ----------------- | --------------------------------------------------------------------- | :--: | :-------------: |
+| **Dashboard**     | Overview of profile, latest news, upcoming tournaments, quick actions |   ✅  |        ✅        |
+| **Account**       | Edit personal details, profile photo, password                        |   ✅  |        ✅        |
+| **Inbox**         | Messages and announcements from federation, state, clubs              |   ✅  |        ✅        |
+| **Credential**    | Digital player ID with NRTP level, ranking, QR code                   |   ✅  |        ✅        |
+| **Tournaments**   | View and register for tournaments                                     |   ✅  |        ✅        |
+| **Rankings**      | View national/state rankings                                          |   ✅  |        ✅        |
+| **Connection**    | Search for players nearby to play with                                |   ❌  |        ✅        |
+| **Notifications** | SMS/email match alerts                                                |   ❌  |        ✅        |
+| **Courts**        | View & reserve courts via club/partner microsites                     |   ❌  |        ✅        |
+| **Payments**      | View affiliation history, renew membership                            |   ✅  |        ✅        |
+
+---
+
+You can do **the same table for Coaches, Clubs, Partners, and States** so all roles have their Free vs Premium tab layout mapped. That will make your site structure crystal clear.

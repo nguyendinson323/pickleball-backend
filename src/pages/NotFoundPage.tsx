@@ -1,52 +1,31 @@
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/button'
-import { motion } from 'framer-motion';
-import { animationConfigs, getAnimationVariants } from '../lib/animations';
+import { useAnimation } from '../hooks/useAnimation'
 
 const NotFoundPage = () => {
+  const { elementRef: titleRef } = useAnimation();
+  const { elementRef: subtitleRef } = useAnimation();
+  const { elementRef: descriptionRef } = useAnimation();
+  const { elementRef: buttonRef } = useAnimation();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <motion.div 
-        className="text-center"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.2,
-              delayChildren: 0.1
-            }
-          }
-        }}
-      >
-        <motion.h1 
-          className="text-6xl font-bold text-gray-900 mb-4"
-          variants={getAnimationVariants('up', 0.8, 0.1)}
-        >
+      <div className="text-center">
+        <h1 ref={titleRef} className="animate-on-scroll text-6xl font-bold text-gray-900 mb-4">
           404
-        </motion.h1>
-        <motion.h2 
-          className="text-2xl font-semibold text-gray-700 mb-4"
-          variants={getAnimationVariants('up', 0.7, 0.3)}
-        >
+        </h1>
+        <h2 ref={subtitleRef} className="animate-on-scroll text-2xl font-semibold text-gray-700 mb-4">
           Page Not Found
-        </motion.h2>
-        <motion.p 
-          className="text-gray-600 mb-8"
-          variants={getAnimationVariants('up', 0.7, 0.5)}
-        >
+        </h2>
+        <p ref={descriptionRef} className="animate-on-scroll text-gray-600 mb-8">
           The page you're looking for doesn't exist.
-        </motion.p>
-        <motion.div
-          variants={getAnimationVariants('up', 0.7, 0.7)}
-        >
+        </p>
+        <div ref={buttonRef} className="animate-on-scroll">
           <Link to="/">
-            <Button>Go Home</Button>
+            <Button className="hover:scale-105 transition-transform duration-300">Go Home</Button>
           </Link>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   )
 }

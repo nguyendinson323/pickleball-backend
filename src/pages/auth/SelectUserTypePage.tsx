@@ -4,15 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { motion } from 'framer-motion';
-import { getAnimationVariants } from '../../lib/animations';
 import { 
   User, 
   Users, 
   Building2, 
   Handshake, 
-  MapPin, 
-  Globe,
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
@@ -49,22 +45,6 @@ const userTypes = [
     icon: Handshake,
     color: 'bg-orange-500',
     features: ['Equipment sales', 'Sponsorship opportunities', 'Business networking', 'Event partnerships']
-  },
-  {
-    type: 'state',
-    title: 'State Federation',
-    description: 'Manage state-level tournaments and regulations',
-    icon: MapPin,
-    color: 'bg-red-500',
-    features: ['State tournaments', 'Regulation management', 'Regional rankings', 'Federation oversight']
-  },
-  {
-    type: 'federation',
-    title: 'National Federation',
-    description: 'National-level governance and major tournaments',
-    icon: Globe,
-    color: 'bg-indigo-500',
-    features: ['National tournaments', 'Policy making', 'International relations', 'Major event hosting']
   }
 ];
 
@@ -88,32 +68,22 @@ const SelectUserTypePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.7, 0.1)}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8">
+          <h1 className="animate-on-scroll text-4xl font-bold text-gray-900 mb-4">
             Choose Your Account Type
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="animate-on-scroll text-xl text-gray-600 max-w-2xl mx-auto">
             Select the type of account that best describes your role in the pickleball community
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
           {userTypes.map((userType, index) => {
             const IconComponent = userType.icon;
             return (
-              <motion.div
-                key={userType.type}
-                variants={getAnimationVariants('up', 0.7, 0.2 + index * 0.1)}
-                initial="hidden"
-                animate="visible"
-              >
+              <div key={userType.type}>
                 <Card 
-                  className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                  className={`animate-on-scroll card cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
                     selectedType === userType.type 
                       ? 'ring-2 ring-blue-500 bg-blue-50' 
                       : 'hover:bg-gray-50'
@@ -122,19 +92,19 @@ const SelectUserTypePage = () => {
                 >
                   <CardHeader className="text-center pb-4">
                     <div className={`w-16 h-16 rounded-full ${userType.color} flex items-center justify-center mx-auto mb-4`}>
-                      <IconComponent className="w-8 h-8 text-white" />
+                      <IconComponent className="animate-on-scroll w-8 h-8 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-semibold text-gray-900">
+                    <CardTitle className="animate-on-scroll text-xl font-semibold text-gray-900">
                       {userType.title}
                     </CardTitle>
-                    <CardDescription className="text-gray-600">
+                    <CardDescription className="animate-on-scroll text-gray-600">
                       {userType.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
                       {userType.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center text-sm text-gray-600">
+                        <li key={featureIndex} className="animate-on-scroll flex items-center text-sm text-gray-600">
                           <div className={`w-2 h-2 rounded-full ${userType.color} mr-3`}></div>
                           {feature}
                         </li>
@@ -142,21 +112,16 @@ const SelectUserTypePage = () => {
                     </ul>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        <motion.div
-          variants={getAnimationVariants('up', 0.7, 0.8)}
-          initial="hidden"
-          animate="visible"
-          className="flex justify-between items-center max-w-md mx-auto"
-        >
+        <div className="flex justify-between items-center max-w-md mx-auto">
           <Button
             variant="outline"
             onClick={handleBack}
-            className="flex items-center gap-2"
+            className="animate-on-scroll flex items-center gap-2 hover:scale-105 transition-transform duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -165,12 +130,12 @@ const SelectUserTypePage = () => {
           <Button
             onClick={handleContinue}
             disabled={!selectedType}
-            className="flex items-center gap-2"
+            className="animate-on-scroll flex items-center gap-2 hover:scale-105 transition-transform duration-300"
           >
             Continue
             <ArrowRight className="w-4 h-4" />
           </Button>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

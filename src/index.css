@@ -126,13 +126,254 @@
   }
 }
 
-@layer components {
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px) scale(1);
+/* 🎯 PERFORMANCE-OPTIMIZED ANIMATION SYSTEM */
+/* Using only GPU-friendly properties: transform, opacity */
+
+@layer utilities {
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
-    50% {
-      transform: translateY(-20px) scale(1.02);
-    }
+  }
+
+  /* Base animation classes - no delays, immediate start */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  .animate-on-scroll.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 🎭 DIFFERENT ANIMATIONS FOR EVERY ELEMENT TYPE */
+
+  /* 1️⃣ DIV ELEMENTS - Slide up from bottom */
+  div.animate-on-scroll {
+    transform: translateY(40px);
+  }
+
+  /* 2️⃣ IMG ELEMENTS - Scale in from center */
+  img.animate-on-scroll {
+    transform: scale(0.8);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  img.animate-on-scroll.animate-in {
+    transform: scale(1);
+  }
+
+  /* 3️⃣ H1 ELEMENTS - Slide down from top */
+  h1.animate-on-scroll {
+    transform: translateY(-40px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  h1.animate-on-scroll.animate-in {
+    transform: translateY(0);
+  }
+
+  /* 4️⃣ H2 ELEMENTS - Slide in from left */
+  h2.animate-on-scroll {
+    transform: translateX(-50px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  h2.animate-on-scroll.animate-in {
+    transform: translateX(0);
+  }
+
+  /* 5️⃣ H3 ELEMENTS - Slide in from right */
+  h3.animate-on-scroll {
+    transform: translateX(50px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  h3.animate-on-scroll.animate-in {
+    transform: translateX(0);
+  }
+
+  /* 6️⃣ H4, H5, H6 ELEMENTS - Rotate in */
+  h4.animate-on-scroll,
+  h5.animate-on-scroll,
+  h6.animate-on-scroll {
+    transform: rotate(-5deg) scale(0.9);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  h4.animate-on-scroll.animate-in,
+  h5.animate-on-scroll.animate-in,
+  h6.animate-on-scroll.animate-in {
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* 7️⃣ P ELEMENTS - Fade in with slight bounce */
+  p.animate-on-scroll {
+    transform: translateY(20px) scale(0.95);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  p.animate-on-scroll.animate-in {
+    transform: translateY(0) scale(1);
+  }
+
+  /* 8️⃣ INPUT ELEMENTS - Slide up with glow */
+  input.animate-on-scroll {
+    transform: translateY(25px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, box-shadow 0.4s ease-out;
+  }
+
+  input.animate-on-scroll.animate-in {
+    transform: translateY(0);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+
+  /* 9️⃣ BUTTON ELEMENTS - Bounce in from bottom */
+  button.animate-on-scroll {
+    transform: translateY(60px) scale(0.8);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  button.animate-on-scroll.animate-in {
+    transform: translateY(0) scale(1);
+  }
+
+  /* 🎨 SPECIALIZED ANIMATIONS FOR SPECIFIC COMPONENTS */
+
+  /* Hero Section - Cascade effect without delays */
+  .hero-title.animate-on-scroll {
+    transform: translateY(-60px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .hero-subtitle.animate-on-scroll {
+    transform: translateY(-40px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .hero-cta.animate-on-scroll {
+    transform: translateY(80px) scale(0.7);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  /* Card Elements - Flip in effect */
+  .card.animate-on-scroll {
+    transform: rotateY(90deg) scale(0.8);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .card.animate-on-scroll.animate-in {
+    transform: rotateY(0deg) scale(1);
+  }
+
+  /* Testimonial Elements - Slide in from sides */
+  .testimonial-left.animate-on-scroll {
+    transform: translateX(-80px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .testimonial-right.animate-on-scroll {
+    transform: translateX(80px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  /* Feature Elements - Zoom in from center */
+  .feature.animate-on-scroll {
+    transform: scale(0.6);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .feature.animate-on-scroll.animate-in {
+    transform: scale(1);
+  }
+
+  /* Navigation Elements - Slide down from top */
+  .nav-item.animate-on-scroll {
+    transform: translateY(-30px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  /* Footer Elements - Slide up from bottom */
+  .footer-item.animate-on-scroll {
+    transform: translateY(50px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  /* 🎯 HOVER EFFECTS - Subtle interactions */
+  
+  /* Card hover effects */
+  .card:hover {
+    transform: translateY(-8px) scale(1.02);
+    transition: transform 0.2s ease-out;
+  }
+
+  /* Button hover effects */
+  button:hover {
+    transform: translateY(-2px) scale(1.05);
+    transition: transform 0.2s ease-out;
+  }
+
+  /* Image hover effects */
+  img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-out;
+  }
+
+  /* Input focus effects */
+  input:focus {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-out;
+  }
+
+  /* 🚀 PERFORMANCE OPTIMIZATIONS */
+  
+  /* Use will-change for elements that will animate */
+  .animate-on-scroll {
+    will-change: transform, opacity;
+  }
+
+  /* Hardware acceleration */
+  .animate-on-scroll {
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* 📱 MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  /* Reduce animation intensity on mobile */
+  .animate-on-scroll {
+    transform: translateY(20px);
+  }
+  
+  h1.animate-on-scroll {
+    transform: translateY(-20px);
+  }
+  
+  .hero-title.animate-on-scroll {
+    transform: translateY(-30px);
+  }
+  
+  .hero-cta.animate-on-scroll {
+    transform: translateY(40px) scale(0.8);
+  }
+  
+  /* Simpler hover effects on mobile */
+  .card:hover,
+  button:hover,
+  img:hover {
+    transform: none;
   }
 }

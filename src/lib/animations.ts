@@ -1,194 +1,251 @@
-import { easeOut } from "framer-motion";
+/**
+ * 🎯 Performance-Optimized Animation System
+ * Uses Intersection Observer API for scroll-triggered animations
+ * No delays, immediate start when elements enter viewport
+ */
 
-// Global animation configurations for different components
-export const animationConfigs = {
-  // Hero section animations
+// Export animation classes for components
+export const componentAnimations = {
   hero: {
-    title: { direction: 'up', duration: 0.8, delay: 0.2 },
-    subtitle: { direction: 'up', duration: 0.7, delay: 0.4 },
-    cta: { direction: 'up', duration: 0.6, delay: 0.6 }
+    title: "animate-on-scroll hero-title",
+    subtitle: "animate-on-scroll hero-subtitle",
+    cta: "animate-on-scroll hero-cta"
   },
-
-  // Feature cards animations
   features: [
-    { direction: 'left', duration: 0.7, delay: 0.1 },
-    { direction: 'up', duration: 0.8, delay: 0.2 },
-    { direction: 'right', duration: 0.6, delay: 0.3 },
-    { direction: 'down', duration: 0.9, delay: 0.4 }
+    "animate-on-scroll feature",
+    "animate-on-scroll feature",
+    "animate-on-scroll feature",
+    "animate-on-scroll feature",
+    "animate-on-scroll feature",
+    "animate-on-scroll feature"
   ],
-
-  // Testimonial animations
+  cards: [
+    "animate-on-scroll card",
+    "animate-on-scroll card",
+    "animate-on-scroll card"
+  ],
   testimonials: [
-    { direction: 'left', duration: 0.8, delay: 0.1 },
-    { direction: 'up', duration: 0.7, delay: 0.3 },
-    { direction: 'right', duration: 0.9, delay: 0.2 },
-    { direction: 'down', duration: 0.6, delay: 0.4 },
-    { direction: 'left', duration: 0.7, delay: 0.5 }
+    "animate-on-scroll testimonial-left",
+    "animate-on-scroll testimonial-right",
+    "animate-on-scroll testimonial-left",
+    "animate-on-scroll testimonial-right"
   ],
-
-  // Role benefits animations (from your existing code)
   roleBenefits: {
     images: [
-      { direction: 'left', duration: 0.8, delay: 0.2 },
-      { direction: 'right', duration: 0.6, delay: 0.1 },
-      { direction: 'up', duration: 0.9, delay: 0.3 },
-      { direction: 'down', duration: 0.7, delay: 0.0 },
-      { direction: 'left', duration: 0.5, delay: 0.4 }
+      "animate-on-scroll",
+      "animate-on-scroll",
+      "animate-on-scroll"
     ],
     content: [
-      { direction: 'right', duration: 0.7, delay: 0.4 },
-      { direction: 'left', duration: 0.8, delay: 0.2 },
-      { direction: 'down', duration: 0.6, delay: 0.1 },
-      { direction: 'up', duration: 0.9, delay: 0.3 },
-      { direction: 'right', duration: 0.8, delay: 0.0 }
-    ]
-  },
-
-  // Dashboard animations
-  dashboard: {
-    stats: [
-      { direction: 'up', duration: 0.6, delay: 0.1 },
-      { direction: 'right', duration: 0.7, delay: 0.2 },
-      { direction: 'down', duration: 0.8, delay: 0.3 },
-      { direction: 'left', duration: 0.5, delay: 0.4 }
-    ],
-    cards: [
-      { direction: 'left', duration: 0.7, delay: 0.1 },
-      { direction: 'up', duration: 0.8, delay: 0.2 },
-      { direction: 'right', duration: 0.6, delay: 0.3 }
-    ]
-  },
-
-  // Tournament animations
-  tournaments: [
-    { direction: 'up', duration: 0.7, delay: 0.1 },
-    { direction: 'left', duration: 0.8, delay: 0.2 },
-    { direction: 'right', duration: 0.6, delay: 0.3 },
-    { direction: 'down', duration: 0.9, delay: 0.4 },
-    { direction: 'up', duration: 0.5, delay: 0.5 },
-    { direction: 'left', duration: 0.7, delay: 0.6 }
-  ],
-
-  // Club animations
-  clubs: [
-    { direction: 'right', duration: 0.8, delay: 0.1 },
-    { direction: 'down', duration: 0.6, delay: 0.2 },
-    { direction: 'left', duration: 0.9, delay: 0.3 },
-    { direction: 'up', duration: 0.7, delay: 0.4 },
-    { direction: 'right', duration: 0.5, delay: 0.5 }
-  ],
-
-  // Ranking animations
-  rankings: [
-    { direction: 'up', duration: 0.6, delay: 0.1 },
-    { direction: 'right', duration: 0.8, delay: 0.2 },
-    { direction: 'down', duration: 0.7, delay: 0.3 },
-    { direction: 'left', duration: 0.9, delay: 0.4 },
-    { direction: 'up', duration: 0.5, delay: 0.5 }
-  ],
-
-  // Banner animations
-  banners: [
-    { direction: 'left', duration: 0.8, delay: 0.1 },
-    { direction: 'up', duration: 0.7, delay: 0.2 },
-    { direction: 'right', duration: 0.9, delay: 0.3 },
-    { direction: 'down', duration: 0.6, delay: 0.4 }
-  ],
-
-  // Player finder animations
-  playerFinder: {
-    search: { direction: 'up', duration: 0.7, delay: 0.1 },
-    results: [
-      { direction: 'left', duration: 0.6, delay: 0.1 },
-      { direction: 'up', duration: 0.7, delay: 0.2 },
-      { direction: 'right', duration: 0.8, delay: 0.3 }
-    ],
-    nearby: [
-      { direction: 'right', duration: 0.7, delay: 0.1 },
-      { direction: 'up', duration: 0.6, delay: 0.2 },
-      { direction: 'left', duration: 0.8, delay: 0.3 }
-    ]
-  },
-
-  // Court reservation animations
-  courtReservations: {
-    courts: [
-      { direction: 'up', duration: 0.7, delay: 0.1 },
-      { direction: 'left', duration: 0.8, delay: 0.2 },
-      { direction: 'right', duration: 0.6, delay: 0.3 },
-      { direction: 'down', duration: 0.9, delay: 0.4 }
-    ],
-    calendar: { direction: 'up', duration: 0.8, delay: 0.2 },
-    timeSlots: [
-      { direction: 'left', duration: 0.5, delay: 0.1 },
-      { direction: 'right', duration: 0.6, delay: 0.2 },
-      { direction: 'up', duration: 0.7, delay: 0.3 }
-    ]
-  },
-
-  // Form animations
-  forms: {
-    fields: [
-      { direction: 'left', duration: 0.6, delay: 0.1 },
-      { direction: 'right', duration: 0.7, delay: 0.2 },
-      { direction: 'up', duration: 0.8, delay: 0.3 },
-      { direction: 'down', duration: 0.5, delay: 0.4 }
-    ],
-    submit: { direction: 'up', duration: 0.7, delay: 0.5 }
-  },
-
-  // Navigation animations
-  navigation: {
-    menu: { direction: 'down', duration: 0.6, delay: 0.1 },
-    items: [
-      { direction: 'left', duration: 0.5, delay: 0.1 },
-      { direction: 'right', duration: 0.6, delay: 0.2 },
-      { direction: 'up', duration: 0.7, delay: 0.3 },
-      { direction: 'down', duration: 0.8, delay: 0.4 }
+      "animate-on-scroll",
+      "animate-on-scroll", 
+      "animate-on-scroll"
     ]
   }
 };
 
-// Helper function to get animation variants
-export const getAnimationVariants = (direction: string, duration: number, delay: number, type: 'image' | 'content' | 'default' = 'default') => {
-  const distance = type === 'image' ? 100 : type === 'content' ? 50 : 80;
-  
-  return {
-    hidden: {
-      x: direction === 'left' ? -distance : direction === 'right' ? distance : 0,
-      y: direction === 'up' ? -distance : direction === 'down' ? distance : 0,
-      opacity: 0,
-      scale: type === 'image' ? 0.8 : 1
-    },
-    visible: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration,
-        delay,
-        ease: easeOut
+export class AnimationController {
+  private observer: IntersectionObserver;
+  private animatedElements: Set<Element> = new Set();
+
+  constructor() {
+    // Create intersection observer with performance-optimized options
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !this.animatedElements.has(entry.target)) {
+            this.animateElement(entry.target);
+            this.animatedElements.add(entry.target);
+          }
+        });
+      },
+      {
+        // Performance-optimized thresholds
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px', // Start animation slightly before element fully enters
+        root: null // Use viewport as root
       }
-    }
-  };
-};
+    );
+  }
 
-// Helper function to get staggered animation variants for lists
-export const getStaggeredVariants = (configs: Array<{ direction: string; duration: number; delay: number }>, type: 'image' | 'content' | 'default' = 'default') => {
-  return configs.map((config, index) => 
-    getAnimationVariants(config.direction, config.duration, config.delay + (index * 0.1), type)
-  );
-};
+  /**
+   * Initialize animations for all elements with animate-on-scroll class
+   */
+  public init(): void {
+    // Find all elements that should animate
+    const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+    
+    elementsToAnimate.forEach((element) => {
+      // Add specific classes based on element type for different animations
+      this.addElementTypeClasses(element);
+      
+      // Start observing the element
+      this.observer.observe(element);
+    });
 
-// Container animation variants
-export const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1
+    // Also observe dynamically added elements
+    this.observeDynamicElements();
+  }
+
+  /**
+   * Add specific animation classes based on element type
+   */
+  private addElementTypeClasses(element: Element): void {
+    const tagName = element.tagName.toLowerCase();
+    const className = element.className;
+
+    // Add specific classes for different element types
+    switch (tagName) {
+      case 'h1':
+        if (className.includes('hero')) {
+          element.classList.add('hero-title');
+        }
+        break;
+      case 'h2':
+        if (className.includes('hero')) {
+          element.classList.add('hero-subtitle');
+        }
+        break;
+      case 'button':
+        if (className.includes('hero') || className.includes('cta')) {
+          element.classList.add('hero-cta');
+        }
+        break;
+      case 'div':
+        if (className.includes('card')) {
+          element.classList.add('card');
+        } else if (className.includes('feature')) {
+          element.classList.add('feature');
+        } else if (className.includes('testimonial')) {
+          // Alternate left/right for testimonials
+          const testimonialIndex = Array.from(document.querySelectorAll('.testimonial')).indexOf(element);
+          element.classList.add(testimonialIndex % 2 === 0 ? 'testimonial-left' : 'testimonial-right');
+        } else if (className.includes('nav')) {
+          element.classList.add('nav-item');
+        } else if (className.includes('footer')) {
+          element.classList.add('footer-item');
+        }
+        break;
     }
   }
-}; 
+
+  /**
+   * Trigger animation for a specific element
+   */
+  private animateElement(element: Element): void {
+    // Add the animate-in class to trigger the CSS animation
+    element.classList.add('animate-in');
+    
+    // Optional: Add a subtle entrance effect
+    if (element instanceof HTMLElement) {
+      element.style.animationPlayState = 'running';
+    }
+  }
+
+  /**
+   * Observe dynamically added elements
+   */
+  private observeDynamicElements(): void {
+    // Use MutationObserver to watch for new elements
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            
+            // Check if the new element has the animate-on-scroll class
+            if (element.classList.contains('animate-on-scroll')) {
+              this.addElementTypeClasses(element);
+              this.observer.observe(element);
+            }
+            
+            // Check child elements
+            const childElements = element.querySelectorAll('.animate-on-scroll');
+            childElements.forEach((child) => {
+              this.addElementTypeClasses(child);
+              this.observer.observe(child);
+            });
+          }
+        });
+      });
+    });
+
+    // Start observing the entire document
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  /**
+   * Manually trigger animation for an element
+   */
+  public animateElementNow(element: Element): void {
+    if (!this.animatedElements.has(element)) {
+      this.animateElement(element);
+      this.animatedElements.add(element);
+    }
+  }
+
+  /**
+   * Reset animations for testing
+   */
+  public reset(): void {
+    this.animatedElements.clear();
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    elements.forEach((element) => {
+      element.classList.remove('animate-in');
+    });
+  }
+
+  /**
+   * Clean up observer
+   */
+  public destroy(): void {
+    this.observer.disconnect();
+    this.animatedElements.clear();
+  }
+}
+
+/**
+ * 🚀 Quick initialization function
+ */
+export function initAnimations(): AnimationController {
+  const controller = new AnimationController();
+  controller.init();
+  return controller;
+}
+
+/**
+ * 🎭 Utility function to add animation class to any element
+ */
+export function addAnimationClass(element: Element, additionalClass?: string): void {
+  element.classList.add('animate-on-scroll');
+  if (additionalClass) {
+    element.classList.add(additionalClass);
+  }
+}
+
+/**
+ * 📱 Check if device prefers reduced motion
+ */
+export function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * 🎯 Auto-initialize animations when DOM is ready
+ */
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!prefersReducedMotion()) {
+        initAnimations();
+      }
+    });
+  } else {
+    if (!prefersReducedMotion()) {
+      initAnimations();
+    }
+  }
+} 

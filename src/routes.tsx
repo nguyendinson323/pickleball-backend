@@ -1,4 +1,3 @@
-import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import SelectUserTypePage from "./pages/auth/SelectUserTypePage";
 import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
@@ -14,6 +13,13 @@ import BannersPage from "./pages/BannersPage";
 import PlayerFinderPage from "./pages/PlayerFinderPage";
 import CourtReservationsPage from "./pages/CourtReservationsPage";
 import Index from "./pages/Index";
+import About from "./pages/home/About";
+import Events from "./pages/home/Events";
+import Rankings from "./pages/home/Rankings";
+import Membership from "./pages/home/Membership";
+import FindCourt from "./pages/home/FindCourt";
+import News from "./pages/home/News";
+import Contact from "./pages/home/Contact";
 
 const routes = [
   {
@@ -23,9 +29,45 @@ const routes = [
     public: true
   },
   {
-    key: 'home',
-    path: '/home',
-    element: <HomePage />,
+    key: 'about',
+    path: '/about',
+    element: <About />,
+    public: true
+  },
+  {
+    key: 'events',
+    path: '/events',
+    element: <Events />,
+    public: true
+  },
+  {
+    key: 'rankings',
+    path: '/rankings',
+    element: <Rankings />,
+    public: true
+  },
+  {
+    key: 'membership',
+    path: '/membership',
+    element: <Membership />,
+    public: true
+  },
+  {
+    key: 'find-court',
+    path: '/find-court',
+    element: <FindCourt />,
+    public: true
+  },
+  {
+    key: 'news',
+    path: '/news',
+    element: <News />,
+    public: true
+  },
+  {
+    key: 'contact',
+    path: '/contact',
+    element: <Contact />,
     public: true
   },
   {
@@ -73,7 +115,7 @@ const routes = [
   {
     key: 'rankings',
     path: '/rankings',
-    element: <RankingsPage />,
+    element: <Rankings />,
     public: true
   },
   {

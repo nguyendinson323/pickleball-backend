@@ -4,11 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import { registerUser } from '../../store/slices/authSlice';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { motion } from 'framer-motion';
-import { getAnimationVariants } from '../../lib/animations';
 import { ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -54,8 +51,8 @@ const RequiredFieldsPage = () => {
       toast.error('Please enter a valid email address');
       return false;
     }
-    if (!formData.password || formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+    if (!formData.password || formData.password.length < 3) {
+      toast.error('Password must be at least 3 characters long');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -136,44 +133,32 @@ const RequiredFieldsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.7, 0.1)}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8">
+          <h1 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-4">
             Required Information
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="animate-on-scroll text-lg text-gray-600">
             Please provide the essential information to create your {userType} account
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={getAnimationVariants('up', 0.7, 0.2)}
-          initial="hidden"
-          animate="visible"
-        >
-          <Card className="w-full">
+        <div>
+          <Card className="animate-on-scroll w-full">
             <CardHeader>
-              <CardTitle className="text-xl">Account Details</CardTitle>
-              <CardDescription>
+              <CardTitle className="animate-on-scroll text-xl">Account Details</CardTitle>
+              <CardDescription className="animate-on-scroll">
                 These fields are required to create your account
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {getRequiredFields().map((field, index) => (
-                <motion.div
+                <div
                   key={field.name}
-                  variants={getAnimationVariants('left', 0.6, 0.3 + index * 0.1)}
-                  initial="hidden"
-                  animate="visible"
                   className="space-y-2"
                 >
-                  <Label htmlFor={field.name}>{field.label}</Label>
+                  <Label htmlFor={field.name} className="animate-on-scroll">{field.label}</Label>
                   <div className="relative">
-                    <Input
+                    <input
                       id={field.name}
                       name={field.name}
                       type={
@@ -181,15 +166,16 @@ const RequiredFieldsPage = () => {
                           ? (field.name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password'))
                           : field.type
                       }
-                      placeholder={field.placeholder}
+                      // placeholder={field.placeholder}
                       value={formData[field.name as keyof typeof formData]}
                       onChange={handleChange}
                       required
+                      className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     {field.type === 'password' && (
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 hover:scale-110 transition-transform duration-300"
                         onClick={() => {
                           if (field.name === 'password') {
                             setShowPassword(!showPassword);
@@ -205,22 +191,17 @@ const RequiredFieldsPage = () => {
                       </button>
                     )}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={getAnimationVariants('up', 0.7, 0.8)}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8"
-        >
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <Button
             variant="outline"
             onClick={handleBack}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="animate-on-scroll flex items-center gap-2 w-full sm:w-auto hover:scale-105 transition-transform duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -231,7 +212,7 @@ const RequiredFieldsPage = () => {
               variant="outline"
               onClick={handleSkipToRegister}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             >
               {loading ? 'Creating Account...' : 'Skip & Register Now'}
             </Button>
@@ -239,13 +220,13 @@ const RequiredFieldsPage = () => {
             <Button
               onClick={handleContinue}
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="animate-on-scroll flex items-center gap-2 w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             >
               Continue
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

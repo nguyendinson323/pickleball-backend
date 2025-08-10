@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Play, Pause, ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { animationConfigs, getAnimationVariants } from "@/lib/animations";
+import { componentAnimations } from "@/lib/animations";
 import { useState, useEffect, useCallback } from "react";
 import sarahImg from "@/assets/testimonial-sarah.jpg";
 import michaelImg from "@/assets/testimonial-michael.jpg";
@@ -90,86 +89,70 @@ const Testimonials = () => {
     <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <motion.h2 
-            className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
+          <h2 
+            className={`text-3xl lg:text-4xl font-bold text-gray-900 mb-4 ${componentAnimations.hero.title}`}
           >
             What Our Community Says
-          </motion.h2>
-          <motion.p 
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            viewport={{ once: true }}
+          </h2>
+          <p 
+            className={`text-lg text-gray-600 max-w-2xl mx-auto ${componentAnimations.hero.subtitle}`}
           >
             Join thousands of players, coaches, and facility managers who trust our platform
-          </motion.p>
+          </p>
         </div>
 
         <div className="relative max-w-4xl mx-auto">
           {/* Carousel Container */}
           <div className="relative overflow-hidden rounded-2xl bg-white shadow-xl">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={current}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="p-8 lg:p-12"
-              >
-                <div className="flex flex-col lg:flex-row items-center gap-8">
-                  {/* Testimonial Image */}
-                  <div className="flex-shrink-0">
-                    <motion.div
-                      className="w-24 h-24 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-4 ring-blue-100"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <img
-                        src={testimonials[current].image}
-                        alt={testimonials[current].author}
-                        className="w-full h-full object-cover"
-                      />
-                    </motion.div>
-                  </div>
-
-                  {/* Testimonial Content */}
-                  <div className="flex-1 text-center lg:text-left">
-                    {/* Stars */}
-                    <div className="flex justify-center lg:justify-start mb-4">
-                      {[...Array(testimonials[current].rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-5 h-5 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-
-                    {/* Quote */}
-                    <blockquote className="text-lg lg:text-xl text-gray-700 mb-6 italic leading-relaxed">
-                      "{testimonials[current].quote}"
-                    </blockquote>
-
-                    {/* Author Info */}
-                    <div>
-                      <cite className="not-italic">
-                        <div className="font-semibold text-gray-900 text-lg">
-                          {testimonials[current].author}
-                        </div>
-                        <div className="text-gray-600">
-                          {testimonials[current].title}
-                        </div>
-                      </cite>
-                    </div>
+            <div
+              key={current}
+              className="p-8 lg:p-12 animate-in slide-in-from-right-4 duration-500"
+            >
+              <div className="flex flex-col lg:flex-row items-center gap-8">
+                {/* Testimonial Image */}
+                <div className="flex-shrink-0">
+                  <div
+                    className="w-24 h-24 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-4 ring-blue-100 hover:scale-105 transition-transform duration-200"
+                  >
+                    <img
+                      src={testimonials[current].image}
+                      alt={testimonials[current].author}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+
+                {/* Testimonial Content */}
+                <div className="flex-1 text-center lg:text-left">
+                  {/* Stars */}
+                  <div className="flex justify-center lg:justify-start mb-4">
+                    {[...Array(testimonials[current].rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-5 h-5 text-yellow-400 fill-current"
+                      />
+                    ))}
+                  </div>
+
+                  {/* Quote */}
+                  <blockquote className="text-lg lg:text-xl text-gray-700 mb-6 italic leading-relaxed">
+                    "{testimonials[current].quote}"
+                  </blockquote>
+
+                  {/* Author Info */}
+                  <div>
+                    <cite className="not-italic">
+                      <div className="font-semibold text-gray-900 text-lg">
+                        {testimonials[current].author}
+                      </div>
+                      <div className="text-gray-600">
+                        {testimonials[current].title}
+                      </div>
+                    </cite>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Navigation Controls */}
             <div className="absolute top-1/2 -translate-y-1/2 left-4">

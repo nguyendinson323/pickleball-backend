@@ -9,8 +9,6 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { motion } from 'framer-motion';
-import { getAnimationVariants } from '../../lib/animations';
 import { ArrowLeft, CheckCircle, User, MapPin, Phone, Globe, Calendar, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -154,14 +152,11 @@ const OptionalFieldsPage = () => {
     const IconComponent = field.icon;
     
     return (
-      <motion.div
+      <div
         key={field.name}
-        variants={getAnimationVariants('left', 0.6, 0.3 + index * 0.1)}
-        initial="hidden"
-        animate="visible"
         className="space-y-2"
       >
-        <Label htmlFor={field.name} className="flex items-center gap-2">
+        <Label htmlFor={field.name} className="animate-on-scroll flex items-center gap-2">
           <IconComponent className="w-4 h-4" />
           {field.label}
         </Label>
@@ -171,7 +166,7 @@ const OptionalFieldsPage = () => {
             value={formData[field.name as keyof typeof formData]}
             onValueChange={(value) => handleSelectChange(field.name, value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="animate-on-scroll">
               <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
@@ -190,6 +185,7 @@ const OptionalFieldsPage = () => {
             value={formData[field.name as keyof typeof formData]}
             onChange={handleChange}
             rows={3}
+            className="animate-on-scroll"
           />
         ) : (
           <Input
@@ -199,42 +195,34 @@ const OptionalFieldsPage = () => {
             placeholder={field.placeholder}
             value={formData[field.name as keyof typeof formData]}
             onChange={handleChange}
+            className="animate-on-scroll"
           />
         )}
-      </motion.div>
+      </div>
     );
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.7, 0.1)}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8">
+          <h1 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-4">
             Complete Your Profile
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="animate-on-scroll text-lg text-gray-600">
             Add optional information to enhance your {userType} profile
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <motion.div
-            variants={getAnimationVariants('up', 0.7, 0.2)}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="w-full">
+          <div>
+            <Card className="animate-on-scroll w-full">
               <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
+                <CardTitle className="animate-on-scroll text-xl flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   Personal Information
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="animate-on-scroll">
                   Help others learn more about you
                 </CardDescription>
               </CardHeader>
@@ -244,20 +232,16 @@ const OptionalFieldsPage = () => {
                 )}
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={getAnimationVariants('up', 0.7, 0.3)}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="w-full">
+          <div>
+            <Card className="animate-on-scroll w-full">
               <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
+                <CardTitle className="animate-on-scroll text-xl flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   Additional Details
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="animate-on-scroll">
                   Additional information for your profile
                 </CardDescription>
               </CardHeader>
@@ -267,19 +251,14 @@ const OptionalFieldsPage = () => {
                 )}
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          variants={getAnimationVariants('up', 0.7, 0.8)}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8"
-        >
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <Button
             variant="outline"
             onClick={handleBack}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="animate-on-scroll flex items-center gap-2 w-full sm:w-auto hover:scale-105 transition-transform duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -290,7 +269,7 @@ const OptionalFieldsPage = () => {
               variant="outline"
               onClick={handleSkip}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             >
               {loading ? 'Creating Account...' : 'Skip & Register Now'}
             </Button>
@@ -298,12 +277,12 @@ const OptionalFieldsPage = () => {
             <Button
               onClick={handleRegister}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             >
               {loading ? 'Creating Account...' : 'Complete Registration'}
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

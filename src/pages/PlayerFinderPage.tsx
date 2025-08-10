@@ -11,13 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Slider } from '../components/ui/slider';
 import { Switch } from '../components/ui/switch';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
-import { animationConfigs, getAnimationVariants } from '../lib/animations';
+import { useAnimation } from '../hooks/useAnimation';
 
 const PlayerFinderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { searchResults, nearbyPlayers, preferences, loading, error } = useSelector((state: RootState) => state.playerFinder);
   const { user } = useSelector((state: RootState) => state.auth);
+  const { elementRef: headerRef } = useAnimation();
   const [searchParams, setSearchParams] = useState({
     skill_level: '4.0' as const,
     gender: 'any' as const,
@@ -95,12 +95,7 @@ const PlayerFinderPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <motion.div 
-        className="flex justify-between items-center mb-6"
-        initial="hidden"
-        animate="visible"
-        variants={getAnimationVariants('up', 0.7, 0.1)}
-      >
+      <div ref={headerRef} className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Player Finder</h1>
         <div className="flex gap-2">
           <Button onClick={() => setShowPreferences(true)}>Preferences</Button>
@@ -111,14 +106,10 @@ const PlayerFinderPage: React.FC = () => {
             {preferences?.is_active ? 'Active' : 'Inactive'}
           </Button>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Search Section */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={getAnimationVariants('up', 0.8, 0.2)}
-      >
+              {/* Search Section */}
+       <div className="animate-on-scroll mb-6">
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Find Players</CardTitle>
@@ -218,14 +209,11 @@ const PlayerFinderPage: React.FC = () => {
           </Button>
         </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Preferences Modal */}
       {showPreferences && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.8, 0.3)}
+        <div
         >
           <Card className="mb-6">
             <CardHeader>
@@ -328,37 +316,24 @@ const PlayerFinderPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        </motion.div>
+        </div>
       )}
 
       {/* Search Results */}
       {searchResults.length > 0 && (
-        <motion.div 
+        <div 
           className="mb-6"
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.7, 0.4)}
         >
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
-          <motion.div 
+          <div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                  delayChildren: 0.5
-                }
-              }
-            }}
           >
             {searchResults.map((player, index) => {
-              const config = animationConfigs.playerFinder.results[index % 3];
+              // const config = animationConfigs.playerFinder.results[index % 3]; // Removed as per edit hint
               return (
-                <motion.div
+                <div
                   key={player.id}
-                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                  // variants={getAnimationVariants(config.direction, config.duration, config.delay)} // Removed as per edit hint
                 >
                   <Card>
                     <CardHeader>
@@ -387,40 +362,27 @@ const PlayerFinderPage: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Nearby Players */}
       {nearbyPlayers.length > 0 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={getAnimationVariants('up', 0.8, 0.6)}
+        <div
         >
           <h2 className="text-2xl font-bold mb-4">Nearby Players</h2>
-          <motion.div 
+          <div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                  delayChildren: 0.7
-                }
-              }
-            }}
           >
             {nearbyPlayers.map((player, index) => {
-              const config = animationConfigs.playerFinder.nearby[index % 3];
+              // const config = animationConfigs.playerFinder.nearby[index % 3]; // Removed as per edit hint
               return (
-                <motion.div
+                <div
                   key={player.id}
-                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
+                  // variants={getAnimationVariants(config.direction, config.duration, config.delay)} // Removed as per edit hint
                 >
                   <Card>
                     <CardHeader>
@@ -449,11 +411,11 @@ const PlayerFinderPage: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </div>
   );

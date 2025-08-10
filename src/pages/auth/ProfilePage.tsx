@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { updateUser } from '../../store/slices/usersSlice';
 import { fetchUserRankings } from '../../store/slices/rankingsSlice';
-import { motion } from 'framer-motion';
-import { getAnimationVariants } from '../../lib/animations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -150,35 +148,25 @@ const ProfilePage = () => {
       {/* Header Section */}
       <section className="bg-white shadow-lg rounded-lg mx-4 my-8 py-16">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.1)}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+          <div className="text-center">
+            <h1 className="animate-on-scroll text-4xl md:text-5xl font-bold mb-4 text-gray-900">
               My Profile
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-600">
+            <p className="animate-on-scroll text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-600">
               Manage your account and track your pickleball journey
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Card */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.2)}
-            className="lg:col-span-1"
-          >
-            <Card className="sticky top-8">
+          <div className="lg:col-span-1">
+            <Card className="animate-on-scroll sticky top-8">
               <CardHeader className="text-center">
                 <div className="relative mx-auto mb-4">
-                  <Avatar className="w-24 h-24 mx-auto">
+                  <Avatar className="animate-on-scroll w-24 h-24 mx-auto">
                     <AvatarImage src={user.profile_photo} alt={user.full_name || user.username} />
                     <AvatarFallback className="text-2xl">
                       {getInitials(user.first_name, user.last_name)}
@@ -187,88 +175,83 @@ const ProfilePage = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0"
+                    className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 hover:scale-110 transition-transform duration-300"
                   >
                     <Camera className="w-4 h-4" />
                   </Button>
                 </div>
-                <CardTitle className="text-2xl font-bold">
+                <CardTitle className="animate-on-scroll text-2xl font-bold">
                   {user.full_name || user.username}
                 </CardTitle>
-                <CardDescription className="text-lg">
+                <CardDescription className="animate-on-scroll text-lg">
                   @{user.username}
                 </CardDescription>
                 <div className="flex justify-center mt-4">
-                  <Badge className={getSkillLevelColor(user.skill_level || '')}>
+                  <Badge className={`animate-on-scroll ${getSkillLevelColor(user.skill_level || '')}`}>
                     Level {user.skill_level || 'N/A'}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center text-sm">
+                <div className="animate-on-scroll flex items-center text-sm">
                   <Mail className="w-4 h-4 mr-2 text-gray-500" />
                   <span>{user.email}</span>
                 </div>
                 {user.phone && (
-                  <div className="flex items-center text-sm">
+                  <div className="animate-on-scroll flex items-center text-sm">
                     <Phone className="w-4 h-4 mr-2 text-gray-500" />
                     <span>{user.phone}</span>
                   </div>
                 )}
                 {user.city && user.state && (
-                  <div className="flex items-center text-sm">
+                  <div className="animate-on-scroll flex items-center text-sm">
                     <MapPin className="w-4 h-4 mr-2 text-gray-500" />
                     <span>{user.city}, {user.state}</span>
                   </div>
                 )}
                 {user.date_of_birth && (
-                  <div className="flex items-center text-sm">
+                  <div className="animate-on-scroll flex items-center text-sm">
                     <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                     <span>Born {formatDate(user.date_of_birth)}</span>
                   </div>
                 )}
                 <Separator />
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Member Since:</span>
                     <span>{formatDate(user.created_at)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Status:</span>
                     <Badge className={getMembershipStatusColor(user.membership_status)}>
                       {user.membership_status}
                     </Badge>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Plan:</span>
                     <span className="capitalize">{user.subscription_plan}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Main Content */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.3)}
-            className="lg:col-span-2"
-          >
+          <div className="lg:col-span-2">
             <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="animate-on-scroll grid w-full grid-cols-3">
                 <TabsTrigger value="profile">Profile</TabsTrigger>
                 <TabsTrigger value="rankings">Rankings</TabsTrigger>
                 <TabsTrigger value="stats">Statistics</TabsTrigger>
               </TabsList>
 
               <TabsContent value="profile" className="space-y-6">
-                <Card>
+                <Card className="animate-on-scroll">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle>Personal Information</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="animate-on-scroll">Personal Information</CardTitle>
+                        <CardDescription className="animate-on-scroll">
                           Update your profile information and preferences
                         </CardDescription>
                       </div>
@@ -276,6 +259,7 @@ const ProfilePage = () => {
                         variant={isEditing ? "outline" : "default"}
                         size="sm"
                         onClick={handleEditToggle}
+                        className="hover:scale-105 transition-transform duration-300"
                       >
                         {isEditing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
                         {isEditing ? 'Cancel' : 'Edit'}
@@ -285,34 +269,36 @@ const ProfilePage = () => {
                   <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first_name">First Name</Label>
+                        <Label htmlFor="first_name" className="animate-on-scroll">First Name</Label>
                         <Input
                           id="first_name"
                           value={isEditing ? editForm.first_name : user.first_name || ''}
                           onChange={(e) => handleInputChange('first_name', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last_name">Last Name</Label>
+                        <Label htmlFor="last_name" className="animate-on-scroll">Last Name</Label>
                         <Input
                           id="last_name"
                           value={isEditing ? editForm.last_name : user.last_name || ''}
                           onChange={(e) => handleInputChange('last_name', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="state">State</Label>
+                        <Label htmlFor="state" className="animate-on-scroll">State</Label>
                         <Select
                           value={isEditing ? editForm.state : user.state || ''}
                           onValueChange={(value) => handleInputChange('state', value)}
                           disabled={!isEditing}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="animate-on-scroll">
                             <SelectValue placeholder="Select State" />
                           </SelectTrigger>
                           <SelectContent>
@@ -324,34 +310,36 @@ const ProfilePage = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
+                        <Label htmlFor="city" className="animate-on-scroll">City</Label>
                         <Input
                           id="city"
                           value={isEditing ? editForm.city : user.city || ''}
                           onChange={(e) => handleInputChange('city', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone</Label>
+                        <Label htmlFor="phone" className="animate-on-scroll">Phone</Label>
                         <Input
                           id="phone"
                           value={isEditing ? editForm.phone : user.phone || ''}
                           onChange={(e) => handleInputChange('phone', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="skill_level">Skill Level</Label>
+                        <Label htmlFor="skill_level" className="animate-on-scroll">Skill Level</Label>
                         <Select
                           value={isEditing ? editForm.skill_level : user.skill_level || ''}
                           onValueChange={(value) => handleInputChange('skill_level', value)}
                           disabled={!isEditing}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="animate-on-scroll">
                             <SelectValue placeholder="Select Skill Level" />
                           </SelectTrigger>
                           <SelectContent>
@@ -369,10 +357,10 @@ const ProfilePage = () => {
 
                     {isEditing && (
                       <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={handleEditToggle}>
+                        <Button variant="outline" onClick={handleEditToggle} className="hover:scale-105 transition-transform duration-300">
                           Cancel
                         </Button>
-                        <Button onClick={handleSave}>
+                        <Button onClick={handleSave} className="hover:scale-105 transition-transform duration-300">
                           <Save className="w-4 h-4 mr-2" />
                           Save Changes
                         </Button>
@@ -383,13 +371,13 @@ const ProfilePage = () => {
               </TabsContent>
 
               <TabsContent value="rankings" className="space-y-6">
-                <Card>
+                <Card className="animate-on-scroll">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="animate-on-scroll flex items-center">
                       <Trophy className="w-5 h-5 mr-2" />
                       My Rankings
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="animate-on-scroll">
                       Your current rankings across different categories
                     </CardDescription>
                   </CardHeader>
@@ -397,7 +385,7 @@ const ProfilePage = () => {
                     {userRankings.length > 0 ? (
                       <div className="space-y-4">
                         {userRankings.map((ranking) => (
-                          <div key={ranking.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div key={ranking.id} className="animate-on-scroll flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow duration-300">
                             <div className="flex items-center space-x-4">
                               <div className="text-2xl font-bold text-blue-600">
                                 #{ranking.current_position}
@@ -423,8 +411,8 @@ const ProfilePage = () => {
                     ) : (
                       <div className="text-center py-8">
                         <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No rankings yet</h3>
-                        <p className="text-gray-600">
+                        <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 mb-2">No rankings yet</h3>
+                        <p className="animate-on-scroll text-gray-600">
                           Participate in tournaments to earn rankings and track your progress.
                         </p>
                       </div>
@@ -435,27 +423,27 @@ const ProfilePage = () => {
 
               <TabsContent value="stats" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
+                  <Card className="animate-on-scroll">
                     <CardHeader>
-                      <CardTitle className="flex items-center">
+                      <CardTitle className="animate-on-scroll flex items-center">
                         <Activity className="w-5 h-5 mr-2" />
                         Activity Stats
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex justify-between items-center">
+                      <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Last Login</span>
                         <span className="font-semibold">
                           {user.last_login ? formatDate(user.last_login) : 'Never'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Email Verified</span>
                         <Badge variant={user.email_verified ? "default" : "secondary"}>
                           {user.email_verified ? 'Yes' : 'No'}
                         </Badge>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Account Status</span>
                         <Badge variant={user.is_active ? "default" : "destructive"}>
                           {user.is_active ? 'Active' : 'Inactive'}
@@ -464,26 +452,26 @@ const ProfilePage = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="animate-on-scroll">
                     <CardHeader>
-                      <CardTitle className="flex items-center">
+                      <CardTitle className="animate-on-scroll flex items-center">
                         <Target className="w-5 h-5 mr-2" />
                         Membership Info
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex justify-between items-center">
+                      <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Plan</span>
                         <span className="font-semibold capitalize">{user.subscription_plan}</span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Status</span>
                         <Badge className={getMembershipStatusColor(user.membership_status)}>
                           {user.membership_status}
                         </Badge>
                       </div>
                       {user.membership_expires_at && (
-                        <div className="flex justify-between items-center">
+                        <div className="animate-on-scroll flex justify-between items-center">
                           <span className="text-gray-600">Expires</span>
                           <span className="font-semibold">{formatDate(user.membership_expires_at)}</span>
                         </div>
@@ -493,7 +481,7 @@ const ProfilePage = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

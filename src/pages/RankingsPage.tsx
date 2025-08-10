@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { fetchRankings, fetchTopPlayers } from '../store/slices/rankingsSlice';
-import { motion } from 'framer-motion';
-import { getAnimationVariants } from '../lib/animations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
 import { Trophy, Medal, Star, TrendingUp, TrendingDown, Minus, Target, Users, Award } from 'lucide-react';
 import { Ranking } from '../types/api';
+import { useAnimation } from '../hooks/useAnimation';
 
 const RankingsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { rankings, topPlayers, loading, error, pagination } = useSelector((state: RootState) => state.rankings);
+  const { elementRef: headerRef } = useAnimation();
   
   const [filters, setFilters] = useState<{
     page: number;
@@ -98,97 +98,26 @@ const RankingsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-white shadow-lg rounded-lg mx-4 my-8 py-16">
+      <section ref={headerRef} className="animate-on-scroll bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.1)}
-            className="text-center"
-          >
+          <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Player Rankings
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-              Track your progress and compete with the best players in the nation
+              Discover the top pickleball players and track your ranking progress
             </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Top Players Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.2)}
-            className="text-center mb-8"
-          >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Top Players - {filters.category.charAt(0).toUpperCase() + filters.category.slice(1)}
-            </h2>
-            <p className="text-gray-600">
-              The highest-ranked players in {filters.category} competition
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topPlayers.slice(0, 6).map((player: Ranking, index: number) => (
-              <motion.div
-                key={player.id}
-                initial="hidden"
-                animate="visible"
-                variants={getAnimationVariants('up', 0.7, 0.1 + index * 0.1)}
-              >
-                <Card className="text-center hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader>
-                    <div className="flex justify-center mb-4">
-                      {getPositionIcon(player.current_position)}
-                    </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
-                      {player.user_name}
-                    </CardTitle>
-                    <CardDescription>
-                      <Badge className={getSkillLevelColor(player.skill_level)}>
-                        {player.skill_level}
-                      </Badge>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-600">Points</p>
-                        <p className="font-semibold text-lg">{player.current_points}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Win %</p>
-                        <p className="font-semibold text-lg">{formatWinPercentage(player.win_percentage)}</p>
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {player.tournaments_played} tournaments • {player.matches_played} matches
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Filters Section */}
-      <section className="py-8 bg-gray-100 border-b">
+      <section className="py-8 bg-white border-b">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.7, 0.3)}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
-                <SelectTrigger>
+                <SelectTrigger className="animate-on-scroll">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -200,100 +129,136 @@ const RankingsPage = () => {
             </div>
             <div>
               <Select value={filters.skill_level} onValueChange={(value) => handleFilterChange('skill_level', value)}>
-                <SelectTrigger>
+                <SelectTrigger className="animate-on-scroll">
                   <SelectValue placeholder="Skill Level" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">All Levels</SelectItem>
-                  <SelectItem value="5.5">5.5</SelectItem>
-                  <SelectItem value="5.0">5.0</SelectItem>
-                  <SelectItem value="4.5">4.5</SelectItem>
-                  <SelectItem value="4.0">4.0</SelectItem>
-                  <SelectItem value="3.5">3.5</SelectItem>
-                  <SelectItem value="3.0">3.0</SelectItem>
                   <SelectItem value="2.5">2.5</SelectItem>
+                  <SelectItem value="3.0">3.0</SelectItem>
+                  <SelectItem value="3.5">3.5</SelectItem>
+                  <SelectItem value="4.0">4.0</SelectItem>
+                  <SelectItem value="4.5">4.5</SelectItem>
+                  <SelectItem value="5.0">5.0</SelectItem>
+                  <SelectItem value="5.5">5.5</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Select value={filters.state} onValueChange={(value) => handleFilterChange('state', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="State" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All States</SelectItem>
-                  <SelectItem value="Jalisco">Jalisco</SelectItem>
-                  <SelectItem value="Nuevo León">Nuevo León</SelectItem>
-                  <SelectItem value="CDMX">CDMX</SelectItem>
-                  <SelectItem value="Baja California">Baja California</SelectItem>
-                </SelectContent>
-              </Select>
+              <input
+                type="text"
+                placeholder="Search players..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+                className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <Button 
-                variant="outline" 
-                onClick={() => setFilters({ page: 1, limit: 20, category: 'singles', skill_level: '', state: '', search: '' })}
-                className="w-full"
-              >
-                Reset Filters
-              </Button>
+              <input
+                type="text"
+                placeholder="State"
+                value={filters.state}
+                onChange={(e) => handleFilterChange('state', e.target.value)}
+                className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Rankings Table */}
+      {/* Top Players Section */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-4">
+              Top 10 Players
+            </h2>
+            <p className="animate-on-scroll text-gray-600">
+              The highest-ranked players in {filters.category.replace('_', ' ')} category
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {topPlayers.map((player, index) => (
+              <div key={player.id}>
+                <Card className="animate-on-scroll card hover:shadow-lg hover:scale-105 transition-all duration-300">
+                  <CardHeader className="text-center">
+                    <div className="flex justify-center mb-4">
+                      {getPositionIcon(index + 1)}
+                    </div>
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      {player.user_name}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      {player.state || 'Unknown State'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Skill Level:</span>
+                      <Badge className={getSkillLevelColor(player.skill_level)}>
+                        {player.skill_level}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Points:</span>
+                      <span className="font-semibold text-blue-600">{player.current_points}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Win Rate:</span>
+                      <span className="font-semibold text-green-600">
+                        {formatWinPercentage(player.win_percentage)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Tournaments:</span>
+                      <span className="font-semibold">{player.tournaments_played}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Rankings Table Section */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           {error && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={getAnimationVariants('up', 0.7, 0.1)}
-              className="text-center py-8"
-            >
+            <div className="text-center py-8">
               <p className="text-red-600 text-lg">{error}</p>
-            </motion.div>
+            </div>
           )}
 
           {rankings.length === 0 && !loading ? (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={getAnimationVariants('up', 0.7, 0.1)}
-              className="text-center py-16"
-            >
+            <div className="text-center py-16">
               <div className="max-w-md mx-auto">
                 <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No rankings found</h3>
                 <p className="text-gray-600 mb-6">
-                  Try adjusting your filters or check back later for updated rankings.
+                  Try adjusting your search criteria or check back later for new rankings.
                 </p>
                 <Button onClick={() => setFilters({ page: 1, limit: 20, category: 'singles', skill_level: '', state: '', search: '' })}>
-                  Reset Filters
+                  Clear Filters
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ) : (
             <>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={getAnimationVariants('up', 0.7, 0.4)}
-                className="bg-white rounded-lg shadow overflow-hidden"
-              >
+              <div className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Rank
+                          Position
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Player
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Level
+                          Skill Level
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Points
@@ -302,10 +267,7 @@ const RankingsPage = () => {
                           Change
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Win %
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Matches
+                          Win Rate
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Tournaments
@@ -313,28 +275,24 @@ const RankingsPage = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {rankings.map((ranking: Ranking, index: number) => (
-                        <motion.tr
-                          key={ranking.id}
-                          initial="hidden"
-                          animate="visible"
-                          variants={getAnimationVariants('up', 0.7, 0.1 + index * 0.05)}
-                          className="hover:bg-gray-50 transition-colors duration-200"
-                        >
+                      {rankings.map((ranking, index) => (
+                        <tr key={ranking.id} className="hover:bg-gray-50 transition-colors duration-200">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               {getPositionIcon(ranking.current_position)}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">
-                              {ranking.user_name}
-                            </div>
-                            {ranking.state && (
-                              <div className="text-sm text-gray-500">
-                                {ranking.state}
+                            <div className="flex items-center">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {ranking.user_name}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {ranking.state || 'Unknown State'}
+                                </div>
                               </div>
-                            )}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge className={getSkillLevelColor(ranking.skill_level)}>
@@ -348,8 +306,9 @@ const RankingsPage = () => {
                             <div className="flex items-center">
                               {getPositionChange(ranking.current_position, ranking.previous_position)}
                               {ranking.previous_position && (
-                                <span className="ml-1 text-sm text-gray-500">
-                                  {Math.abs(ranking.current_position - ranking.previous_position)}
+                                <span className="ml-2 text-sm text-gray-600">
+                                  {ranking.current_position < ranking.previous_position ? '+' : ''}
+                                  {ranking.previous_position - ranking.current_position}
                                 </span>
                               )}
                             </div>
@@ -358,32 +317,25 @@ const RankingsPage = () => {
                             {formatWinPercentage(ranking.win_percentage)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {ranking.matches_won}/{ranking.matches_played}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {ranking.tournaments_played}
                           </td>
-                        </motion.tr>
+                        </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Pagination */}
               {pagination && pagination.pages > 1 && (
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  variants={getAnimationVariants('up', 0.7, 0.5)}
-                  className="flex justify-center mt-8"
-                >
+                <div className="flex justify-center mt-12">
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page <= 1}
+                      className="hover:scale-105 transition-transform duration-300"
                     >
                       Previous
                     </Button>
@@ -396,6 +348,7 @@ const RankingsPage = () => {
                           variant={pagination.page === page ? "default" : "outline"}
                           size="sm"
                           onClick={() => handlePageChange(page)}
+                          className="hover:scale-105 transition-transform duration-300"
                         >
                           {page}
                         </Button>
@@ -407,11 +360,12 @@ const RankingsPage = () => {
                       size="sm"
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page >= pagination.pages}
+                      className="hover:scale-105 transition-transform duration-300"
                     >
                       Next
                     </Button>
                   </div>
-                </motion.div>
+                </div>
               )}
             </>
           )}

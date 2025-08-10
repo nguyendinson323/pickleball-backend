@@ -11,13 +11,13 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Calendar } from '../components/ui/calendar';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
-import { animationConfigs, getAnimationVariants } from '../lib/animations';
+import { useAnimation } from '../hooks/useAnimation';
 
 const CourtReservationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { courts } = useSelector((state: RootState) => state.courts);
   const { reservations, availability, loading, error } = useSelector((state: RootState) => state.courtReservations);
+  const { elementRef: headerRef } = useAnimation();
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -101,47 +101,21 @@ const CourtReservationsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <motion.h1 
-        className="text-3xl font-bold mb-6"
-        initial="hidden"
-        animate="visible"
-        variants={getAnimationVariants('up', 0.7, 0.1)}
-      >
+      <h1 ref={headerRef} className="animate-on-scroll text-3xl font-bold mb-6">
         Court Reservations
-      </motion.h1>
+      </h1>
 
       {/* Court Selection */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={getAnimationVariants('up', 0.8, 0.2)}
-      >
+      <div className="animate-on-scroll">
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Select a Court</CardTitle>
             <CardDescription>Choose a court to view availability and make reservations</CardDescription>
           </CardHeader>
           <CardContent>
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.1,
-                    delayChildren: 0.3
-                  }
-                }
-              }}
-            >
-            {courts.map((court, index) => {
-              const config = animationConfigs.courtReservations.courts[index % 4];
-              return (
-                <motion.div
-                  key={court.id}
-                  variants={getAnimationVariants(config.direction, config.duration, config.delay)}
-                >
+            <div className="animate-on-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courts.map((court, index) => (
+                <div key={court.id} className="animate-on-scroll">
                   <Card 
                     className={`cursor-pointer transition-colors ${
                       selectedCourt?.id === court.id ? 'border-primary bg-primary/5' : ''
@@ -173,22 +147,17 @@ const CourtReservationsPage: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </CardContent>
-      </Card>
-      </motion.div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {selectedCourt && (
         <>
           {/* Date Selection */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={getAnimationVariants('up', 0.8, 0.4)}
-          >
+          <div className="animate-on-scroll">
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle>Select Date</CardTitle>
@@ -204,28 +173,12 @@ const CourtReservationsPage: React.FC = () => {
                 />
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Availability and Booking */}
-          <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                  delayChildren: 0.5
-                }
-              }
-            }}
-          >
+          <div className="animate-on-scroll grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Availability */}
-            <motion.div
-              variants={getAnimationVariants('left', 0.7, 0.1)}
-            >
+            <div className="animate-on-scroll">
               <Card>
                 <CardHeader>
                   <CardTitle>Court Availability</CardTitle>
@@ -234,44 +187,45 @@ const CourtReservationsPage: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                <div className="space-y-2">
-                  {generateTimeSlots().map((slot) => {
-                    const isAvailable = isTimeSlotAvailable(slot.startTime, slot.endTime);
-                    return (
-                      <div
-                        key={slot.startTime}
-                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                          isAvailable 
-                            ? 'bg-green-50 border-green-200 hover:bg-green-100' 
-                            : 'bg-red-50 border-red-200'
-                        }`}
-                        onClick={() => {
-                          if (isAvailable) {
-                            setBookingData({
-                              ...bookingData,
-                              start_time: slot.startTime,
-                              end_time: slot.endTime,
-                            });
-                            setShowBookingForm(true);
-                          }
-                        }}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">
-                            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                          </span>
-                          <span className={`text-sm font-medium ${
-                            isAvailable ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {isAvailable ? 'Available' : 'Booked'}
-                          </span>
+                  <div className="space-y-2">
+                    {generateTimeSlots().map((slot) => {
+                      const isAvailable = isTimeSlotAvailable(slot.startTime, slot.endTime);
+                      return (
+                        <div
+                          key={slot.startTime}
+                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                            isAvailable 
+                              ? 'bg-green-50 border-green-200 hover:bg-green-100' 
+                              : 'bg-red-50 border-red-200'
+                          }`}
+                          onClick={() => {
+                            if (isAvailable) {
+                              setBookingData({
+                                ...bookingData,
+                                start_time: slot.startTime,
+                                end_time: slot.endTime,
+                              });
+                              setShowBookingForm(true);
+                            }
+                          }}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">
+                              {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+                            </span>
+                            <span className={`text-sm font-medium ${
+                              isAvailable ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {isAvailable ? 'Available' : 'Booked'}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Booking Form */}
             {showBookingForm && (
@@ -279,7 +233,7 @@ const CourtReservationsPage: React.FC = () => {
                 <CardHeader>
                   <CardTitle>Book Court</CardTitle>
                   <CardDescription>
-                    Reserve {selectedCourt.name} for {selectedDate?.toLocaleDateString()}
+                    Complete your reservation for {selectedCourt.name}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -289,7 +243,6 @@ const CourtReservationsPage: React.FC = () => {
                         <Label htmlFor="start_time">Start Time</Label>
                         <Input
                           id="start_time"
-                          type="time"
                           value={bookingData.start_time}
                           onChange={(e) => setBookingData({ ...bookingData, start_time: e.target.value })}
                           required
@@ -299,7 +252,6 @@ const CourtReservationsPage: React.FC = () => {
                         <Label htmlFor="end_time">End Time</Label>
                         <Input
                           id="end_time"
-                          type="time"
                           value={bookingData.end_time}
                           onChange={(e) => setBookingData({ ...bookingData, end_time: e.target.value })}
                           required
@@ -307,46 +259,47 @@ const CourtReservationsPage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="match_type">Match Type</Label>
-                      <Select
-                        value={bookingData.match_type}
-                        onValueChange={(value) => setBookingData({ ...bookingData, match_type: value as any })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="singles">Singles</SelectItem>
-                          <SelectItem value="doubles">Doubles</SelectItem>
-                          <SelectItem value="mixed_doubles">Mixed Doubles</SelectItem>
-                          <SelectItem value="practice">Practice</SelectItem>
-                          <SelectItem value="lesson">Lesson</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="guest_count">Number of Guests</Label>
-                      <Input
-                        id="guest_count"
-                        type="number"
-                        min="0"
-                        max="10"
-                        value={bookingData.guest_count}
-                        onChange={(e) => setBookingData({ ...bookingData, guest_count: parseInt(e.target.value) })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="purpose">Purpose/Notes</Label>
+                      <Label htmlFor="purpose">Purpose</Label>
                       <Input
                         id="purpose"
                         value={bookingData.purpose}
                         onChange={(e) => setBookingData({ ...bookingData, purpose: e.target.value })}
-                        placeholder="Optional notes about your booking"
+                        placeholder="e.g., Practice, Match, Lesson"
                       />
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="match_type">Match Type</Label>
+                        <Select
+                          value={bookingData.match_type}
+                          onValueChange={(value) => setBookingData({ ...bookingData, match_type: value as any })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="singles">Singles</SelectItem>
+                            <SelectItem value="doubles">Doubles</SelectItem>
+                            <SelectItem value="mixed_doubles">Mixed Doubles</SelectItem>
+                            <SelectItem value="practice">Practice</SelectItem>
+                            <SelectItem value="lesson">Lesson</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="guest_count">Guest Count</Label>
+                        <Input
+                          id="guest_count"
+                          type="number"
+                          min="0"
+                          max="10"
+                          value={bookingData.guest_count}
+                          onChange={(e) => setBookingData({ ...bookingData, guest_count: parseInt(e.target.value) || 0 })}
+                        />
+                      </div>
+                    </div>
                     <div className="flex gap-4">
-                      <Button type="submit" disabled={loading}>
+                      <Button type="submit" className="flex-1">
                         Book Court
                       </Button>
                       <Button
@@ -405,8 +358,7 @@ const CourtReservationsPage: React.FC = () => {
                 </CardContent>
               </Card>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
         </>
       )}
     </div>

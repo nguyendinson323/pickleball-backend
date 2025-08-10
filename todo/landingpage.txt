@@ -1,0 +1,20 @@
+For your **Pickleball Federation** landing page, the main navigation (tabs) would guide visitors to the most important public sections before logging in.
+
+Here’s the suggested tab list:
+
+---
+
+### 🗂️ **Landing Page Tabs (Public Navigation)**
+
+| Tab Name             | Purpose                                                     |
+| -------------------- | ----------------------------------------------------------- |
+| **Home**             | Main landing page with hero, overview, and highlights       |
+| **About**            | Info about the federation, mission, and structure           |
+| **Events**           | List of upcoming tournaments, leagues, championships        |
+| **Rankings**         | Public leaderboard of top players (national/state)          |
+| **Membership**       | Details of Free, Basic, Premium, Elite plans + registration |
+| **Find a Court**     | Court locator map (teaser for logged-in booking system)     |
+| **News**             | Announcements, updates, press releases                      |
+| **Contact**          | Federation contact form, address, and social media links    |
+| **Login / Register** | Entry point to create an account or log in                  |
+

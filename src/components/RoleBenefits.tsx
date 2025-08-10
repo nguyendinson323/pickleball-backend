@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building, Handshake, GraduationCap, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
-import { animationConfigs, getAnimationVariants } from "@/lib/animations";
+import { componentAnimations } from "@/lib/animations";
 import playersImg from "@/assets/players-community.jpg";
 import clubsImg from "@/assets/clubs-facility.jpg";
 import partnersImg from "@/assets/partners-business.jpg";
@@ -92,23 +91,17 @@ const RoleBenefits = () => {
             const Icon = role.icon;
             const isEven = index % 2 === 0;
             
-            const imageConfig = animationConfigs.roleBenefits.images[index];
-            const contentConfig = animationConfigs.roleBenefits.content[index];
+            const imageAnimation = componentAnimations.roleBenefits.images[index];
+            const contentAnimation = componentAnimations.roleBenefits.content[index];
             
             return (
-              <motion.div
+              <div
                 key={role.id}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
                 className="flex flex-col lg:flex-row transition-all duration-300 overflow-hidden"
               >
                 {isEven ? (
                   <>
-                    <motion.div 
-                      className="relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden"
-                      variants={getAnimationVariants(imageConfig.direction, imageConfig.duration, imageConfig.delay, 'image')}
-                    >
+                    <div className={`relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden ${imageAnimation}`}>
                       <img 
                         src={role.image} 
                         alt={`${role.label} community`}
@@ -122,11 +115,8 @@ const RoleBenefits = () => {
                         <span className="hidden sm:inline">Benefits for {role.label}</span>
                         <span className="sm:hidden">{role.label}</span>
                       </CardTitle>
-                    </motion.div>
-                    <motion.div 
-                      className="flex-1 p-4 lg:p-6 flex flex-col justify-center"
-                      variants={getAnimationVariants(contentConfig.direction, contentConfig.duration, contentConfig.delay, 'content')}
-                    >
+                    </div>
+                    <div className={`flex-1 p-4 lg:p-6 flex flex-col justify-center ${contentAnimation}`}>
                       <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-primary">Key Benefits</h3>
                       <ul className="space-y-2 lg:space-y-3">
                         {role.highlights.map((highlight, index) => (
@@ -136,14 +126,11 @@ const RoleBenefits = () => {
                           </li>
                         ))}
                       </ul>
-                    </motion.div>
+                    </div>
                   </>
                 ) : (
                   <>
-                    <motion.div 
-                      className="flex-1 p-4 lg:p-6 flex flex-col justify-center"
-                      variants={getAnimationVariants(contentConfig.direction, contentConfig.duration, contentConfig.delay, 'content')}
-                    >
+                    <div className={`flex-1 p-4 lg:p-6 flex flex-col justify-center ${contentAnimation}`}>
                       <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-primary">Key Benefits</h3>
                       <ul className="space-y-2 lg:space-y-3">
                         {role.highlights.map((highlight, index) => (
@@ -153,11 +140,8 @@ const RoleBenefits = () => {
                           </li>
                         ))}
                       </ul>
-                    </motion.div>
-                    <motion.div 
-                      className="relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden"
-                      variants={getAnimationVariants(imageConfig.direction, imageConfig.duration, imageConfig.delay, 'image')}
-                    >
+                    </div>
+                    <div className={`relative w-full lg:w-1/2 h-64 lg:h-96 overflow-hidden ${imageAnimation}`}>
                       <img 
                         src={role.image} 
                         alt={`${role.label} community`}
@@ -171,10 +155,10 @@ const RoleBenefits = () => {
                         <span className="hidden sm:inline">Benefits for {role.label}</span>
                         <span className="sm:hidden">{role.label}</span>
                       </CardTitle>
-                    </motion.div>
+                    </div>
                   </>
                 )}
-              </motion.div>
+              </div>
             );
           })}
         </div>

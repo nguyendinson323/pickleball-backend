@@ -1,0 +1,69 @@
+Here’s a **smooth-animation strategy** for your Pickleball Federation landing page that keeps it visually engaging without hurting performance:
+
+---
+
+### 🎯 **Animation Strategy (Performance-Optimized)**
+
+#### 1️⃣ **Use GPU-Friendly Properties**
+
+* Animate only:
+
+  * `transform` (translate, scale, rotate)
+  * `opacity`
+* Avoid:
+
+  * `top`, `left`, `width`, `height`, `box-shadow` (cause reflow/repaint)
+
+---
+
+#### 2️⃣ **Strategic Animation Placement**
+
+* **Hero Section**:
+
+  * Fade-in + slight slide-up for heading & call-to-action button.
+  * Delay 0.2s between each element for a “cascade” effect.
+* **Event Cards**:
+
+  * Subtle hover scale (1.02) with shadow for interaction feedback.
+* **Membership Plans**:
+
+  * Flip-in or fade-up when scrolled into view.
+* **Testimonials**:
+
+  * Crossfade between quotes every 6–8 seconds.
+
+---
+
+#### 3️⃣ **Trigger Animations on Scroll**
+
+* Use **Intersection Observer API** instead of constantly checking `scroll` events.
+* Only animate elements once when they enter the viewport.
+
+---
+
+#### 4️⃣ **Keep Duration Short**
+
+* **Entrance animations**: 300–500ms
+* **Hover effects**: 150–250ms
+* Avoid anything over 1s unless it’s a slideshow.
+
+---
+
+#### 5️⃣ **Lightweight Animation Libraries**
+
+* **GSAP** (GreenSock) — highly optimized, can batch animations.
+* **Framer Motion** (if React) — easy for complex UI animations.
+* **Animate.css** — good for quick fade/slide effects.
+
+---
+
+#### 6️⃣ **Mobile Optimization**
+
+* Reduce animation complexity on mobile (less simultaneous movement).
+* Use `prefers-reduced-motion` media query for accessibility.
+
+---
+
+I hope to use animation effect for every div, img, h1~h6, p, input and button tags.
+and in one screen, the animation style should differ for every tag.
+I don't like animation delay effect.
