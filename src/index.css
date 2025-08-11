@@ -308,12 +308,6 @@
 
   /* 🎯 HOVER EFFECTS - Subtle interactions */
   
-  /* Card hover effects */
-  .card:hover {
-    transform: translateY(-8px) scale(1.02);
-    transition: transform 0.2s ease-out;
-  }
-
   /* Button hover effects */
   button:hover {
     transform: translateY(-2px) scale(1.05);
@@ -371,7 +365,6 @@
   }
   
   /* Simpler hover effects on mobile */
-  .card:hover,
   button:hover,
   img:hover {
     transform: none;

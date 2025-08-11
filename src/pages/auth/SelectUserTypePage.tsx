@@ -65,14 +65,38 @@ const SelectUserTypePage = () => {
     navigate('/register');
   };
 
+  const handleCardClick = (userType: string) => {
+    setSelectedType(userType);
+    
+    // Add selection animation
+    const cardElement = document.querySelector(`[data-user-type="${userType}"]`);
+    if (cardElement) {
+      cardElement.classList.add('selected');
+      setTimeout(() => {
+        cardElement.classList.remove('selected');
+      }, 600);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="animate-on-scroll text-4xl font-bold text-gray-900 mb-4">
+          <h1 
+            className="text-4xl font-bold text-gray-900 mb-4 transition-all duration-500 hover:text-blue-600 hover:scale-105"
+            style={{
+              animation: 'fadeInUp 0.8s ease-out forwards'
+            }}
+          >
             Choose Your Account Type
           </h1>
-          <p className="animate-on-scroll text-xl text-gray-600 max-w-2xl mx-auto">
+          <p 
+            className="text-xl text-gray-600 max-w-2xl mx-auto transition-all duration-500 hover:text-gray-800"
+            style={{
+              animationDelay: '0.2s',
+              animation: 'fadeInUp 0.8s ease-out forwards'
+            }}
+          >
             Select the type of account that best describes your role in the pickleball community
           </p>
         </div>
@@ -83,29 +107,59 @@ const SelectUserTypePage = () => {
             return (
               <div key={userType.type}>
                 <Card 
-                  className={`animate-on-scroll card cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
+                  data-user-type={userType.type}
+                  className={`card cursor-pointer transition-all duration-500 ease-out hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1 ${
                     selectedType === userType.type 
-                      ? 'ring-2 ring-blue-500 bg-blue-50' 
+                      ? 'ring-2 ring-blue-500 bg-blue-50 scale-105 shadow-xl' 
                       : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => setSelectedType(userType.type)}
+                  onClick={() => handleCardClick(userType.type)}
+                  style={{
+                    animationDelay: `${index * 0.5}s`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
                 >
                   <CardHeader className="text-center pb-4">
-                    <div className={`w-16 h-16 rounded-full ${userType.color} flex items-center justify-center mx-auto mb-4`}>
-                      <IconComponent className="animate-on-scroll w-8 h-8 text-white" />
+                    <div 
+                      className={`w-16 h-16 rounded-full ${userType.color} flex items-center justify-center mx-auto mb-4 transition-all duration-300 hover:scale-110 hover:rotate-3`}
+                      style={{
+                        animationDelay: `${index * 0.1 + 0.2}s`,
+                        animation: 'bounceIn 0.8s ease-out forwards'
+                      }}
+                    >
+                      <IconComponent className="w-8 h-8 text-white transition-transform duration-300 hover:scale-125" />
                     </div>
-                    <CardTitle className="animate-on-scroll text-xl font-semibold text-gray-900">
+                    <CardTitle 
+                      className="text-xl font-semibold text-gray-900 transition-all duration-300 hover:text-blue-600"
+                      style={{
+                        animationDelay: `${index * 0.1 + 0.3}s`,
+                        animation: 'slideInRight 0.6s ease-out forwards'
+                      }}
+                    >
                       {userType.title}
                     </CardTitle>
-                    <CardDescription className="animate-on-scroll text-gray-600">
+                    <CardDescription 
+                      className="text-gray-600 transition-all duration-300 hover:text-gray-800"
+                      style={{
+                        animationDelay: `${index * 0.1 + 0.4}s`,
+                        animation: 'fadeIn 0.8s ease-out forwards'
+                      }}
+                    >
                       {userType.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
                       {userType.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="animate-on-scroll flex items-center text-sm text-gray-600">
-                          <div className={`w-2 h-2 rounded-full ${userType.color} mr-3`}></div>
+                        <li 
+                          key={featureIndex} 
+                          className="flex items-center text-sm text-gray-600 transition-all duration-300 hover:text-blue-600"
+                          style={{
+                            animationDelay: `${index * 0.1 + 0.5 + featureIndex * 0.1}s`,
+                            animation: 'slideInLeft 0.6s ease-out forwards'
+                          }}
+                        >
+                          <div className={`w-2 h-2 rounded-full ${userType.color} mr-3 transition-all duration-300 hover:scale-150 hover:animate-pulse`}></div>
                           {feature}
                         </li>
                       ))}
@@ -121,19 +175,27 @@ const SelectUserTypePage = () => {
           <Button
             variant="outline"
             onClick={handleBack}
-            className="animate-on-scroll flex items-center gap-2 hover:scale-105 transition-transform duration-300"
+            className="flex items-center gap-2 hover:scale-105 hover:-translate-x-2 transition-all duration-300 hover:shadow-lg hover:bg-gray-100"
+            style={{
+              animationDelay: '0.8s',
+              animation: 'slideInLeft 0.6s ease-out forwards'
+            }}
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
             Back
           </Button>
           
           <Button
             onClick={handleContinue}
             disabled={!selectedType}
-            className="animate-on-scroll flex items-center gap-2 hover:scale-105 transition-transform duration-300"
+            className="flex items-center gap-2 hover:scale-105 hover:translate-x-2 transition-all duration-300 hover:shadow-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              animationDelay: '0.9s',
+              animation: 'slideInRight 0.6s ease-out forwards'
+            }}
           >
             Continue
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
       </div>
