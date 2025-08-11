@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { fetchCourts } from '../store/slices/courtsSlice';
-import { bookCourt, getCourtAvailability, getCourtBookings } from '../store/slices/courtReservationsSlice';
-import { Court, BookCourtRequest } from '../types/api';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Calendar } from '../components/ui/calendar';
+import { AppDispatch, RootState } from '../../store';
+import { fetchCourts } from '../../store/slices/courtsSlice';
+import { bookCourt, getCourtAvailability, getCourtBookings } from '../../store/slices/courtReservationsSlice';
+import { Court, BookCourtRequest } from '../../types/api';
+import { Button } from '../../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Calendar } from '../../components/ui/calendar';
 import { toast } from 'sonner';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const CourtReservationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

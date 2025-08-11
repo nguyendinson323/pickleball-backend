@@ -26,11 +26,18 @@ function App() {
       <Header />
       <main className="flex-1 mt-[60px]">
         <Routes>
-          {routes.map(route =>
-            isAuthenticated ?
-              <Route key={route.key} path={route.path} element={route.element} />
-              :
-              route.public && <Route key={route.key} path={route.path} element={route.element} />)}
+          {routes.map(route => {
+            // Always render public routes
+            if (route.public) {
+              return <Route key={route.key} path={route.path} element={route.element} />
+            }
+            // Only render private routes if authenticated
+            if (isAuthenticated) {
+              return <Route key={route.key} path={route.path} element={route.element} />
+            }
+            // Don't render anything for private routes when not authenticated
+            return null
+          })}
         </Routes>
       </main>
       <Footer />

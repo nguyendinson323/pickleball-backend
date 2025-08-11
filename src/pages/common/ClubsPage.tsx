@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { fetchClubs } from '../store/slices/clubsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Badge } from '../components/ui/badge';
+import { AppDispatch, RootState } from '../../store';
+import { fetchClubs } from '../../store/slices/clubsSlice';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Badge } from '../../components/ui/badge';
 import { MapPin, Users, Calendar, Star, Phone, Mail, Globe, Clock } from 'lucide-react';
-import { Club } from '../types/api';
-import { useAnimation } from '../hooks/useAnimation';
+import { Club } from '../../types/api';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const ClubsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,27 +21,29 @@ const ClubsPage = () => {
     limit: number;
     state: string;
     city: string;
-    club_type: '' | 'recreational' | 'competitive' | 'training' | 'mixed';
+    club_type: 'all' | 'recreational' | 'competitive' | 'training' | 'mixed';
     has_courts: string;
-    subscription_plan: '' | 'basic' | 'premium';
+    subscription_plan: 'all' | 'basic' | 'premium';
     search: string;
   }>({
     page: 1,
     limit: 12,
-    state: '',
-    city: '',
-    club_type: '',
-    has_courts: '',
-    subscription_plan: '',
+    state: 'all',
+    city: 'all',
+    club_type: 'all',
+    has_courts: 'all',
+    subscription_plan: 'all',
     search: ''
   });
 
   useEffect(() => {
     const apiFilters = {
       ...filters,
-      club_type: filters.club_type || undefined,
-      has_courts: filters.has_courts ? filters.has_courts === 'true' : undefined,
-      subscription_plan: filters.subscription_plan || undefined
+      state: filters.state === 'all' ? undefined : filters.state,
+      city: filters.city === 'all' ? undefined : filters.city,
+      club_type: filters.club_type === 'all' ? undefined : filters.club_type,
+      has_courts: filters.has_courts === 'all' ? undefined : (filters.has_courts === 'true'),
+      subscription_plan: filters.subscription_plan === 'all' ? undefined : filters.subscription_plan
     } as any;
     dispatch(fetchClubs(apiFilters));
   }, [dispatch, filters]);
@@ -88,13 +90,22 @@ const ClubsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="container mx-auto px-4">
+      <section 
+        className="relative text-white py-16 overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(150, 200, 200, 0.4), rgba(147, 200, 234, 0.9)), url('/img/clubs-facility.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="animate-on-scroll text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="animate-on-scroll text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">
               Find Your Perfect Pickleball Club
             </h1>
-            <p className="animate-on-scroll text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            <p className="animate-on-scroll text-xl md:text-2xl mb-8 max-w-3xl mx-auto drop-shadow-md">
               Discover clubs near you, join communities, and take your game to the next level
             </p>
           </div>
@@ -119,7 +130,7 @@ const ClubsPage = () => {
                   <SelectValue placeholder="Select State" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All States</SelectItem>
+                  <SelectItem value="all">All States</SelectItem>
                   <SelectItem value="Jalisco">Jalisco</SelectItem>
                   <SelectItem value="Nuevo León">Nuevo León</SelectItem>
                   <SelectItem value="CDMX">CDMX</SelectItem>
@@ -133,7 +144,7 @@ const ClubsPage = () => {
                   <SelectValue placeholder="Club Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="recreational">Recreational</SelectItem>
                   <SelectItem value="competitive">Competitive</SelectItem>
                   <SelectItem value="training">Training</SelectItem>
@@ -147,7 +158,7 @@ const ClubsPage = () => {
                   <SelectValue placeholder="Courts Available" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Clubs</SelectItem>
+                  <SelectItem value="all">All Clubs</SelectItem>
                   <SelectItem value="true">With Courts</SelectItem>
                   <SelectItem value="false">Without Courts</SelectItem>
                 </SelectContent>
@@ -174,7 +185,7 @@ const ClubsPage = () => {
                 <p className="animate-on-scroll text-gray-600 mb-6">
                   Try adjusting your search criteria or check back later for new clubs in your area.
                 </p>
-                <Button onClick={() => setFilters({ page: 1, limit: 12, state: '', city: '', club_type: '', has_courts: '', subscription_plan: '', search: '' })}>
+                <Button onClick={() => setFilters({ page: 1, limit: 12, state: 'all', city: 'all', club_type: 'all', has_courts: 'all', subscription_plan: 'all', search: '' })}>
                   Clear Filters
                 </Button>
               </div>

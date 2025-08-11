@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { fetchTournaments, registerForTournament } from '../store/slices/tournamentsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Badge } from '../components/ui/badge';
+import { AppDispatch, RootState } from '../../store';
+import { fetchTournaments, registerForTournament } from '../../store/slices/tournamentsSlice';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Badge } from '../../components/ui/badge';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, Star, CalendarDays } from 'lucide-react';
-import { Tournament } from '../types/api';
+import { Tournament } from '../../types/api';
 import { toast } from 'sonner';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const TournamentsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,18 +21,18 @@ const TournamentsPage = () => {
   const [filters, setFilters] = useState<{
     page: number;
     limit: number;
-    tournament_type: '' | 'local' | 'state' | 'national' | 'international' | 'exhibition' | 'league';
-    category: '' | 'singles' | 'doubles' | 'mixed_doubles' | 'team';
-    status: '' | 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'in_progress' | 'completed' | 'cancelled';
+    tournament_type: 'all' | 'local' | 'state' | 'national' | 'international' | 'exhibition' | 'league';
+    category: 'all' | 'singles' | 'doubles' | 'mixed_doubles' | 'team';
+    status: 'all' | 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'in_progress' | 'completed' | 'cancelled';
     state: string;
     city: string;
     search: string;
   }>({
     page: 1,
     limit: 12,
-    tournament_type: '',
-    category: '',
-    status: '',
+    tournament_type: 'all',
+    category: 'all',
+    status: 'all',
     state: '',
     city: '',
     search: ''
@@ -41,9 +41,9 @@ const TournamentsPage = () => {
   useEffect(() => {
     const apiFilters = {
       ...filters,
-      tournament_type: filters.tournament_type || undefined,
-      category: filters.category || undefined,
-      status: filters.status || undefined
+      tournament_type: filters.tournament_type === 'all' ? undefined : filters.tournament_type,
+      category: filters.category === 'all' ? undefined : filters.category,
+      status: filters.status === 'all' ? undefined : filters.status
     } as any;
     dispatch(fetchTournaments(apiFilters));
   }, [dispatch, filters]);
@@ -94,16 +94,26 @@ const TournamentsPage = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    if (!dateString) return 'TBD';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
   };
 
   const isRegistrationOpen = (tournament: Tournament) => {
-    return tournament.status === 'registration_open' && 
-           new Date(tournament.registration_deadline) > new Date();
+    if (!tournament.registration_deadline) return false;
+    try {
+      return tournament.status === 'registration_open' && 
+             new Date(tournament.registration_deadline) > new Date();
+    } catch (error) {
+      return false;
+    }
   };
 
   return (
@@ -134,7 +144,7 @@ const TournamentsPage = () => {
                 <SelectValue placeholder="Tournament Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="local">Local</SelectItem>
                 <SelectItem value="state">State</SelectItem>
                 <SelectItem value="national">National</SelectItem>
@@ -148,7 +158,7 @@ const TournamentsPage = () => {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem value="singles">Singles</SelectItem>
                 <SelectItem value="doubles">Doubles</SelectItem>
                 <SelectItem value="mixed_doubles">Mixed Doubles</SelectItem>
@@ -160,7 +170,7 @@ const TournamentsPage = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="registration_open">Registration Open</SelectItem>
                 <SelectItem value="registration_closed">Registration Closed</SelectItem>
                 <SelectItem value="in_progress">In Progress</SelectItem>
@@ -220,7 +230,7 @@ const TournamentsPage = () => {
                       {tournament.name}
                     </CardTitle>
                     <CardDescription className="text-gray-600">
-                      {tournament.description}
+                      {tournament.description || 'No description available'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -231,11 +241,11 @@ const TournamentsPage = () => {
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="w-4 h-4 mr-2" />
-                        <span>{tournament.city}, {tournament.state}</span>
+                        <span>{tournament.city || 'TBD'}, {tournament.state || 'TBD'}</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <Users className="w-4 h-4 mr-2" />
-                        <span>{tournament.max_participants} participants max</span>
+                        <span>{tournament.max_participants || 'Unlimited'} participants max</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <Trophy className="w-4 h-4 mr-2" />

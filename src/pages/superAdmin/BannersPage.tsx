@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { fetchBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } from '../store/slices/bannersSlice';
-import { Banner, CreateBannerRequest } from '../types/api';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Textarea } from '../components/ui/textarea';
+import { AppDispatch, RootState } from '../../store';
+import { fetchBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } from '../../store/slices/bannersSlice';
+import { Banner, CreateBannerRequest } from '../../types/api';
+import { Button } from '../../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Textarea } from '../../components/ui/textarea';
 import { toast } from 'sonner';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const BannersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

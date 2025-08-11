@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');

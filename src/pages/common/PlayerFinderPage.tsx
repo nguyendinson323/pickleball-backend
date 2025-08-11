@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { searchPlayers, getNearbyPlayers, getPlayerFinderPreferences, updatePlayerFinderPreferences, togglePlayerFinderStatus, sendMatchRequest } from '../store/slices/playerFinderSlice';
-import { User, UpdatePlayerFinderPreferencesRequest, SendMatchRequestRequest } from '../types/api';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Slider } from '../components/ui/slider';
-import { Switch } from '../components/ui/switch';
+import { AppDispatch, RootState } from '../../store';
+import { searchPlayers, getNearbyPlayers, getPlayerFinderPreferences, updatePlayerFinderPreferences, togglePlayerFinderStatus, sendMatchRequest } from '../../store/slices/playerFinderSlice';
+import { User, UpdatePlayerFinderPreferencesRequest, SendMatchRequestRequest } from '../../types/api';
+import { Button } from '../../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Slider } from '../../components/ui/slider';
+import { Switch } from '../../components/ui/switch';
 import { toast } from 'sonner';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const PlayerFinderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
