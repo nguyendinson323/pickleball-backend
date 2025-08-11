@@ -5,28 +5,28 @@ const FindCourt = () => {
       count: "2,847",
       description: "Climate-controlled facilities",
       icon: "🏠",
-      image: "img/8.jpg"
+      image: "/img/8.jpg"
     },
     {
       name: "Outdoor Courts",
       count: "5,234",
       description: "Fresh air and natural lighting",
       icon: "🌳",
-      image: "img/9.jpg"
+      image: "/img/9.jpg"
     },
     {
       name: "Temporary Courts",
       count: "1,156",
       description: "Portable and flexible setups",
       icon: "🎯",
-      image: "img/2.jpg"
+      image: "/img/2.jpg"
     },
     {
       name: "Tournament Courts",
       count: "892",
       description: "Professional-grade facilities",
       icon: "🏆",
-      image: "img/3.jpg"
+      image: "/img/3.jpg"
     }
   ];
 
@@ -35,37 +35,37 @@ const FindCourt = () => {
       name: "Lighting",
       available: "85%",
       icon: "💡",
-      image: "img/4.jpg"
+      image: "/img/4.jpg"
     },
     {
       name: "Parking",
       available: "92%",
       icon: "🚗",
-      image: "img/5.jpg"
+      image: "/img/5.jpg"
     },
     {
       name: "Restrooms",
       available: "78%",
       icon: "🚻",
-      image: "img/6.jpg"
+      image: "/img/6.jpg"
     },
     {
       name: "Water Fountains",
       available: "65%",
       icon: "🚰",
-      image: "img/1 (2).jpeg"
+      image: "/img/1 (2).jpeg"
     },
     {
       name: "Equipment Rental",
       available: "45%",
       icon: "🏓",
-      image: "img/1 (3).jpeg"
+      image: "/img/1 (3).jpeg"
     },
     {
       name: "Pro Shop",
       available: "32%",
       icon: "🛍️",
-      image: "img/1 (4).jpeg"
+      image: "/img/1 (4).jpeg"
     }
   ];
 
@@ -76,7 +76,7 @@ const FindCourt = () => {
         <div className="text-center mb-16 animate-on-scroll">
           <div className="w-full h-64 mb-8 rounded-lg overflow-hidden shadow-lg animate-on-scroll">
             <img 
-              src="img/7.jpg" 
+              src="/img/7.jpg" 
               alt="Find Court Hero - Beautiful pickleball courts"
               className="w-full h-full object-cover animate-on-scroll"
             />

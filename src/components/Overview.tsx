@@ -1,8 +1,9 @@
 import { Trophy, Users, MapPin, Award } from "lucide-react";
-import tournamentSystemImg from "@/assets/tournament-system.jpg";
-import rankingCredentialsImg from "@/assets/ranking-credentials.jpg";
-import courtReservationsImg from "@/assets/court-reservations.jpg";
-import playerCommunityImg from "@/assets/player-community.jpg";
+import React from "react";
+import tournamentSystemImg from "/img/tournament-system.jpg";
+import rankingCredentialsImg from "/img/ranking-credentials.jpg";
+import courtReservationsImg from "/img/court-reservations.jpg";
+import playerCommunityImg from "/img/player-community.jpg";
 
 const Overview = () => {
   const features = [

@@ -23,8 +23,8 @@ const News = () => {
             {/* Featured Article 1 */}
             <div className="animate-on-scroll card bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="h-48 relative overflow-hidden">
-                <img 
-                  src="/src/assets/tournament-system.jpg"
+                <img
+                  src="/img/tournament-system.jpg"
                   alt="Tournament Championship"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -58,8 +58,8 @@ const News = () => {
             {/* Featured Article 2 */}
             <div className="animate-on-scroll card bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="h-48 relative overflow-hidden">
-                <img 
-                  src="/src/assets/player-community.jpg"
+                <img
+                  src="/img/player-community.jpg"
                   alt="Youth Program Launch"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -93,8 +93,8 @@ const News = () => {
             {/* Featured Article 3 */}
             <div className="animate-on-scroll card bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="h-48 relative overflow-hidden">
-                <img 
-                  src="/src/assets/partners-business.jpg"
+                <img
+                  src="/img/partners-business.jpg"
                   alt="Olympic Partnership"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -135,8 +135,8 @@ const News = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="animate-on-scroll feature bg-white p-6 rounded-lg shadow-sm text-center hover:bg-gray-50 transition-colors duration-300">
               <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4">
-                <img 
-                  src="/src/assets/tournament-management.jpg"
+                <img
+                  src="/img/tournament-management.jpg"
                   alt="Tournaments"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -151,8 +151,8 @@ const News = () => {
 
             <div className="animate-on-scroll feature bg-white p-6 rounded-lg shadow-sm text-center hover:bg-gray-50 transition-colors duration-300">
               <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4">
-                <img 
-                  src="/src/assets/players-community.jpg"
+                <img
+                  src="/img/players-community.jpg"
                   alt="Community"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -167,8 +167,8 @@ const News = () => {
 
             <div className="animate-on-scroll feature bg-white p-6 rounded-lg shadow-sm text-center hover:bg-gray-50 transition-colors duration-300">
               <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4">
-                <img 
-                  src="/src/assets/ranking-system.jpg"
+                <img
+                  src="/img/ranking-system.jpg"
                   alt="Federation"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />
@@ -183,8 +183,8 @@ const News = () => {
 
             <div className="animate-on-scroll feature bg-white p-6 rounded-lg shadow-sm text-center hover:bg-gray-50 transition-colors duration-300">
               <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4">
-                <img 
-                  src="/src/assets/credentialing.jpg"
+                <img
+                  src="/img/credentialing.jpg"
                   alt="Press Releases"
                   className="animate-on-scroll w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                 />

@@ -1,13 +1,14 @@
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Play, Pause, ChevronLeft, ChevronRight } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
 import { useState, useEffect, useCallback } from "react";
-import sarahImg from "@/assets/testimonial-sarah.jpg";
-import michaelImg from "@/assets/testimonial-michael.jpg";
-import jenniferImg from "@/assets/testimonial-jennifer.jpg";
-import davidImg from "@/assets/testimonial-david.jpg";
-import lisaImg from "@/assets/testimonial-lisa.jpg";
-import omarImg from "@/assets/testimonial-omar.jpg";
+import sarahImg from "/img/testimonial-sarah.jpg";
+import michaelImg from "/img/testimonial-michael.jpg";
+import jenniferImg from "/img/testimonial-jennifer.jpg";
+import davidImg from "/img/testimonial-david.jpg";
+import lisaImg from "/img/testimonial-lisa.jpg";
+import omarImg from "/img/testimonial-omar.jpg";
 
 const Testimonials = () => {
   const [current, setCurrent] = useState(0);

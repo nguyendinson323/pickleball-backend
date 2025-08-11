@@ -1,5 +1,6 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
-import ctaBackgroundImg from "@/assets/cta-background.jpg";
+import ctaBackgroundImg from "/img/cta-background.jpg";
 
 const CallToAction = () => {
   return (

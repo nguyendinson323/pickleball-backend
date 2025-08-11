@@ -1,12 +1,13 @@
-import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, BarChart3, MapPin, Search, Shield, Globe } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
-import tournamentManagementImg from "@/assets/tournament-management.jpg";
-import rankingSystemImg from "@/assets/ranking-system.jpg";
-import courtReservationsImg from "@/assets/court-reservations.jpg";
-import playerFinderImg from "@/assets/player-finder.jpg";
-import credentialingImg from "@/assets/credentialing.jpg";
-import micrositesImg from "@/assets/microsites.jpg";
+import tournamentManagementImg from "/img/tournament-management.jpg";
+import rankingSystemImg from "/img/ranking-system.jpg";
+import courtReservationsImg from "/img/court-reservations.jpg";
+import playerFinderImg from "/img/player-finder.jpg";
+import credentialingImg from "/img/credentialing.jpg";
+import micrositesImg from "/img/microsites.jpg";
 
 const Features = () => {
   const features = [

@@ -1,12 +1,13 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building, Handshake, GraduationCap, MapPin } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
-import playersImg from "@/assets/players-community.jpg";
-import clubsImg from "@/assets/clubs-facility.jpg";
-import partnersImg from "@/assets/partners-business.jpg";
-import coachesImg from "@/assets/coaches-training.jpg";
-import statesImg from "@/assets/states-management.jpg";
+import playersImg from "/img/players-community.jpg";
+import clubsImg from "/img/clubs-facility.jpg";
+import partnersImg from "/img/partners-business.jpg";
+import coachesImg from "/img/coaches-training.jpg";
+import statesImg from "/img/states-management.jpg";
 
 const RoleBenefits = () => {
   const roles = [
