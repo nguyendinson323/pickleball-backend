@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Simple SVG icon components
 const CheckIcon = () => (
@@ -14,221 +14,203 @@ const XMarkIcon = () => (
 );
 
 const Membership = () => {
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "month",
-      description: "Basic access to federation resources",
-      features: [
-        "Access to public rankings",
-        "Event calendar viewing",
-        "Newsletter subscription",
-        "Basic court finder"
-      ],
-      popular: false,
-      color: "gray"
-    },
-    {
-      name: "Basic",
-      price: "$9.99",
-      period: "month",
-      description: "Enhanced features for casual players",
-      features: [
-        "All Free features",
-        "Tournament registration",
-        "Player profile",
-        "Basic statistics",
-        "Email support"
-      ],
-      popular: false,
-      color: "blue"
-    },
-    {
-      name: "Premium",
-      price: "$19.99",
-      period: "month",
-      description: "Advanced features for serious players",
-      features: [
-        "All Basic features",
-        "Advanced analytics",
-        "Priority tournament access",
-        "Coaching resources",
-        "Phone support",
-        "Exclusive events"
-      ],
-      popular: true,
-      color: "purple"
-    },
-    {
-      name: "Elite",
-      price: "$39.99",
-      period: "month",
-      description: "Ultimate experience for professionals",
-      features: [
-        "All Premium features",
-        "Personal account manager",
-        "VIP tournament access",
-        "Custom training plans",
-        "24/7 priority support",
-        "Sponsorship opportunities"
-      ],
-      popular: false,
-      color: "green"
-    }
-  ];
+  const [selectedUserType, setSelectedUserType] = useState<'player' | 'coach' | 'club' | 'partner' | 'state'>('player');
 
-  // Feature comparison data - much more maintainable
-  const featureComparison = [
-    {
-      category: "Core Features",
-      features: [
-        {
-          name: "Tournament Registration",
-          free: false,
-          basic: true,
-          premium: true,
-          elite: true
-        },
-        {
-          name: "Priority Tournament Access",
-          free: false,
-          basic: false,
-          premium: true,
-          elite: true
-        },
-        {
-          name: "VIP Tournament Access",
-          free: false,
-          basic: false,
-          premium: false,
-          elite: true
-        }
-      ]
-    },
-    {
-      category: "Player Experience",
-      features: [
-        {
-          name: "Player Profile & Statistics",
-          free: false,
-          basic: "Basic",
-          premium: "Advanced",
-          elite: "Premium"
-        },
-        {
-          name: "Advanced Analytics",
-          free: false,
-          basic: false,
-          premium: true,
-          elite: true
-        },
-        {
-          name: "Court Finder",
-          free: "Basic",
-          basic: "Enhanced",
-          premium: "Advanced",
-          elite: "Premium"
-        }
-      ]
-    },
-    {
-      category: "Training & Support",
-      features: [
-        {
-          name: "Coaching Resources",
-          free: false,
-          basic: false,
-          premium: true,
-          elite: true
-        },
-        {
-          name: "Custom Training Plans",
-          free: false,
-          basic: false,
-          premium: false,
-          elite: true
-        },
-        {
-          name: "Customer Support",
-          free: "Community",
-          basic: "Email",
-          premium: "Phone",
-          elite: "24/7 Priority"
-        },
-        {
-          name: "Training Videos",
-          free: false,
-          basic: "Limited",
-          premium: "Full Library",
-          elite: "Exclusive Content"
-        }
-      ]
-    },
-    {
-      category: "Exclusive Benefits",
-      features: [
-        {
-          name: "Exclusive Events",
-          free: false,
-          basic: false,
-          premium: true,
-          elite: true
-        },
-        {
-          name: "Personal Account Manager",
-          free: false,
-          basic: false,
-          premium: false,
-          elite: true
-        },
-        {
-          name: "Sponsorship Opportunities",
-          free: false,
-          basic: false,
-          premium: false,
-          elite: true
-        },
-        {
-          name: "Early Access to Features",
-          free: false,
-          basic: false,
-          premium: true,
-          elite: true
-        }
-      ]
-    }
-  ];
-
-  // Helper function to render feature value
-  const renderFeatureValue = (value: boolean | string, planColor: string) => {
-    if (typeof value === 'boolean') {
-      return value ? (
-        <CheckIcon />
-      ) : (
-        <XMarkIcon />
-      );
-    }
-    
-    if (typeof value === 'string') {
-      return (
-        <span className="text-xs text-gray-500">{value}</span>
-      );
-    }
-    
-    return null;
+  // User type-specific membership plans
+  const userTypePlans = {
+    player: [
+      {
+        name: "Free",
+        price: "$0",
+        period: "month",
+        description: "Basic access to federation resources",
+        features: [
+          "Access to public rankings",
+          "Event calendar viewing",
+          "Newsletter subscription",
+          "Basic court finder"
+        ],
+        popular: false,
+        color: "gray",
+        type: "free"
+      },
+      {
+        name: "Basic",
+        price: "$49.99",
+        period: "year",
+        description: "Annual membership for casual players",
+        features: [
+          "All Free features",
+          "Tournament registration",
+          "Player profile & statistics",
+          "Club affiliation",
+          "Email support"
+        ],
+        popular: true,
+        color: "blue",
+        type: "basic"
+      },
+      {
+        name: "Premium",
+        price: "$99.99",
+        period: "year",
+        description: "Enhanced features for serious players",
+        features: [
+          "All Basic features",
+          "Advanced analytics",
+          "Priority tournament access",
+          "Player finder (nearby players)",
+          "Court reservations",
+          "Phone support"
+        ],
+        popular: false,
+        color: "purple",
+        type: "premium"
+      }
+    ],
+    coach: [
+      {
+        name: "Free",
+        price: "$0",
+        period: "month",
+        description: "Basic access to federation resources",
+        features: [
+          "Access to public rankings",
+          "Event calendar viewing",
+          "Newsletter subscription"
+        ],
+        popular: false,
+        color: "gray",
+        type: "free"
+      },
+      {
+        name: "Professional",
+        price: "$79.99",
+        period: "year",
+        description: "Annual membership for coaches",
+        features: [
+          "All Free features",
+          "Tournament registration",
+          "Coach profile & credentials",
+          "Student management tools",
+          "Training session scheduling",
+          "Email support"
+        ],
+        popular: true,
+        color: "green",
+        type: "professional"
+      },
+      {
+        name: "Elite Coach",
+        price: "$149.99",
+        period: "year",
+        description: "Premium coaching features",
+        features: [
+          "All Professional features",
+          "Advanced student analytics",
+          "Priority tournament access",
+          "Coach finder (student matching)",
+          "Training facility access",
+          "Phone support"
+        ],
+        popular: false,
+        color: "green",
+        type: "elite"
+      }
+    ],
+    club: [
+      {
+        name: "Basic Affiliation",
+        price: "$199.99",
+        period: "year",
+        description: "Basic club affiliation",
+        features: [
+          "Club profile & microsite",
+          "Member management",
+          "Tournament hosting",
+          "Court registry",
+          "Email support"
+        ],
+        popular: true,
+        color: "purple",
+        type: "basic"
+      },
+      {
+        name: "Premium Club",
+        price: "$399.99",
+        period: "year",
+        description: "Advanced club management",
+        features: [
+          "All Basic features",
+          "Advanced analytics",
+          "Priority tournament access",
+          "Court reservations",
+          "Player & coach oversight",
+          "Phone support"
+        ],
+        popular: false,
+        color: "purple",
+        type: "premium"
+      }
+    ],
+    partner: [
+      {
+        name: "Premium Partner",
+        price: "$299.99",
+        period: "year",
+        description: "Partner membership",
+        features: [
+          "Partner profile & microsite",
+          "Tournament hosting",
+          "Court registry",
+          "Player & coach oversight",
+          "Email support"
+        ],
+        popular: true,
+        color: "orange",
+        type: "premium"
+      },
+      {
+        name: "Enterprise Partner",
+        price: "$599.99",
+        period: "year",
+        description: "Enterprise partner features",
+        features: [
+          "All Premium features",
+          "Advanced analytics",
+          "Priority tournament access",
+          "Court reservations",
+          "Full member oversight",
+          "Phone support"
+        ],
+        popular: false,
+        color: "orange",
+        type: "enterprise"
+      }
+    ],
+    state: [
+      {
+        name: "State Affiliation",
+        price: "$499.99",
+        period: "year",
+        description: "State federation affiliation",
+        features: [
+          "State profile & microsite",
+          "Full member management",
+          "Tournament creation & hosting",
+          "Court registry management",
+          "Player & club oversight",
+          "State-wide announcements",
+          "Priority support"
+        ],
+        popular: true,
+        color: "purple",
+        type: "federation"
+      }
+    ]
   };
 
-  // Helper function to get plan color classes
-  const getPlanColorClasses = (planName: string) => {
-    const colorMap: Record<string, string> = {
-      'Free': 'text-gray-900',
-      'Basic': 'text-blue-600',
-      'Premium': 'text-purple-600',
-      'Elite': 'text-green-600'
-    };
-    return colorMap[planName] || 'text-gray-900';
-  };
+  const currentPlans = userTypePlans[selectedUserType];
 
   return (
     <section className="py-20 bg-white">
@@ -243,13 +225,110 @@ const Membership = () => {
           </p>
         </div>
 
+        {/* User Type Selector */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-gradient-to-r from-gray-50 via-white to-gray-50 rounded-2xl p-2 shadow-lg border border-gray-200">
+            {Object.keys(userTypePlans).map((userType, index) => {
+              const isSelected = selectedUserType === userType;
+              const getIcon = (type: string) => {
+                switch (type) {
+                  case 'player':
+                    return (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    );
+                  case 'coach':
+                    return (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    );
+                  case 'club':
+                    return (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    );
+                  case 'partner':
+                    return (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    );
+                  case 'state':
+                    return (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    );
+                  default:
+                    return null;
+                }
+              };
+
+              const getColorClasses = (type: string) => {
+                switch (type) {
+                  case 'player':
+                    return isSelected ? 'bg-blue-500 text-white shadow-blue-200' : 'text-blue-600 hover:bg-blue-50';
+                  case 'coach':
+                    return isSelected ? 'bg-green-500 text-white shadow-green-200' : 'text-green-600 hover:bg-green-50';
+                  case 'club':
+                    return isSelected ? 'bg-purple-500 text-white shadow-purple-200' : 'text-purple-600 hover:bg-purple-50';
+                  case 'partner':
+                    return isSelected ? 'bg-orange-500 text-white shadow-orange-200' : 'text-orange-600 hover:bg-orange-50';
+                  case 'state':
+                    return isSelected ? 'bg-indigo-500 text-white shadow-indigo-200' : 'text-indigo-600 hover:bg-indigo-50';
+                  default:
+                    return isSelected ? 'bg-gray-500 text-white shadow-gray-200' : 'text-gray-600 hover:bg-gray-50';
+                }
+              };
+
+              return (
+                <button
+                  key={userType}
+                  onClick={() => setSelectedUserType(userType as keyof typeof userTypePlans)}
+                  className={`relative px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                    isSelected 
+                      ? 'shadow-lg scale-105' 
+                      : 'hover:shadow-md'
+                  } ${getColorClasses(userType)}`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className={`transition-all duration-300 ${isSelected ? 'scale-110' : ''}`}>
+                      {getIcon(userType)}
+                    </span>
+                    <span className="font-medium">
+                      {userType.charAt(0).toUpperCase() + userType.slice(1)}
+                    </span>
+                  </div>
+                  
+                  {/* Active indicator */}
+                  {isSelected && (
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-current rounded-full animate-pulse"></div>
+                  )}
+                  
+                  {/* Hover effect */}
+                  <div className={`absolute inset-0 rounded-xl transition-opacity duration-300 ${
+                    isSelected ? 'opacity-0' : 'opacity-0 hover:opacity-10'
+                  } bg-current`}></div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Membership Plans Section */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {plans.map((plan, index) => (
+        <div className={`grid gap-6 mb-16 ${
+          currentPlans.length === 1 ? 'md:grid-cols-1 max-w-2xl mx-auto' :
+          currentPlans.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+          'md:grid-cols-2 lg:grid-cols-3'
+        }`}>
+          {currentPlans.map((plan, index) => (
             <div
               key={plan.name}
-              className={`animate-on-scroll card relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${
-                plan.popular ? 'ring-2 ring-purple-500' : ''
+              className={`animate-on-scroll card relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ring-2  ${
+                plan.popular ? 'ring-purple-500' : ''
               }`}
             >
               {plan.popular && (
@@ -262,7 +341,8 @@ const Membership = () => {
                   <h3 className={`animate-on-scroll text-2xl font-bold mb-2 ${
                     plan.color === 'purple' ? 'text-purple-600' :
                     plan.color === 'blue' ? 'text-blue-600' :
-                    plan.color === 'green' ? 'text-green-600' : 'text-gray-600'
+                    plan.color === 'green' ? 'text-green-600' :
+                    plan.color === 'orange' ? 'text-orange-600' : 'text-gray-600'
                   }`}>
                     {plan.name}
                   </h3>
@@ -310,130 +390,6 @@ const Membership = () => {
           ))}
         </div>
 
-        {/* Membership Comparison Table */}
-        <div className="mb-16">
-          <h3 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-8 text-center">
-            Membership Comparison Table
-          </h3>
-          <div className="overflow-x-auto shadow-lg rounded-lg">
-            <div className="min-w-[800px]">
-              <table className="w-full bg-white overflow-hidden">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
-                      Features & Benefits
-                    </th>
-                    {plans.map((plan) => (
-                      <th 
-                        key={plan.name}
-                        className={`px-6 py-4 text-center text-sm font-semibold border-b border-gray-200 relative ${getPlanColorClasses(plan.name)}`}
-                      >
-                        {plan.name}
-                        {plan.popular && (
-                          <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
-                            Popular
-                          </span>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {/* Core Features Row */}
-                  <tr className="bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                      Core Features
-                    </td>
-                    {plans.map((plan) => (
-                      <td key={plan.name} className="px-6 py-4 text-center">
-                        <div className={`w-4 h-4 bg-${plan.color}-500 rounded-full mx-auto shadow-sm`}></div>
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Feature Rows */}
-                  {featureComparison.map((category, categoryIndex) => (
-                    <React.Fragment key={category.category}>
-                      {category.features.map((feature, featureIndex) => (
-                        <tr 
-                          key={`${category.category}-${feature.name}`}
-                          className="hover:bg-gray-50 transition-colors"
-                        >
-                          <td className="px-6 py-4 text-sm text-gray-700 font-medium">
-                            {feature.name}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {renderFeatureValue(feature.free, 'gray')}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {renderFeatureValue(feature.basic, 'blue')}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {renderFeatureValue(feature.premium, 'purple')}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {renderFeatureValue(feature.elite, 'green')}
-                          </td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Benefits Section */}
-        <div className="mb-16">
-          <h3 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-8 text-center">
-            Membership Benefits
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="animate-on-scroll feature text-center p-6 hover:bg-gray-50 transition-colors duration-300">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="animate-on-scroll w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h4 className="animate-on-scroll text-xl font-semibold text-gray-900 mb-3">
-                Community Access
-              </h4>
-              <p className="animate-on-scroll text-gray-600">
-                Connect with players, join clubs, and participate in community events.
-              </p>
-            </div>
-
-            <div className="animate-on-scroll feature text-center p-6 hover:bg-gray-50 transition-colors duration-300">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="animate-on-scroll w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h4 className="animate-on-scroll text-xl font-semibold text-gray-900 mb-3">
-                Advanced Analytics
-              </h4>
-              <p className="animate-on-scroll text-gray-600">
-                Track your progress with detailed statistics and performance insights.
-              </p>
-            </div>
-
-            <div className="animate-on-scroll feature text-center p-6 hover:bg-gray-50 transition-colors duration-300">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="animate-on-scroll w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h4 className="animate-on-scroll text-xl font-semibold text-gray-900 mb-3">
-                Priority Access
-              </h4>
-              <p className="animate-on-scroll text-gray-600">
-                Get early access to tournaments and exclusive member-only events.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Call to Action Section */}
         <div className="text-center">
           <div className="animate-on-scroll bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
@@ -453,4 +409,4 @@ const Membership = () => {
   );
 };
 
-export default Membership; 
+export default Membership;

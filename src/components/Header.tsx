@@ -74,8 +74,6 @@ const Header = () => {
           <div className="animate-on-scroll">
             <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
               <img src="/logo.jpeg" alt="Logo" className="h-8 w-8 rounded animate-on-scroll" />
-              <span className="text-xl font-bold text-gray-900 hidden sm:block animate-on-scroll">Pickleball</span>
-              <span className="text-lg font-bold text-gray-900 sm:hidden animate-on-scroll">PF</span>
             </Link>
           </div>
 

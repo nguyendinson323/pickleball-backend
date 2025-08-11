@@ -65,7 +65,7 @@ const Footer = () => {
             {/* Column 1: Logo and Copyright */}
             <div className="flex flex-col space-y-4 animate-on-scroll footer-item">
               <div className="flex h-full w-8 items-center rounded-md text-primary-foreground font-bold text-sm animate-on-scroll">
-                <img src="logo.jpeg" alt="logo" className="w-[160px] max-w-none animate-on-scroll" />
+                <img src="/logo.jpeg" alt="logo" className="w-[160px] max-w-none animate-on-scroll" />
               </div>
               
               <p className="text-sm text-muted-foreground animate-on-scroll">
