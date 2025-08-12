@@ -28,7 +28,7 @@ const apiRoutes = require('./routes');
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const API_VERSION = process.env.API_VERSION || 'v1';
 
 // Security middleware
