@@ -23,7 +23,7 @@ import {
   User,
   LogOut
 } from 'lucide-react'
-import { getUserNavigation } from '../lib/navigation'
+import { getUserNavigation, basePublicNavigation, commonLoggedInTabs } from '../lib/navigation'
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -46,26 +46,9 @@ const Header = () => {
   // Get dynamic navigation based on user type and role
   const userNavigation = getUserNavigation(user)
   
-  // Separate navigation into logical groups
-  const baseNavigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Events', href: '/events' },
-    { name: 'News', href: '/news' },
-    { name: 'Contact', href: '/contact' },
-  ]
-  
-  // All common functionality for logged-in users in one array
-  const allCommonFeatures = [
-    { name: 'Tournaments', href: '/tournaments' },
-    { name: 'Rankings', href: '/rankings' },
-    { name: 'Find Court', href: '/find-court' },
-    { name: 'Player Finder', href: '/player-finder' },
-    { name: 'Clubs', href: '/clubs' },
-    { name: 'Court Reservations', href: '/court-reservations' },
-    { name: 'Messages', href: '/messages' },
-    { name: 'Membership', href: '/membership' },
-  ]
+  // Use navigation.ts as single source of truth
+  const baseNavigation = basePublicNavigation
+  const allCommonFeatures = commonLoggedInTabs
   
   const adminNavigation = userNavigation.admin || []
 
@@ -108,21 +91,19 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center space-x-1">
             {/* Base Navigation Tabs */}
-            <div className="hidden xl:flex items-center space-x-1">
-              {baseNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                    isActive(item.href)
-                      ? 'text-blue-600 bg-blue-50 border border-blue-200'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
+            {baseNavigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  isActive(item.href)
+                    ? 'text-blue-600 bg-blue-50 border border-blue-200'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
 
             {/* Services Mega Menu */}
             {isAuthenticated && (
@@ -157,23 +138,6 @@ const Header = () => {
                 </div>
               </div>
             )}
-
-            {/* Admin Navigation */}
-            {isAuthenticated && user?.role === 'admin' && adminNavigation.filter(item => !item.public).map((item) => (
-              <div key={item.name} className="relative">
-                <Link
-                  to={item.href}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-50 group ${
-                    isActive(item.href)
-                      ? 'text-red-600 bg-red-50 border border-red-200'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              </div>
-            ))}
           </nav>
 
           {/* User Menu */}
@@ -220,9 +184,6 @@ const Header = () => {
                         <div className="flex items-center space-x-2">
                           <Badge variant="secondary" className="text-xs capitalize">
                             {user?.user_type}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs capitalize">
-                            {user?.role}
                           </Badge>
                         </div>
                       </div>
@@ -338,7 +299,7 @@ const Header = () => {
               )}
 
               {/* Admin Navigation */}
-              {isAuthenticated && user?.role === 'admin' && (
+              {isAuthenticated && adminNavigation.length > 0 && (
                 <div className="px-4 pb-2">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Admin</h3>
                   <div className="space-y-1">

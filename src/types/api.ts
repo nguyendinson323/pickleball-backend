@@ -25,8 +25,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // User Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface User {
   id: string;
-  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'federation';
-  role: 'super_admin' | 'admin' | 'moderator' | 'user';
+  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'admin' | 'super_admin';
   username: string;
   email: string;
   first_name?: string;

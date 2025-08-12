@@ -80,6 +80,14 @@ export const statePrivateTabs: NavigationItem[] = [
   { name: 'Statistics', href: '/state/statistics', public: false },
 ]
 
+// Admin navigation - only private tabs
+export const adminPrivateTabs: NavigationItem[] = [
+  { name: 'Admin Dashboard', href: '/admin/dashboard', public: false },
+  { name: 'Admin Profile', href: '/admin/profile', public: false },
+  { name: 'User Management', href: '/admin/users', public: false },
+  { name: 'Banner Management', href: '/admin/banners', public: false },
+]
+
 // Super Admin navigation - only private tabs
 export const superAdminPrivateTabs: NavigationItem[] = [
   { name: 'Dashboard', href: '/super-admin/dashboard', public: false },
@@ -110,21 +118,23 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   // For logged-in users, combine base public + common tabs + private tabs
   const mainNavigation = [...basePublicNavigation, ...commonLoggedInTabs]
   
-  // Super admin gets special navigation
-  if (user.role === 'super_admin') {
+  // Get private tabs based on user_type (this is the primary navigation)
+  const privateTabs = getPrivateTabsByUserType(user.user_type)
+  
+  // Super admin user_type gets additional admin tabs
+  if (user.user_type === 'super_admin') {
     return {
       main: mainNavigation,
-      user: superAdminPrivateTabs,
+      user: privateTabs,  // Use user_type-based tabs
       admin: superAdminAdminTabs
     }
   }
 
-  // Regular admin gets admin navigation
-  if (user.role === 'admin') {
-    const privateTabs = getPrivateTabsByUserType(user.user_type)
+  // Admin user_type gets basic admin tabs
+  if (user.user_type === 'admin') {
     return {
       main: mainNavigation,
-      user: privateTabs,
+      user: privateTabs,  // Use user_type-based tabs
       admin: [
         { name: 'Admin Dashboard', href: '/admin', public: false },
         { name: 'Banner Management', href: '/admin/banners', public: false },
@@ -132,8 +142,7 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
     }
   }
 
-  // Regular users get their type-specific private tabs
-  const privateTabs = getPrivateTabsByUserType(user.user_type)
+  // Regular users get only their type-specific private tabs
   return {
     main: mainNavigation,
     user: privateTabs
@@ -154,6 +163,18 @@ const getPrivateTabsByUserType = (userType: string): NavigationItem[] => {
     case 'state':
       return statePrivateTabs
     case 'federation':
+      // Federation users get federation-specific tabs, using state routes for now
+      return [
+        { name: 'Federation Dashboard', href: '/state/dashboard', public: false },
+        { name: 'Federation Profile', href: '/state/profile', public: false },
+        { name: 'Member Management', href: '/state/members', public: false },
+        { name: 'State Management', href: '/state/microsite', public: false },
+        { name: 'Tournament Management', href: '/tournaments', public: false },
+        { name: 'Analytics', href: '/state/statistics', public: false },
+      ]
+    case 'admin':
+      return adminPrivateTabs
+    case 'super_admin':
       return superAdminPrivateTabs
     default:
       return playerPrivateTabs

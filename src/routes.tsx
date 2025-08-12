@@ -2,7 +2,6 @@ import LoginPage from "./pages/auth/LoginPage";
 import SelectUserTypePage from "./pages/auth/SelectUserTypePage";
 import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
 import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
-import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -386,19 +385,49 @@ const routes = [
     public: false
   },
   {
+    key: 'admin-dashboard',
+    path: '/admin/dashboard',
+    element: <AdminPage />,
+    public: false
+  },
+  {
+    key: 'admin-profile',
+    path: '/admin/profile',
+    element: <AdminPage />,
+    public: false
+  },
+  {
+    key: 'admin-users',
+    path: '/admin/users',
+    element: <AdminPage />,
+    public: false
+  },
+  {
     key: 'banners',
     path: '/admin/banners',
     element: <BannersPage />,
     public: false
   },
-
-  // Legacy routes (keeping for backward compatibility)
   {
-    key: 'dashboard',
-    path: '/dashboard',
-    element: <DashboardPage />,
+    key: 'admin-settings',
+    path: '/admin/settings',
+    element: <AdminPage />,
     public: false
   },
+  {
+    key: 'admin-payments',
+    path: '/admin/payments',
+    element: <AdminPage />,
+    public: false
+  },
+  {
+    key: 'admin-content',
+    path: '/admin/content',
+    element: <AdminPage />,
+    public: false
+  },
+
+  // Legacy routes (keeping for backward compatibility)
   {
     key: 'profile',
     path: '/profile',
