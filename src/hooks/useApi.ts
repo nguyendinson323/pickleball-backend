@@ -1,45 +1,64 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { apiService } from '../services/api';
 import {
   loginUser,
   registerUser,
   getProfile,
+} from '../store/slices/authSlice';
+import {
   fetchUsers,
   fetchPlayers,
   fetchUser,
   updateUser,
+} from '../store/slices/usersSlice';
+import {
   fetchClubs,
   fetchClub,
   createClub,
   fetchClubCourts,
   fetchClubTournaments,
+} from '../store/slices/clubsSlice';
+import {
   fetchTournaments,
   fetchUpcomingTournaments,
   fetchTournament,
   createTournament,
   registerForTournament,
+} from '../store/slices/tournamentsSlice';
+import {
   fetchCourts,
   fetchCourt,
   createCourt,
   bookCourt,
   getCourtAvailability,
   getCourtBookings,
+} from '../store/slices/courtsSlice';
+import {
   fetchPayments,
   createPayment,
   processPayment,
+} from '../store/slices/paymentsSlice';
+import {
   fetchRankings,
   fetchTopPlayers,
   fetchUserRankings,
+} from '../store/slices/rankingsSlice';
+import {
   fetchNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+} from '../store/slices/notificationsSlice';
+import {
   fetchDashboardStats,
   fetchAdminUsers,
   updateUserRole,
+} from '../store/slices/adminSlice';
+import {
   fetchOverviewStats,
   fetchUserStats,
+} from '../store/slices/statsSlice';
+import {
   fetchBanners,
   fetchCarouselBanners,
   fetchActiveBanners,
@@ -50,6 +69,8 @@ import {
   updateBannerPosition,
   trackBannerView,
   trackBannerClick,
+} from '../store/slices/bannersSlice';
+import {
   searchPlayers,
   fetchNearbyPlayers,
   fetchPlayerFinderPreferences,
@@ -57,38 +78,14 @@ import {
   togglePlayerFinderStatus,
   fetchPlayerFinderStats,
   sendMatchRequest,
+} from '../store/slices/playerFinderSlice';
+import {
   createCourtReservation,
   fetchCourtReservations,
   cancelCourtReservation,
-} from '../store/slices';
+} from '../store/slices/courtReservationsSlice';
 
-// Generic hook for API operations
-export function useApi<T, P = void>() {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const execute = useCallback(
-    async (params?: P) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await apiService.request<T>(params as any);
-        setData(result);
-        return result;
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  return { data, loading, error, execute };
-}
 
 // Auth hooks
 export function useAuth() {
