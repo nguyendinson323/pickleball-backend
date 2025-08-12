@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Ranking, RankingsQueryParams } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface RankingsState {
   rankings: Ranking[];
@@ -28,27 +28,25 @@ const initialState: RankingsState = {
 export const fetchRankings = createAsyncThunk(
   'rankings/fetchRankings',
   async (params: RankingsQueryParams) => {
-    const response = await apiService.getRankings(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/rankings?${queryString}`);
   }
 );
 
 export const fetchTopPlayers = createAsyncThunk(
   'rankings/fetchTopPlayers',
   async (params: Partial<RankingsQueryParams>) => {
-    const response = await apiService.getTopPlayers(params);
-    if (!response.success) throw new Error(response.message);
-    return response.data || [];
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    const data = await api.get(`/rankings/top?${queryString}`);
+    return data || [];
   }
 );
 
 export const fetchUserRankings = createAsyncThunk(
   'rankings/fetchUserRankings',
   async (userId: string) => {
-    const response = await apiService.getUserRankings(userId);
-    if (!response.success) throw new Error(response.message);
-    return response.data || [];
+    const data = await api.get(`/rankings/user/${userId}`);
+    return data || [];
   }
 );
 
@@ -79,8 +77,9 @@ const rankingsSlice = createSlice({
       })
       .addCase(fetchRankings.fulfilled, (state, action) => {
         state.loading = false;
-        state.rankings = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.rankings = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchRankings.rejected, (state, action) => {
         state.loading = false;
@@ -93,7 +92,8 @@ const rankingsSlice = createSlice({
       })
       .addCase(fetchTopPlayers.fulfilled, (state, action) => {
         state.loading = false;
-        state.topPlayers = action.payload;
+        const payload = action.payload as any;
+        state.topPlayers = payload || [];
       })
       .addCase(fetchTopPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -106,7 +106,8 @@ const rankingsSlice = createSlice({
       })
       .addCase(fetchUserRankings.fulfilled, (state, action) => {
         state.loading = false;
-        state.userRankings = action.payload;
+        const payload = action.payload as any;
+        state.userRankings = payload || [];
       })
       .addCase(fetchUserRankings.rejected, (state, action) => {
         state.loading = false;

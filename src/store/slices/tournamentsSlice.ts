@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Tournament, TournamentsQueryParams, CreateTournamentRequest, TournamentRegistrationRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface TournamentsState {
   tournaments: Tournament[];
@@ -28,45 +28,38 @@ const initialState: TournamentsState = {
 export const fetchTournaments = createAsyncThunk(
   'tournaments/fetchTournaments',
   async (params: TournamentsQueryParams) => {
-    const response = await apiService.getTournaments(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/tournaments?${queryString}`);
   }
 );
 
 export const fetchUpcomingTournaments = createAsyncThunk(
   'tournaments/fetchUpcomingTournaments',
   async (limit: number = 5) => {
-    const response = await apiService.getUpcomingTournaments(limit);
-    if (!response.success) throw new Error(response.message);
-    return response.data || [];
+    const data = await api.get(`/tournaments/upcoming?limit=${limit}`);
+    return data || [];
   }
 );
 
 export const fetchTournament = createAsyncThunk(
   'tournaments/fetchTournament',
   async (id: string) => {
-    const response = await apiService.getTournament(id);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get(`/tournaments/${id}`);
   }
 );
 
 export const createTournament = createAsyncThunk(
   'tournaments/createTournament',
   async (tournamentData: CreateTournamentRequest) => {
-    const response = await apiService.createTournament(tournamentData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/tournaments', tournamentData);
   }
 );
 
 export const registerForTournament = createAsyncThunk(
   'tournaments/registerForTournament',
   async ({ tournamentId, registrationData }: { tournamentId: string; registrationData: TournamentRegistrationRequest }) => {
-    const response = await apiService.registerForTournament(tournamentId, registrationData);
-    if (!response.success) throw new Error(response.message);
-    return { tournamentId, registration: response.data };
+    const data = await api.post(`/tournaments/${tournamentId}/register`, registrationData);
+    return { tournamentId, registration: data };
   }
 );
 
@@ -106,8 +99,9 @@ const tournamentsSlice = createSlice({
       })
       .addCase(fetchTournaments.fulfilled, (state, action) => {
         state.loading = false;
-        state.tournaments = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.tournaments = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchTournaments.rejected, (state, action) => {
         state.loading = false;
@@ -120,7 +114,8 @@ const tournamentsSlice = createSlice({
       })
       .addCase(fetchUpcomingTournaments.fulfilled, (state, action) => {
         state.loading = false;
-        state.upcomingTournaments = action.payload;
+        const payload = action.payload as any;
+        state.upcomingTournaments = payload || [];
       })
       .addCase(fetchUpcomingTournaments.rejected, (state, action) => {
         state.loading = false;
@@ -133,7 +128,10 @@ const tournamentsSlice = createSlice({
       })
       .addCase(fetchTournament.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentTournament = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentTournament = payload;
+        }
       })
       .addCase(fetchTournament.rejected, (state, action) => {
         state.loading = false;
@@ -146,8 +144,11 @@ const tournamentsSlice = createSlice({
       })
       .addCase(createTournament.fulfilled, (state, action) => {
         state.loading = false;
-        state.tournaments.unshift(action.payload);
-        state.currentTournament = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.tournaments.unshift(payload);
+          state.currentTournament = payload;
+        }
       })
       .addCase(createTournament.rejected, (state, action) => {
         state.loading = false;
@@ -160,15 +161,16 @@ const tournamentsSlice = createSlice({
       })
       .addCase(registerForTournament.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current tournament if it's the same tournament
-        if (state.currentTournament && state.currentTournament.id === action.payload.tournamentId) {
+        if (state.currentTournament && state.currentTournament.id === payload.tournamentId) {
           state.currentTournament = {
             ...state.currentTournament,
             current_participants: state.currentTournament.current_participants + 1
           };
         }
         // Update tournament in tournaments array if exists
-        const index = state.tournaments.findIndex(t => t.id === action.payload.tournamentId);
+        const index = state.tournaments.findIndex(t => t.id === payload.tournamentId);
         if (index !== -1) {
           state.tournaments[index] = {
             ...state.tournaments[index],

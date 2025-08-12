@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
+import { api } from '../../lib/api';
 
 interface OverviewStats {
   total_users: number;
@@ -34,18 +34,14 @@ const initialState: StatsState = {
 export const fetchOverviewStats = createAsyncThunk(
   'stats/fetchOverviewStats',
   async () => {
-    const response = await apiService.getOverviewStats();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get('/stats/overview');
   }
 );
 
 export const fetchUserStats = createAsyncThunk(
   'stats/fetchUserStats',
-  async (params: { start_date?: string; end_date?: string; state?: string; category?: string }) => {
-    const response = await apiService.getUserStats(params);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+  async () => {
+    return await api.get('/stats/users');
   }
 );
 
@@ -72,7 +68,10 @@ const statsSlice = createSlice({
       })
       .addCase(fetchOverviewStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.overviewStats = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.overviewStats = payload;
+        }
       })
       .addCase(fetchOverviewStats.rejected, (state, action) => {
         state.loading = false;
@@ -85,7 +84,10 @@ const statsSlice = createSlice({
       })
       .addCase(fetchUserStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.userStats = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.userStats = payload;
+        }
       })
       .addCase(fetchUserStats.rejected, (state, action) => {
         state.loading = false;

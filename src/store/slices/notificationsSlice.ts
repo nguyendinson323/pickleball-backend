@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Notification, NotificationsQueryParams } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface NotificationsState {
   notifications: Notification[];
@@ -26,27 +26,22 @@ const initialState: NotificationsState = {
 export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (params: NotificationsQueryParams) => {
-    const response = await apiService.getNotifications(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/notifications?${queryString}`);
   }
 );
 
 export const markNotificationAsRead = createAsyncThunk(
   'notifications/markNotificationAsRead',
   async (notificationId: string) => {
-    const response = await apiService.markNotificationAsRead(notificationId);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put(`/notifications/${notificationId}/read`, {});
   }
 );
 
 export const markAllNotificationsAsRead = createAsyncThunk(
   'notifications/markAllNotificationsAsRead',
   async () => {
-    const response = await apiService.markAllNotificationsAsRead();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put('/notifications/read-all', {});
   }
 );
 
@@ -89,10 +84,10 @@ const notificationsSlice = createSlice({
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.loading = false;
-        state.notifications = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
-        // Calculate unread count
-        state.unreadCount = state.notifications.filter(n => !n.is_read).length;
+        const payload = action.payload as any;
+        state.notifications = payload?.data || [];
+        state.pagination = payload?.pagination || null;
+        state.unreadCount = payload?.unread_count || 0;
       })
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
@@ -105,14 +100,15 @@ const notificationsSlice = createSlice({
       })
       .addCase(markNotificationAsRead.fulfilled, (state, action) => {
         state.loading = false;
-        // Update notification in the list
-        const index = state.notifications.findIndex(n => n.id === action.payload.id);
-        if (index !== -1) {
-          state.notifications[index] = action.payload;
-        }
-        // Update unread count if notification was unread
-        if (action.payload.is_read && state.unreadCount > 0) {
-          state.unreadCount = Math.max(0, state.unreadCount - 1);
+        const payload = action.payload as any;
+        if (payload) {
+          const notification = state.notifications.find(n => n.id === payload.id);
+          if (notification) {
+            notification.is_read = true;
+          }
+          if (state.unreadCount > 0) {
+            state.unreadCount--;
+          }
         }
       })
       .addCase(markNotificationAsRead.rejected, (state, action) => {
@@ -124,10 +120,11 @@ const notificationsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(markAllNotificationsAsRead.fulfilled, (state, action) => {
+      .addCase(markAllNotificationsAsRead.fulfilled, (state) => {
         state.loading = false;
-        // Mark all notifications as read
-        state.notifications = state.notifications.map(n => ({ ...n, is_read: true }));
+        state.notifications.forEach(notification => {
+          notification.is_read = true;
+        });
         state.unreadCount = 0;
       })
       .addCase(markAllNotificationsAsRead.rejected, (state, action) => {

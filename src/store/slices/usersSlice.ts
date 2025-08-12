@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { User, UsersQueryParams, UpdateUserRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface UsersState {
   users: User[];
@@ -26,36 +26,30 @@ const initialState: UsersState = {
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (params: UsersQueryParams) => {
-    const response = await apiService.getUsers(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/users?${queryString}`);
   }
 );
 
 export const fetchPlayers = createAsyncThunk(
   'users/fetchPlayers',
   async (params: Partial<UsersQueryParams>) => {
-    const response = await apiService.getPlayers(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/users/players?${queryString}`);
   }
 );
 
 export const fetchUser = createAsyncThunk(
   'users/fetchUser',
   async (id: string) => {
-    const response = await apiService.getUser(id);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get(`/users/${id}`);
   }
 );
 
 export const updateUser = createAsyncThunk(
   'users/updateUser',
   async ({ id, userData }: { id: string; userData: UpdateUserRequest }) => {
-    const response = await apiService.updateUser(id, userData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put(`/users/${id}`, userData);
   }
 );
 
@@ -83,8 +77,9 @@ const usersSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.users = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
@@ -97,8 +92,9 @@ const usersSlice = createSlice({
       })
       .addCase(fetchPlayers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.users = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -111,7 +107,10 @@ const usersSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentUser = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentUser = payload;
+        }
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
@@ -124,11 +123,14 @@ const usersSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentUser = action.payload;
-        // Update user in users array if exists
-        const index = state.users.findIndex(user => user.id === action.payload.id);
-        if (index !== -1) {
-          state.users[index] = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentUser = payload;
+          // Update user in users array if exists
+          const index = state.users.findIndex(user => user.id === payload.id);
+          if (index !== -1) {
+            state.users[index] = payload;
+          }
         }
       })
       .addCase(updateUser.rejected, (state, action) => {

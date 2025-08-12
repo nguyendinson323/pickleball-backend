@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { CourtReservation, BookCourtRequest, CourtAvailabilityQueryParams, CourtBookingsQueryParams } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface CourtReservationsState {
   reservations: CourtReservation[];
@@ -34,44 +34,45 @@ const initialState: CourtReservationsState = {
 export const createCourtReservation = createAsyncThunk(
   'courtReservations/createCourtReservation',
   async ({ courtId, bookingData }: { courtId: string; bookingData: BookCourtRequest }) => {
-    const response = await apiService.bookCourt(courtId, bookingData);
-    if (!response.success) throw new Error(response.message);
-    return response.data.reservation;
+    const data = await api.post(`/courts/${courtId}/book`, bookingData);
+    const response = data as any;
+    return response?.reservation;
   }
 );
 
 export const fetchCourtReservations = createAsyncThunk(
   'courtReservations/fetchCourtReservations',
   async (params: { page?: number; limit?: number; user_id?: string; club_id?: string; status?: string }) => {
-    // This would need to be implemented in the API service
-    // For now, we'll use a mock response
-    return { data: [], pagination: null };
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/court-reservations?${queryString}`);
   }
 );
 
 export const getCourtAvailability = createAsyncThunk(
   'courtReservations/getCourtAvailability',
   async ({ courtId, params }: { courtId: string; params: CourtAvailabilityQueryParams }) => {
-    const response = await apiService.getCourtAvailability(courtId, params);
-    if (!response.success) throw new Error(response.message);
-    return { courtId, availability: response.data || [] };
+    const queryParams = new URLSearchParams();
+    queryParams.append('date', params.date);
+    if (params.duration) queryParams.append('duration', params.duration.toString());
+    
+    const data = await api.get(`/courts/${courtId}/availability?${queryParams.toString()}`);
+    return { courtId, availability: data || [] };
   }
 );
 
 export const getCourtBookings = createAsyncThunk(
   'courtReservations/getCourtBookings',
   async ({ courtId, params }: { courtId: string; params: CourtBookingsQueryParams }) => {
-    const response = await apiService.getCourtBookings(courtId, params);
-    if (!response.success) throw new Error(response.message);
-    return { courtId, bookings: response.data || [] };
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    const data = await api.get(`/courts/${courtId}/bookings?${queryString}`);
+    return { courtId, bookings: data || [] };
   }
 );
 
 export const cancelCourtReservation = createAsyncThunk(
   'courtReservations/cancelCourtReservation',
   async (reservationId: string) => {
-    // This would need to be implemented in the API service
-    // For now, we'll return the reservation ID
+    await api.put(`/court-reservations/${reservationId}/cancel`, {});
     return reservationId;
   }
 );
@@ -144,8 +145,9 @@ const courtReservationsSlice = createSlice({
       })
       .addCase(fetchCourtReservations.fulfilled, (state, action) => {
         state.loading = false;
-        state.reservations = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.reservations = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchCourtReservations.rejected, (state, action) => {
         state.loading = false;
@@ -158,7 +160,8 @@ const courtReservationsSlice = createSlice({
       })
       .addCase(getCourtAvailability.fulfilled, (state, action) => {
         state.loading = false;
-        state.courtAvailability = action.payload.availability;
+        const payload = action.payload as any;
+        state.courtAvailability = payload?.availability || [];
       })
       .addCase(getCourtAvailability.rejected, (state, action) => {
         state.loading = false;
@@ -171,7 +174,8 @@ const courtReservationsSlice = createSlice({
       })
       .addCase(getCourtBookings.fulfilled, (state, action) => {
         state.loading = false;
-        state.courtBookings = action.payload.bookings;
+        const payload = action.payload as any;
+        state.courtBookings = payload?.bookings || [];
       })
       .addCase(getCourtBookings.rejected, (state, action) => {
         state.loading = false;

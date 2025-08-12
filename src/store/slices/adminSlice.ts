@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { User, UsersQueryParams, UpdateUserRoleRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface DashboardStats {
   total_users: number;
@@ -37,27 +37,22 @@ const initialState: AdminState = {
 export const fetchDashboardStats = createAsyncThunk(
   'admin/fetchDashboardStats',
   async () => {
-    const response = await apiService.getDashboardStats();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get('/admin/dashboard-stats');
   }
 );
 
 export const fetchAdminUsers = createAsyncThunk(
   'admin/fetchAdminUsers',
   async (params: UsersQueryParams) => {
-    const response = await apiService.getAdminUsers(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/admin/users?${queryString}`);
   }
 );
 
 export const updateUserRole = createAsyncThunk(
   'admin/updateUserRole',
   async ({ userId, roleData }: { userId: string; roleData: UpdateUserRoleRequest }) => {
-    const response = await apiService.updateUserRole(userId, roleData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put(`/admin/users/${userId}/role`, roleData);
   }
 );
 
@@ -85,7 +80,10 @@ const adminSlice = createSlice({
       })
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.dashboardStats = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.dashboardStats = payload;
+        }
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {
         state.loading = false;
@@ -98,8 +96,9 @@ const adminSlice = createSlice({
       })
       .addCase(fetchAdminUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.adminUsers = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.adminUsers = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchAdminUsers.rejected, (state, action) => {
         state.loading = false;
@@ -112,10 +111,13 @@ const adminSlice = createSlice({
       })
       .addCase(updateUserRole.fulfilled, (state, action) => {
         state.loading = false;
-        // Update user in admin users array if exists
-        const index = state.adminUsers.findIndex(user => user.id === action.payload.id);
-        if (index !== -1) {
-          state.adminUsers[index] = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          // Update user in adminUsers array if exists
+          const index = state.adminUsers.findIndex(user => user.id === payload.id);
+          if (index !== -1) {
+            state.adminUsers[index] = payload;
+          }
         }
       })
       .addCase(updateUserRole.rejected, (state, action) => {

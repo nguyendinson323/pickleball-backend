@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Club, ClubsQueryParams, CreateClubRequest, Court, Tournament } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface ClubWithDetails extends Club {
   courts?: Court[];
@@ -31,45 +31,38 @@ const initialState: ClubsState = {
 export const fetchClubs = createAsyncThunk(
   'clubs/fetchClubs',
   async (params: ClubsQueryParams) => {
-    const response = await apiService.getClubs(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/clubs?${queryString}`);
   }
 );
 
 export const fetchClub = createAsyncThunk(
   'clubs/fetchClub',
   async (id: string) => {
-    const response = await apiService.getClub(id);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get(`/clubs/${id}`);
   }
 );
 
 export const createClub = createAsyncThunk(
   'clubs/createClub',
   async (clubData: CreateClubRequest) => {
-    const response = await apiService.createClub(clubData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/clubs', clubData);
   }
 );
 
 export const fetchClubCourts = createAsyncThunk(
   'clubs/fetchClubCourts',
   async (clubId: string) => {
-    const response = await apiService.getClubCourts(clubId);
-    if (!response.success) throw new Error(response.message);
-    return { clubId, courts: response.data || [] };
+    const data = await api.get(`/clubs/${clubId}/courts`);
+    return { clubId, courts: data || [] };
   }
 );
 
 export const fetchClubTournaments = createAsyncThunk(
   'clubs/fetchClubTournaments',
   async (clubId: string) => {
-    const response = await apiService.getClubTournaments(clubId);
-    if (!response.success) throw new Error(response.message);
-    return { clubId, tournaments: response.data || [] };
+    const data = await api.get(`/clubs/${clubId}/tournaments`);
+    return { clubId, tournaments: data || [] };
   }
 );
 
@@ -109,8 +102,9 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClubs.fulfilled, (state, action) => {
         state.loading = false;
-        state.clubs = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.clubs = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchClubs.rejected, (state, action) => {
         state.loading = false;
@@ -123,7 +117,10 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClub.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentClub = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentClub = payload;
+        }
       })
       .addCase(fetchClub.rejected, (state, action) => {
         state.loading = false;
@@ -136,8 +133,11 @@ const clubsSlice = createSlice({
       })
       .addCase(createClub.fulfilled, (state, action) => {
         state.loading = false;
-        state.clubs.unshift(action.payload);
-        state.currentClub = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.clubs.unshift(payload);
+          state.currentClub = payload;
+        }
       })
       .addCase(createClub.rejected, (state, action) => {
         state.loading = false;
@@ -150,9 +150,10 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClubCourts.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current club with courts if it's the same club
-        if (state.currentClub && state.currentClub.id === action.payload.clubId) {
-          state.currentClub = { ...state.currentClub, courts: action.payload.courts };
+        if (state.currentClub && state.currentClub.id === payload.clubId) {
+          state.currentClub = { ...state.currentClub, courts: payload.courts || [] };
         }
       })
       .addCase(fetchClubCourts.rejected, (state, action) => {
@@ -166,9 +167,10 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClubTournaments.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current club with tournaments if it's the same club
-        if (state.currentClub && state.currentClub.id === action.payload.clubId) {
-          state.currentClub = { ...state.currentClub, tournaments: action.payload.tournaments };
+        if (state.currentClub && state.currentClub.id === payload.clubId) {
+          state.currentClub = { ...state.currentClub, tournaments: payload.tournaments || [] };
         }
       })
       .addCase(fetchClubTournaments.rejected, (state, action) => {

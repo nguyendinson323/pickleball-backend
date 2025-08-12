@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { User, LoginRequest, RegisterRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface AuthState {
   user: User | null;
@@ -23,27 +23,21 @@ const initialState: AuthState = {
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: LoginRequest) => {
-    const response = await apiService.login(credentials);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/auth/login', credentials);
   }
 );
 
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData: RegisterRequest) => {
-    const response = await apiService.register(userData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/auth/register', userData);
   }
 );
 
 export const getProfile = createAsyncThunk(
   'auth/getProfile',
   async () => {
-    const response = await apiService.getProfile();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get('/auth/profile');
   }
 );
 
@@ -56,7 +50,8 @@ const authSlice = createSlice({
       state.token = null;
       state.refresh_token = null;
       state.isAuthenticated = false;
-      apiService.clearToken();
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh_token');
     },
     clearError: (state) => {
       state.error = null;
@@ -64,7 +59,7 @@ const authSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
       state.isAuthenticated = true;
-      apiService.setToken(action.payload);
+      localStorage.setItem('token', action.payload);
     },
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
@@ -79,11 +74,15 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.tokens.accessToken;
-        state.refresh_token = action.payload.tokens.refreshToken;
-        state.isAuthenticated = true;
-        apiService.setToken(action.payload.tokens.accessToken);
+        const payload = action.payload as any;
+        if (payload?.user && payload?.tokens) {
+          state.user = payload.user;
+          state.token = payload.tokens.accessToken;
+          state.refresh_token = payload.tokens.refreshToken;
+          state.isAuthenticated = true;
+          localStorage.setItem('token', payload.tokens.accessToken);
+          localStorage.setItem('refresh_token', payload.tokens.refreshToken);
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -97,11 +96,15 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.tokens.accessToken;
-        state.refresh_token = action.payload.tokens.refreshToken;
-        state.isAuthenticated = true;
-        apiService.setToken(action.payload.tokens.accessToken);
+        const payload = action.payload as any;
+        if (payload?.user && payload?.tokens) {
+          state.user = payload.user;
+          state.token = payload.tokens.accessToken;
+          state.refresh_token = payload.tokens.refreshToken;
+          state.isAuthenticated = true;
+          localStorage.setItem('token', payload.tokens.accessToken);
+          localStorage.setItem('refresh_token', payload.tokens.refreshToken);
+        }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -115,8 +118,11 @@ const authSlice = createSlice({
       })
       .addCase(getProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
+        const payload = action.payload as any;
+        if (payload) {
+          state.user = payload;
+          state.isAuthenticated = true;
+        }
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;

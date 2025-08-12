@@ -25,7 +25,9 @@ const LoginPage = () => {
       toast.success('Login successful!')
       
       // Navigate to appropriate dashboard based on user type
-      const userType = result.user.user_type
+      // Handle the API response structure properly
+      const response = result as any
+      const userType = response?.user?.user_type || response?.user_type
       switch (userType) {
         case 'player':
           navigate('/player/dashboard')

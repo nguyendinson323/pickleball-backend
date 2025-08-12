@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { User, PlayerFinder, SearchPlayersQueryParams, UpdatePlayerFinderPreferencesRequest, SendMatchRequestRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface PlayerFinderState {
   searchResults: User[];
@@ -36,63 +36,52 @@ const initialState: PlayerFinderState = {
 export const searchPlayers = createAsyncThunk(
   'playerFinder/searchPlayers',
   async (params: SearchPlayersQueryParams) => {
-    const response = await apiService.searchPlayers(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/player-finder/search?${queryString}`);
   }
 );
 
 export const fetchNearbyPlayers = createAsyncThunk(
   'playerFinder/fetchNearbyPlayers',
   async (limit: number = 10) => {
-    const response = await apiService.getNearbyPlayers(limit);
-    if (!response.success) throw new Error(response.message);
-    return response.data || [];
+    const data = await api.get(`/player-finder/nearby?limit=${limit}`);
+    return data || [];
   }
 );
 
 export const fetchPlayerFinderPreferences = createAsyncThunk(
   'playerFinder/fetchPlayerFinderPreferences',
   async () => {
-    const response = await apiService.getPlayerFinderPreferences();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get('/player-finder/preferences');
   }
 );
 
 export const updatePlayerFinderPreferences = createAsyncThunk(
   'playerFinder/updatePlayerFinderPreferences',
   async (preferences: UpdatePlayerFinderPreferencesRequest) => {
-    const response = await apiService.updatePlayerFinderPreferences(preferences);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put('/player-finder/preferences', preferences);
   }
 );
 
 export const togglePlayerFinderStatus = createAsyncThunk(
   'playerFinder/togglePlayerFinderStatus',
   async () => {
-    const response = await apiService.togglePlayerFinderStatus();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.put('/player-finder/toggle-status', {});
   }
 );
 
 export const fetchPlayerFinderStats = createAsyncThunk(
   'playerFinder/fetchPlayerFinderStats',
   async () => {
-    const response = await apiService.getPlayerFinderStats();
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get('/player-finder/stats');
   }
 );
 
 export const sendMatchRequest = createAsyncThunk(
   'playerFinder/sendMatchRequest',
   async ({ targetUserId, requestData }: { targetUserId: string; requestData: SendMatchRequestRequest }) => {
-    const response = await apiService.sendMatchRequest(targetUserId, requestData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    const data = await api.post(`/player-finder/match-request/${targetUserId}`, requestData);
+    return data;
   }
 );
 
@@ -132,8 +121,9 @@ const playerFinderSlice = createSlice({
       })
       .addCase(searchPlayers.fulfilled, (state, action) => {
         state.loading = false;
-        state.searchResults = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.searchResults = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(searchPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -146,7 +136,8 @@ const playerFinderSlice = createSlice({
       })
       .addCase(fetchNearbyPlayers.fulfilled, (state, action) => {
         state.loading = false;
-        state.nearbyPlayers = action.payload;
+        const payload = action.payload as any;
+        state.nearbyPlayers = payload || [];
       })
       .addCase(fetchNearbyPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -159,7 +150,10 @@ const playerFinderSlice = createSlice({
       })
       .addCase(fetchPlayerFinderPreferences.fulfilled, (state, action) => {
         state.loading = false;
-        state.preferences = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.preferences = payload;
+        }
       })
       .addCase(fetchPlayerFinderPreferences.rejected, (state, action) => {
         state.loading = false;
@@ -172,7 +166,10 @@ const playerFinderSlice = createSlice({
       })
       .addCase(updatePlayerFinderPreferences.fulfilled, (state, action) => {
         state.loading = false;
-        state.preferences = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.preferences = payload;
+        }
       })
       .addCase(updatePlayerFinderPreferences.rejected, (state, action) => {
         state.loading = false;
@@ -185,9 +182,9 @@ const playerFinderSlice = createSlice({
       })
       .addCase(togglePlayerFinderStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.preferences = action.payload;
-        if (state.stats) {
-          state.stats.is_active = action.payload.is_active;
+        const payload = action.payload as any;
+        if (payload && state.preferences) {
+          state.preferences.is_active = payload.is_active;
         }
       })
       .addCase(togglePlayerFinderStatus.rejected, (state, action) => {
@@ -201,7 +198,10 @@ const playerFinderSlice = createSlice({
       })
       .addCase(fetchPlayerFinderStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.stats = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.stats = payload;
+        }
       })
       .addCase(fetchPlayerFinderStats.rejected, (state, action) => {
         state.loading = false;

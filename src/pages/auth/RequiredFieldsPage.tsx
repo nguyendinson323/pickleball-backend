@@ -111,7 +111,8 @@ const RequiredFieldsPage = () => {
       toast.success('Registration successful!');
       
       // Navigate to appropriate dashboard based on user type
-      const resultUserType = result.user.user_type
+      const response = result as any;
+      const resultUserType = response?.user?.user_type || response?.user_type;
       switch (resultUserType) {
         case 'player':
           navigate('/player/dashboard')

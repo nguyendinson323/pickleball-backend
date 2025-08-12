@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Payment, PaymentsQueryParams, CreatePaymentRequest, ProcessPaymentRequest } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface PaymentsState {
   payments: Payment[];
@@ -26,27 +26,22 @@ const initialState: PaymentsState = {
 export const fetchPayments = createAsyncThunk(
   'payments/fetchPayments',
   async (params: PaymentsQueryParams) => {
-    const response = await apiService.getPayments(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/payments?${queryString}`);
   }
 );
 
 export const createPayment = createAsyncThunk(
   'payments/createPayment',
   async (paymentData: CreatePaymentRequest) => {
-    const response = await apiService.createPayment(paymentData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/payments', paymentData);
   }
 );
 
 export const processPayment = createAsyncThunk(
   'payments/processPayment',
-  async ({ paymentId, paymentData }: { paymentId: string; paymentData: ProcessPaymentRequest }) => {
-    const response = await apiService.processPayment(paymentId, paymentData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+  async ({ paymentId, processData }: { paymentId: string; processData: ProcessPaymentRequest }) => {
+    return await api.put(`/payments/${paymentId}/process`, processData);
   }
 );
 
@@ -86,8 +81,9 @@ const paymentsSlice = createSlice({
       })
       .addCase(fetchPayments.fulfilled, (state, action) => {
         state.loading = false;
-        state.payments = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.payments = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchPayments.rejected, (state, action) => {
         state.loading = false;
@@ -100,8 +96,11 @@ const paymentsSlice = createSlice({
       })
       .addCase(createPayment.fulfilled, (state, action) => {
         state.loading = false;
-        state.payments.unshift(action.payload);
-        state.currentPayment = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.payments.unshift(payload);
+          state.currentPayment = payload;
+        }
       })
       .addCase(createPayment.rejected, (state, action) => {
         state.loading = false;
@@ -114,11 +113,14 @@ const paymentsSlice = createSlice({
       })
       .addCase(processPayment.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentPayment = action.payload.payment;
-        // Update payment in payments array if exists
-        const index = state.payments.findIndex(p => p.id === action.payload.payment.id);
-        if (index !== -1) {
-          state.payments[index] = action.payload.payment;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentPayment = payload;
+          // Update payment in payments array if exists
+          const index = state.payments.findIndex(payment => payment.id === payload.id);
+          if (index !== -1) {
+            state.payments[index] = payload;
+          }
         }
       })
       .addCase(processPayment.rejected, (state, action) => {

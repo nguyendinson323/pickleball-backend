@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiService } from '../../services/api';
 import { Court, CourtsQueryParams, CreateCourtRequest, BookCourtRequest, CourtReservation } from '../../types/api';
+import { api } from '../../lib/api';
 
 interface CourtWithDetails extends Court {
   availability?: Array<{
@@ -35,54 +35,52 @@ const initialState: CourtsState = {
 export const fetchCourts = createAsyncThunk(
   'courts/fetchCourts',
   async (params: CourtsQueryParams) => {
-    const response = await apiService.getCourts(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return await api.get(`/courts?${queryString}`);
   }
 );
 
 export const fetchCourt = createAsyncThunk(
   'courts/fetchCourt',
   async (id: string) => {
-    const response = await apiService.getCourt(id);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.get(`/courts/${id}`);
   }
 );
 
 export const createCourt = createAsyncThunk(
   'courts/createCourt',
   async (courtData: CreateCourtRequest) => {
-    const response = await apiService.createCourt(courtData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    return await api.post('/courts', courtData);
   }
 );
 
 export const bookCourt = createAsyncThunk(
   'courts/bookCourt',
   async ({ courtId, bookingData }: { courtId: string; bookingData: BookCourtRequest }) => {
-    const response = await apiService.bookCourt(courtId, bookingData);
-    if (!response.success) throw new Error(response.message);
-    return { courtId, reservation: response.data.reservation };
+    const data = await api.post(`/courts/${courtId}/book`, bookingData);
+    const response = data as any;
+    return { courtId, reservation: response?.reservation };
   }
 );
 
 export const getCourtAvailability = createAsyncThunk(
   'courts/getCourtAvailability',
   async ({ courtId, params }: { courtId: string; params: { date: string; duration?: number } }) => {
-    const response = await apiService.getCourtAvailability(courtId, params);
-    if (!response.success) throw new Error(response.message);
-    return { courtId, availability: response.data || [] };
+    const queryParams = new URLSearchParams();
+    queryParams.append('date', params.date);
+    if (params.duration) queryParams.append('duration', params.duration.toString());
+    
+    const data = await api.get(`/courts/${courtId}/availability?${queryParams.toString()}`);
+    return { courtId, availability: data || [] };
   }
 );
 
 export const getCourtBookings = createAsyncThunk(
   'courts/getCourtBookings',
   async ({ courtId, params }: { courtId: string; params: { date?: string; status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show' } }) => {
-    const response = await apiService.getCourtBookings(courtId, params);
-    if (!response.success) throw new Error(response.message);
-    return { courtId, bookings: response.data || [] };
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    const data = await api.get(`/courts/${courtId}/bookings?${queryString}`);
+    return { courtId, bookings: data || [] };
   }
 );
 
@@ -122,8 +120,9 @@ const courtsSlice = createSlice({
       })
       .addCase(fetchCourts.fulfilled, (state, action) => {
         state.loading = false;
-        state.courts = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
+        const payload = action.payload as any;
+        state.courts = payload?.data || [];
+        state.pagination = payload?.pagination || null;
       })
       .addCase(fetchCourts.rejected, (state, action) => {
         state.loading = false;
@@ -136,7 +135,10 @@ const courtsSlice = createSlice({
       })
       .addCase(fetchCourt.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentCourt = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.currentCourt = payload;
+        }
       })
       .addCase(fetchCourt.rejected, (state, action) => {
         state.loading = false;
@@ -149,8 +151,11 @@ const courtsSlice = createSlice({
       })
       .addCase(createCourt.fulfilled, (state, action) => {
         state.loading = false;
-        state.courts.unshift(action.payload);
-        state.currentCourt = action.payload;
+        const payload = action.payload as any;
+        if (payload) {
+          state.courts.unshift(payload);
+          state.currentCourt = payload;
+        }
       })
       .addCase(createCourt.rejected, (state, action) => {
         state.loading = false;
@@ -163,15 +168,16 @@ const courtsSlice = createSlice({
       })
       .addCase(bookCourt.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current court if it's the same court
-        if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
+        if (state.currentCourt && state.currentCourt.id === payload.courtId) {
           state.currentCourt = {
             ...state.currentCourt,
             total_bookings: state.currentCourt.total_bookings + 1
           };
         }
         // Update court in courts array if exists
-        const index = state.courts.findIndex(c => c.id === action.payload.courtId);
+        const index = state.courts.findIndex(c => c.id === payload.courtId);
         if (index !== -1) {
           state.courts[index] = {
             ...state.courts[index],
@@ -190,9 +196,10 @@ const courtsSlice = createSlice({
       })
       .addCase(getCourtAvailability.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current court with availability if it's the same court
-        if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
-          state.currentCourt = { ...state.currentCourt, availability: action.payload.availability };
+        if (state.currentCourt && state.currentCourt.id === payload.courtId) {
+          state.currentCourt = { ...state.currentCourt, availability: payload.availability || [] };
         }
       })
       .addCase(getCourtAvailability.rejected, (state, action) => {
@@ -206,9 +213,10 @@ const courtsSlice = createSlice({
       })
       .addCase(getCourtBookings.fulfilled, (state, action) => {
         state.loading = false;
+        const payload = action.payload as any;
         // Update current court with bookings if it's the same court
-        if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
-          state.currentCourt = { ...state.currentCourt, bookings: action.payload.bookings };
+        if (state.currentCourt && state.currentCourt.id === payload.courtId) {
+          state.currentCourt = { ...state.currentCourt, bookings: payload.bookings || [] };
         }
       })
       .addCase(getCourtBookings.rejected, (state, action) => {
