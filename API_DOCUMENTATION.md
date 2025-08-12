@@ -553,7 +553,7 @@ export const COURT_RESERVATION_CANCEL_FAILURE = 'COURT_RESERVATION_CANCEL_FAILUR
 
 ```typescript
 interface RegisterRequest {
-  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'federation';
+  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'admin' | 'super_admin';
   username: string;
   email: string;
   password: string;

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { fetchRankings, fetchTopPlayers } from '../store/slices/rankingsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Badge } from '../components/ui/badge';
+import { AppDispatch, RootState } from '../../store';
+import { fetchRankings, fetchTopPlayers } from '../../store/slices/rankingsSlice';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Badge } from '../../components/ui/badge';
 import { Trophy, Medal, Star, TrendingUp, TrendingDown, Minus, Target, Users, Award } from 'lucide-react';
-import { Ranking } from '../types/api';
-import { useAnimation } from '../hooks/useAnimation';
+import { Ranking } from '../../types/api';
+import { useAnimation } from '../../hooks/useAnimation';
 
 const RankingsPage = () => {
   const dispatch = useDispatch<AppDispatch>();

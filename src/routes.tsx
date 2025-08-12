@@ -4,18 +4,26 @@ import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
 import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/auth/ProfilePage";
-import AdminPage from "./pages/superAdmin/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
+
+// Super Admin pages
+import AdminPage from "./pages/superAdmin/AdminPage";
+import AdminProfile from "./pages/superAdmin/AdminProfile";
+import Analytics from "./pages/superAdmin/Analytics";
+import SystemManagement from "./pages/superAdmin/SystemManagement";
+import UserManagement from "./pages/superAdmin/UserManagement";
 import BannersPage from "./pages/superAdmin/BannersPage";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
 import TournamentsPage from "./pages/common/TournamentsPage";
 import Rankings from "./pages/common/Rankings";
+import RankingsPage from "./pages/common/RankingsPage";
 import PlayerFinderPage from "./pages/common/PlayerFinderPage";
 import CourtReservationsPage from "./pages/common/CourtReservationsPage";
 import FindCourt from "./pages/common/FindCourt";
 import Membership from "./pages/common/Membership";
+import MessagePage from "./pages/common/MessagePage";
 
 // Home pages (public)
 import About from "./pages/home/About";
@@ -23,10 +31,44 @@ import Events from "./pages/home/Events";
 import News from "./pages/home/News";
 import Contact from "./pages/home/Contact";
 import Home from "./pages/home/Home";
-import { PlayerProfile } from "./pages/player";
 
+// Player pages
+import PlayerDashboard from "./pages/player/Dashboard";
+import PlayerProfile from "./pages/player/PlayerProfile";
+
+// Coach pages
+import CoachDashboard from "./pages/coach/Dashboard";
+import CoachProfile from "./pages/coach/CoachProfile";
+import Credentials from "./pages/coach/Credentials";
+import Students from "./pages/coach/Students";
+import Sessions from "./pages/coach/Sessions";
+import Certifications from "./pages/coach/Certifications";
+
+// Club pages
+import ClubDashboard from "./pages/club/Dashboard";
+import ClubProfile from "./pages/club/ClubProfile";
+import ClubCourtManagement from "./pages/club/CourtManagement";
+import ClubMemberManagement from "./pages/club/MemberManagement";
+import ClubMicrosite from "./pages/club/ClubMicrosite";
+
+// Partner pages
+import PartnerDashboard from "./pages/partner/Dashboard";
+import BusinessProfile from "./pages/partner/BusinessProfile";
+import PartnerCourtManagement from "./pages/partner/CourtManagement";
+import BusinessMicrosite from "./pages/partner/BusinessMicrosite";
+import PartnerAnalytics from "./pages/partner/Analytics";
+
+// State pages
+import StateDashboard from "./pages/state/Dashboard";
+import StateProfile from "./pages/state/StateProfile";
+import StateMemberManagement from "./pages/state/MemberManagement";
+import StateCourtManagement from "./pages/state/CourtManagement";
+import StateMicrosite from "./pages/state/StateMicrosite";
+import Announcements from "./pages/state/Announcements";
+import Statistics from "./pages/state/Statistics";
 
 const routes = [
+  // Public routes
   {
     key: 'root',
     path: '/',
@@ -43,24 +85,6 @@ const routes = [
     key: 'events',
     path: '/events',
     element: <Events />,
-    public: true
-  },
-  {
-    key: 'rankings',
-    path: '/rankings',
-    element: <Rankings />,
-    public: true
-  },
-  {
-    key: 'membership',
-    path: '/membership',
-    element: <Membership />,
-    public: true
-  },
-  {
-    key: 'find-court',
-    path: '/find-court',
-    element: <FindCourt />,
     public: true
   },
   {
@@ -105,16 +129,30 @@ const routes = [
     element: <OptionalFieldsPage />,
     public: true
   },
-  {
-    key: 'clubs',
-    path: '/clubs',
-    element: <ClubsPage />,
-    public: true
-  },
+
+  // Common functionality routes (accessible to all logged-in users)
   {
     key: 'tournaments',
     path: '/tournaments',
     element: <TournamentsPage />,
+    public: true
+  },
+  {
+    key: 'rankings',
+    path: '/rankings',
+    element: <Rankings />,
+    public: true
+  },
+  {
+    key: 'rankings-page',
+    path: '/rankings-page',
+    element: <RankingsPage />,
+    public: true
+  },
+  {
+    key: 'find-court',
+    path: '/find-court',
+    element: <FindCourt />,
     public: true
   },
   {
@@ -124,37 +162,35 @@ const routes = [
     public: true
   },
   {
+    key: 'clubs',
+    path: '/clubs',
+    element: <ClubsPage />,
+    public: true
+  },
+  {
     key: 'court-reservations',
     path: '/court-reservations',
     element: <CourtReservationsPage />,
     public: true
   },
-  // Public messages page for everyone
+  {
+    key: 'membership',
+    path: '/membership',
+    element: <Membership />,
+    public: true
+  },
   {
     key: 'messages',
     path: '/messages',
-    element: <DashboardPage />,
+    element: <MessagePage />,
     public: true
   },
-  // Legacy dashboard routes (keeping for backward compatibility)
-  {
-    key: 'dashboard',
-    path: '/dashboard',
-    element: <DashboardPage />,
-    public: false
-  },
-  // Legacy profile route (keeping for backward compatibility)
-  {
-    key: 'profile',
-    path: '/profile',
-    element: <ProfilePage />,
-    public: false
-  },
+
   // Player-specific routes
   {
     key: 'player-dashboard',
     path: '/player/dashboard',
-    element: <DashboardPage />,
+    element: <PlayerDashboard />,
     public: false
   },
   {
@@ -163,191 +199,185 @@ const routes = [
     element: <PlayerProfile />,
     public: false
   },
-  {
-    key: 'player-rankings',
-    path: '/player/rankings',
-    element: <Rankings />,
-    public: false
-  },
-  {
-    key: 'player-courts',
-    path: '/player/courts',
-    element: <CourtReservationsPage />,
-    public: false
-  },
+
   // Coach-specific routes
   {
     key: 'coach-dashboard',
     path: '/coach/dashboard',
-    element: <DashboardPage />,
+    element: <CoachDashboard />,
     public: false
   },
   {
     key: 'coach-profile',
     path: '/coach/profile',
-    element: <ProfilePage />,
+    element: <CoachProfile />,
     public: false
   },
   {
     key: 'coach-credentials',
     path: '/coach/credentials',
-    element: <DashboardPage />,
+    element: <Credentials />,
     public: false
   },
   {
     key: 'coach-students',
     path: '/coach/students',
-    element: <DashboardPage />,
+    element: <Students />,
     public: false
   },
   {
     key: 'coach-sessions',
     path: '/coach/sessions',
-    element: <DashboardPage />,
+    element: <Sessions />,
     public: false
   },
   {
     key: 'coach-certifications',
     path: '/coach/certifications',
-    element: <DashboardPage />,
+    element: <Certifications />,
     public: false
   },
+
   // Club-specific routes
   {
     key: 'club-dashboard',
     path: '/club/dashboard',
-    element: <DashboardPage />,
+    element: <ClubDashboard />,
     public: false
   },
   {
     key: 'club-profile',
     path: '/club/profile',
-    element: <ProfilePage />,
+    element: <ClubProfile />,
     public: false
   },
   {
     key: 'club-courts',
     path: '/club/courts',
-    element: <CourtReservationsPage />,
+    element: <ClubCourtManagement />,
     public: false
   },
   {
     key: 'club-members',
     path: '/club/members',
-    element: <DashboardPage />,
+    element: <ClubMemberManagement />,
     public: false
   },
   {
     key: 'club-microsite',
     path: '/club/microsite',
-    element: <DashboardPage />,
+    element: <ClubMicrosite />,
     public: false
   },
+
   // Partner-specific routes
   {
     key: 'partner-dashboard',
     path: '/partner/dashboard',
-    element: <DashboardPage />,
+    element: <PartnerDashboard />,
     public: false
   },
   {
     key: 'partner-profile',
     path: '/partner/profile',
-    element: <ProfilePage />,
+    element: <BusinessProfile />,
     public: false
   },
   {
     key: 'partner-courts',
     path: '/partner/courts',
-    element: <CourtReservationsPage />,
+    element: <PartnerCourtManagement />,
     public: false
   },
   {
     key: 'partner-microsite',
     path: '/partner/microsite',
-    element: <DashboardPage />,
+    element: <BusinessMicrosite />,
     public: false
   },
   {
     key: 'partner-analytics',
     path: '/partner/analytics',
-    element: <DashboardPage />,
+    element: <PartnerAnalytics />,
     public: false
   },
+
   // State-specific routes
   {
     key: 'state-dashboard',
     path: '/state/dashboard',
-    element: <DashboardPage />,
+    element: <StateDashboard />,
     public: false
   },
   {
     key: 'state-profile',
     path: '/state/profile',
-    element: <ProfilePage />,
+    element: <StateProfile />,
     public: false
   },
   {
     key: 'state-members',
     path: '/state/members',
-    element: <DashboardPage />,
+    element: <StateMemberManagement />,
     public: false
   },
   {
     key: 'state-courts',
     path: '/state/courts',
-    element: <CourtReservationsPage />,
+    element: <StateCourtManagement />,
     public: false
   },
   {
     key: 'state-microsite',
     path: '/state/microsite',
-    element: <DashboardPage />,
+    element: <StateMicrosite />,
     public: false
   },
   {
     key: 'state-announcements',
     path: '/state/announcements',
-    element: <DashboardPage />,
+    element: <Announcements />,
     public: false
   },
   {
     key: 'state-statistics',
     path: '/state/statistics',
-    element: <DashboardPage />,
+    element: <Statistics />,
     public: false
   },
+
   // Super Admin-specific routes
   {
     key: 'super-admin-dashboard',
     path: '/super-admin/dashboard',
-    element: <DashboardPage />,
+    element: <AdminPage />,
     public: false
   },
   {
     key: 'super-admin-profile',
     path: '/super-admin/profile',
-    element: <ProfilePage />,
+    element: <AdminProfile />,
     public: false
   },
   {
     key: 'super-admin-users',
     path: '/super-admin/users',
-    element: <AdminPage />,
+    element: <UserManagement />,
     public: false
   },
   {
     key: 'super-admin-system',
     path: '/super-admin/system',
-    element: <AdminPage />,
+    element: <SystemManagement />,
     public: false
   },
   {
     key: 'super-admin-analytics',
     path: '/super-admin/analytics',
-    element: <AdminPage />,
+    element: <Analytics />,
     public: false
   },
+
   // Admin routes
   {
     key: 'admin',
@@ -361,6 +391,22 @@ const routes = [
     element: <BannersPage />,
     public: false
   },
+
+  // Legacy routes (keeping for backward compatibility)
+  {
+    key: 'dashboard',
+    path: '/dashboard',
+    element: <DashboardPage />,
+    public: false
+  },
+  {
+    key: 'profile',
+    path: '/profile',
+    element: <ProfilePage />,
+    public: false
+  },
+
+  // 404 route
   {
     key: '404',
     path: '*',
