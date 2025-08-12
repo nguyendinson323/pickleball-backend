@@ -1,6 +1,41 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Club, ClubsQueryParams, CreateClubRequest } from '../../types/api';
-import { apiService } from '../../services/api';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+
+interface Club {
+  id: string;
+  name: string;
+  description: string;
+  logo?: string;
+  banner?: string;
+  founded: string;
+  type: 'public' | 'private' | 'semi-private';
+  category: 'recreation' | 'competitive' | 'social' | 'training';
+  website?: string;
+  location: string;
+  rating: number;
+  memberCount: number;
+  courtCount: number;
+  amenities: string[];
+  courts?: any[];
+  tournaments?: any[];
+}
+
+interface ClubsQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  type?: string;
+  category?: string;
+  location?: string;
+}
+
+interface CreateClubRequest {
+  name: string;
+  description: string;
+  type: string;
+  category: string;
+  location: string;
+  website?: string;
+}
 
 interface ClubsState {
   clubs: Club[];
@@ -27,45 +62,54 @@ const initialState: ClubsState = {
 export const fetchClubs = createAsyncThunk(
   'clubs/fetchClubs',
   async (params: ClubsQueryParams) => {
-    const response = await apiService.getClubs(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
+    const queryString = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) queryString.append(key, value.toString());
+    });
+    
+    const response = await fetch(`/api/clubs?${queryString}`);
+    if (!response.ok) throw new Error('Failed to fetch clubs');
+    return response.json();
   }
 );
 
 export const fetchClub = createAsyncThunk(
   'clubs/fetchClub',
   async (id: string) => {
-    const response = await apiService.getClub(id);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    const response = await fetch(`/api/clubs/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch club');
+    return response.json();
   }
 );
 
 export const createClub = createAsyncThunk(
   'clubs/createClub',
   async (clubData: CreateClubRequest) => {
-    const response = await apiService.createClub(clubData);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
+    const response = await fetch('/api/clubs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(clubData),
+    });
+    if (!response.ok) throw new Error('Failed to create club');
+    return response.json();
   }
 );
 
 export const fetchClubCourts = createAsyncThunk(
   'clubs/fetchClubCourts',
   async (clubId: string) => {
-    const response = await apiService.getClubCourts(clubId);
-    if (!response.success) throw new Error(response.message);
-    return { clubId, courts: response.data };
+    const response = await fetch(`/api/clubs/${clubId}/courts`);
+    if (!response.ok) throw new Error('Failed to fetch club courts');
+    return { clubId, courts: await response.json() };
   }
 );
 
 export const fetchClubTournaments = createAsyncThunk(
   'clubs/fetchClubTournaments',
   async (clubId: string) => {
-    const response = await apiService.getClubTournaments(clubId);
-    if (!response.success) throw new Error(response.message);
-    return { clubId, tournaments: response.data };
+    const response = await fetch(`/api/clubs/${clubId}/tournaments`);
+    if (!response.ok) throw new Error('Failed to fetch club tournaments');
+    return { clubId, tournaments: await response.json() };
   }
 );
 
@@ -80,7 +124,7 @@ const clubsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setCurrentClub: (state, action) => {
+    setCurrentClub: (state, action: PayloadAction<Club>) => {
       state.currentClub = action.payload;
     },
   },
