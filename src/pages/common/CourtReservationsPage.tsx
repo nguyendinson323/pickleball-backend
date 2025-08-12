@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchCourts } from '../../store/slices/courtsSlice';
-import { bookCourt, getCourtAvailability, getCourtBookings } from '../../store/slices/courtReservationsSlice';
+import { createCourtReservation, getCourtAvailability, getCourtBookings } from '../../store/slices/courtReservationsSlice';
 import { Court, BookCourtRequest } from '../../types/api';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -16,7 +16,7 @@ import { useAnimation } from '../../hooks/useAnimation';
 const CourtReservationsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { courts } = useSelector((state: RootState) => state.courts);
-  const { reservations, availability, loading, error } = useSelector((state: RootState) => state.courtReservations);
+  const { reservations, courtAvailability, loading, error } = useSelector((state: RootState) => state.courtReservations);
   const { elementRef: headerRef } = useAnimation();
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -52,7 +52,7 @@ const CourtReservationsPage: React.FC = () => {
     if (!selectedCourt) return;
 
     try {
-      await dispatch(bookCourt({
+      await dispatch(createCourtReservation({
         courtId: selectedCourt.id,
         bookingData: bookingData as BookCourtRequest
       })).unwrap();
@@ -79,7 +79,7 @@ const CourtReservationsPage: React.FC = () => {
   };
 
   const isTimeSlotAvailable = (startTime: string, endTime: string) => {
-    return availability.some(slot => 
+    return courtAvailability.some(slot => 
       slot.start_time === startTime && 
       slot.end_time === endTime && 
       slot.available

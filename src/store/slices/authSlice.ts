@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, LoginRequest, RegisterRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { User, LoginRequest, RegisterRequest } from '../../types/api';
 
 interface AuthState {
   user: User | null;
@@ -17,10 +17,9 @@ const initialState: AuthState = {
   refresh_token: localStorage.getItem('refresh_token'),
   loading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'),
 };
 
-// Async thunks
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: LoginRequest) => {
@@ -58,8 +57,6 @@ const authSlice = createSlice({
       state.refresh_token = null;
       state.isAuthenticated = false;
       apiService.clearToken();
-      localStorage.removeItem('token');
-      localStorage.removeItem('refresh_token');
     },
     clearError: (state) => {
       state.error = null;
@@ -87,12 +84,11 @@ const authSlice = createSlice({
         state.refresh_token = action.payload.tokens.refreshToken;
         state.isAuthenticated = true;
         apiService.setToken(action.payload.tokens.accessToken);
-        localStorage.setItem('token', action.payload.tokens.accessToken);
-        localStorage.setItem('refresh_token', action.payload.tokens.refreshToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Login failed';
+        state.isAuthenticated = false;
       })
       // Register
       .addCase(registerUser.pending, (state) => {
@@ -106,12 +102,11 @@ const authSlice = createSlice({
         state.refresh_token = action.payload.tokens.refreshToken;
         state.isAuthenticated = true;
         apiService.setToken(action.payload.tokens.accessToken);
-        localStorage.setItem('token', action.payload.tokens.accessToken);
-        localStorage.setItem('refresh_token', action.payload.tokens.refreshToken);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Registration failed';
+        state.isAuthenticated = false;
       })
       // Get Profile
       .addCase(getProfile.pending, (state) => {

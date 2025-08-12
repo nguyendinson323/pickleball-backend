@@ -1,6 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { OverviewStats, UserStats } from '../../types/api';
 import { apiService } from '../../services/api';
+
+interface OverviewStats {
+  total_users: number;
+  total_clubs: number;
+  total_tournaments: number;
+  total_revenue: number;
+  active_memberships: number;
+}
+
+interface UserStats {
+  total_users: number;
+  new_users_this_month: number;
+  active_users: number;
+  users_by_type: Record<string, number>;
+  users_by_state: Record<string, number>;
+}
 
 interface StatsState {
   overviewStats: OverviewStats | null;
@@ -16,7 +31,6 @@ const initialState: StatsState = {
   error: null,
 };
 
-// Async thunks
 export const fetchOverviewStats = createAsyncThunk(
   'stats/fetchOverviewStats',
   async () => {
@@ -28,12 +42,7 @@ export const fetchOverviewStats = createAsyncThunk(
 
 export const fetchUserStats = createAsyncThunk(
   'stats/fetchUserStats',
-  async (params: {
-    start_date?: string;
-    end_date?: string;
-    state?: string;
-    category?: string;
-  }) => {
+  async (params: { start_date?: string; end_date?: string; state?: string; category?: string }) => {
     const response = await apiService.getUserStats(params);
     if (!response.success) throw new Error(response.message);
     return response.data;
@@ -44,12 +53,14 @@ const statsSlice = createSlice({
   name: 'stats',
   initialState,
   reducers: {
-    clearStats: (state) => {
-      state.overviewStats = null;
-      state.userStats = null;
-    },
     clearError: (state) => {
       state.error = null;
+    },
+    clearOverviewStats: (state) => {
+      state.overviewStats = null;
+    },
+    clearUserStats: (state) => {
+      state.userStats = null;
     },
   },
   extraReducers: (builder) => {
@@ -83,5 +94,5 @@ const statsSlice = createSlice({
   },
 });
 
-export const { clearStats, clearError } = statsSlice.actions;
+export const { clearError, clearOverviewStats, clearUserStats } = statsSlice.actions;
 export default statsSlice.reducer; 

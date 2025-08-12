@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Ranking, RankingsQueryParams } from '../../types/api';
 import { apiService } from '../../services/api';
+import { Ranking, RankingsQueryParams } from '../../types/api';
 
 interface RankingsState {
   rankings: Ranking[];
@@ -25,7 +25,6 @@ const initialState: RankingsState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchRankings = createAsyncThunk(
   'rankings/fetchRankings',
   async (params: RankingsQueryParams) => {
@@ -40,7 +39,7 @@ export const fetchTopPlayers = createAsyncThunk(
   async (params: Partial<RankingsQueryParams>) => {
     const response = await apiService.getTopPlayers(params);
     if (!response.success) throw new Error(response.message);
-    return response.data;
+    return response.data || [];
   }
 );
 
@@ -49,7 +48,7 @@ export const fetchUserRankings = createAsyncThunk(
   async (userId: string) => {
     const response = await apiService.getUserRankings(userId);
     if (!response.success) throw new Error(response.message);
-    return response.data;
+    return response.data || [];
   }
 );
 
@@ -57,12 +56,18 @@ const rankingsSlice = createSlice({
   name: 'rankings',
   initialState,
   reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
     clearRankings: (state) => {
       state.rankings = [];
       state.pagination = null;
     },
-    clearError: (state) => {
-      state.error = null;
+    clearTopPlayers: (state) => {
+      state.topPlayers = [];
+    },
+    clearUserRankings: (state) => {
+      state.userRankings = [];
     },
   },
   extraReducers: (builder) => {
@@ -88,7 +93,7 @@ const rankingsSlice = createSlice({
       })
       .addCase(fetchTopPlayers.fulfilled, (state, action) => {
         state.loading = false;
-        state.topPlayers = action.payload || [];
+        state.topPlayers = action.payload;
       })
       .addCase(fetchTopPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -101,7 +106,7 @@ const rankingsSlice = createSlice({
       })
       .addCase(fetchUserRankings.fulfilled, (state, action) => {
         state.loading = false;
-        state.userRankings = action.payload || [];
+        state.userRankings = action.payload;
       })
       .addCase(fetchUserRankings.rejected, (state, action) => {
         state.loading = false;
@@ -110,5 +115,5 @@ const rankingsSlice = createSlice({
   },
 });
 
-export const { clearRankings, clearError } = rankingsSlice.actions;
+export const { clearError, clearRankings, clearTopPlayers, clearUserRankings } = rankingsSlice.actions;
 export default rankingsSlice.reducer; 

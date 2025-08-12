@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, UsersQueryParams, UpdateUserRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { User, UsersQueryParams, UpdateUserRequest } from '../../types/api';
 
 interface UsersState {
   users: User[];
@@ -23,11 +23,19 @@ const initialState: UsersState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (params: UsersQueryParams) => {
     const response = await apiService.getUsers(params);
+    if (!response.success) throw new Error(response.message);
+    return response;
+  }
+);
+
+export const fetchPlayers = createAsyncThunk(
+  'users/fetchPlayers',
+  async (params: Partial<UsersQueryParams>) => {
+    const response = await apiService.getPlayers(params);
     if (!response.success) throw new Error(response.message);
     return response;
   }
@@ -51,28 +59,19 @@ export const updateUser = createAsyncThunk(
   }
 );
 
-export const fetchPlayers = createAsyncThunk(
-  'users/fetchPlayers',
-  async (params: Partial<UsersQueryParams>) => {
-    const response = await apiService.getPlayers(params);
-    if (!response.success) throw new Error(response.message);
-    return response;
-  }
-);
-
 const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    clearUsers: (state) => {
-      state.users = [];
-      state.pagination = null;
-    },
     clearError: (state) => {
       state.error = null;
     },
     setCurrentUser: (state, action) => {
       state.currentUser = action.payload;
+    },
+    clearUsers: (state) => {
+      state.users = [];
+      state.pagination = null;
     },
   },
   extraReducers: (builder) => {
@@ -90,6 +89,20 @@ const usersSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch users';
+      })
+      // Fetch Players
+      .addCase(fetchPlayers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPlayers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload.data || [];
+        state.pagination = action.payload.pagination || null;
+      })
+      .addCase(fetchPlayers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch players';
       })
       // Fetch User
       .addCase(fetchUser.pending, (state) => {
@@ -111,36 +124,19 @@ const usersSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
-        // Update user in the list if it exists
+        state.currentUser = action.payload;
+        // Update user in users array if exists
         const index = state.users.findIndex(user => user.id === action.payload.id);
         if (index !== -1) {
           state.users[index] = action.payload;
-        }
-        // Update current user if it's the same user
-        if (state.currentUser && state.currentUser.id === action.payload.id) {
-          state.currentUser = action.payload;
         }
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update user';
-      })
-      // Fetch Players
-      .addCase(fetchPlayers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchPlayers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.users = action.payload.data || [];
-        state.pagination = action.payload.pagination || null;
-      })
-      .addCase(fetchPlayers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch players';
       });
   },
 });
 
-export const { clearUsers, clearError, setCurrentUser } = usersSlice.actions;
+export const { clearError, setCurrentUser, clearUsers } = usersSlice.actions;
 export default usersSlice.reducer; 

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Tournament, TournamentsQueryParams, CreateTournamentRequest, TournamentRegistrationRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { Tournament, TournamentsQueryParams, CreateTournamentRequest, TournamentRegistrationRequest } from '../../types/api';
 
 interface TournamentsState {
   tournaments: Tournament[];
@@ -25,13 +25,21 @@ const initialState: TournamentsState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchTournaments = createAsyncThunk(
   'tournaments/fetchTournaments',
   async (params: TournamentsQueryParams) => {
     const response = await apiService.getTournaments(params);
     if (!response.success) throw new Error(response.message);
     return response;
+  }
+);
+
+export const fetchUpcomingTournaments = createAsyncThunk(
+  'tournaments/fetchUpcomingTournaments',
+  async (limit: number = 5) => {
+    const response = await apiService.getUpcomingTournaments(limit);
+    if (!response.success) throw new Error(response.message);
+    return response.data || [];
   }
 );
 
@@ -62,28 +70,31 @@ export const registerForTournament = createAsyncThunk(
   }
 );
 
-export const fetchUpcomingTournaments = createAsyncThunk(
-  'tournaments/fetchUpcomingTournaments',
-  async (limit: number = 5) => {
-    const response = await apiService.getUpcomingTournaments(limit);
-    if (!response.success) throw new Error(response.message);
-    return response.data;
-  }
-);
-
 const tournamentsSlice = createSlice({
   name: 'tournaments',
   initialState,
   reducers: {
-    clearTournaments: (state) => {
-      state.tournaments = [];
-      state.pagination = null;
-    },
     clearError: (state) => {
       state.error = null;
     },
     setCurrentTournament: (state, action) => {
       state.currentTournament = action.payload;
+    },
+    clearTournaments: (state) => {
+      state.tournaments = [];
+      state.pagination = null;
+    },
+    addTournament: (state, action) => {
+      state.tournaments.unshift(action.payload);
+    },
+    updateTournament: (state, action) => {
+      const index = state.tournaments.findIndex(tournament => tournament.id === action.payload.id);
+      if (index !== -1) {
+        state.tournaments[index] = action.payload;
+      }
+      if (state.currentTournament && state.currentTournament.id === action.payload.id) {
+        state.currentTournament = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -101,6 +112,19 @@ const tournamentsSlice = createSlice({
       .addCase(fetchTournaments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch tournaments';
+      })
+      // Fetch Upcoming Tournaments
+      .addCase(fetchUpcomingTournaments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUpcomingTournaments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.upcomingTournaments = action.payload;
+      })
+      .addCase(fetchUpcomingTournaments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch upcoming tournaments';
       })
       // Fetch Tournament
       .addCase(fetchTournament.pending, (state) => {
@@ -136,40 +160,28 @@ const tournamentsSlice = createSlice({
       })
       .addCase(registerForTournament.fulfilled, (state, action) => {
         state.loading = false;
-        // Update tournament with new registration
-        const tournamentIndex = state.tournaments.findIndex(t => t.id === action.payload.tournamentId);
-        if (tournamentIndex !== -1) {
-          state.tournaments[tournamentIndex] = {
-            ...state.tournaments[tournamentIndex],
-            current_participants: state.tournaments[tournamentIndex].current_participants + 1
-          };
-        }
+        // Update current tournament if it's the same tournament
         if (state.currentTournament && state.currentTournament.id === action.payload.tournamentId) {
           state.currentTournament = {
             ...state.currentTournament,
             current_participants: state.currentTournament.current_participants + 1
           };
         }
+        // Update tournament in tournaments array if exists
+        const index = state.tournaments.findIndex(t => t.id === action.payload.tournamentId);
+        if (index !== -1) {
+          state.tournaments[index] = {
+            ...state.tournaments[index],
+            current_participants: state.tournaments[index].current_participants + 1
+          };
+        }
       })
       .addCase(registerForTournament.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to register for tournament';
-      })
-      // Fetch Upcoming Tournaments
-      .addCase(fetchUpcomingTournaments.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUpcomingTournaments.fulfilled, (state, action) => {
-        state.loading = false;
-        state.upcomingTournaments = action.payload || [];
-      })
-      .addCase(fetchUpcomingTournaments.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch upcoming tournaments';
       });
   },
 });
 
-export const { clearTournaments, clearError, setCurrentTournament } = tournamentsSlice.actions;
+export const { clearError, setCurrentTournament, clearTournaments, addTournament, updateTournament } = tournamentsSlice.actions;
 export default tournamentsSlice.reducer; 

@@ -1,18 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, UsersQueryParams, UpdateUserRoleRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { User, UsersQueryParams, UpdateUserRoleRequest } from '../../types/api';
+
+interface DashboardStats {
+  total_users: number;
+  total_clubs: number;
+  total_tournaments: number;
+  total_revenue: number;
+  active_memberships: number;
+  new_users_this_month: number;
+  upcoming_tournaments: number;
+  pending_payments: number;
+}
 
 interface AdminState {
-  dashboardStats: {
-    total_users: number;
-    total_clubs: number;
-    total_tournaments: number;
-    total_revenue: number;
-    active_memberships: number;
-    new_users_this_month: number;
-    upcoming_tournaments: number;
-    pending_payments: number;
-  } | null;
+  dashboardStats: DashboardStats | null;
   adminUsers: User[];
   loading: boolean;
   error: string | null;
@@ -32,7 +34,6 @@ const initialState: AdminState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchDashboardStats = createAsyncThunk(
   'admin/fetchDashboardStats',
   async () => {
@@ -44,7 +45,7 @@ export const fetchDashboardStats = createAsyncThunk(
 
 export const fetchAdminUsers = createAsyncThunk(
   'admin/fetchAdminUsers',
-  async (params: Partial<UsersQueryParams>) => {
+  async (params: UsersQueryParams) => {
     const response = await apiService.getAdminUsers(params);
     if (!response.success) throw new Error(response.message);
     return response;
@@ -53,8 +54,8 @@ export const fetchAdminUsers = createAsyncThunk(
 
 export const updateUserRole = createAsyncThunk(
   'admin/updateUserRole',
-  async ({ userId, role }: { userId: string; role: string }) => {
-    const response = await apiService.updateUserRole(userId, { role: role as 'user' | 'moderator' | 'admin' | 'super_admin' });
+  async ({ userId, roleData }: { userId: string; roleData: UpdateUserRoleRequest }) => {
+    const response = await apiService.updateUserRole(userId, roleData);
     if (!response.success) throw new Error(response.message);
     return response.data;
   }
@@ -64,13 +65,15 @@ const adminSlice = createSlice({
   name: 'admin',
   initialState,
   reducers: {
-    clearAdminData: (state) => {
-      state.dashboardStats = null;
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearAdminUsers: (state) => {
       state.adminUsers = [];
       state.pagination = null;
     },
-    clearError: (state) => {
-      state.error = null;
+    clearDashboardStats: (state) => {
+      state.dashboardStats = null;
     },
   },
   extraReducers: (builder) => {
@@ -109,7 +112,7 @@ const adminSlice = createSlice({
       })
       .addCase(updateUserRole.fulfilled, (state, action) => {
         state.loading = false;
-        // Update user in the admin users list
+        // Update user in admin users array if exists
         const index = state.adminUsers.findIndex(user => user.id === action.payload.id);
         if (index !== -1) {
           state.adminUsers[index] = action.payload;
@@ -122,5 +125,5 @@ const adminSlice = createSlice({
   },
 });
 
-export const { clearAdminData, clearError } = adminSlice.actions;
+export const { clearError, clearAdminUsers, clearDashboardStats } = adminSlice.actions;
 export default adminSlice.reducer; 

@@ -1,10 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Court, CourtsQueryParams, CreateCourtRequest, BookCourtRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { Court, CourtsQueryParams, CreateCourtRequest, BookCourtRequest, CourtReservation } from '../../types/api';
+
+interface CourtWithDetails extends Court {
+  availability?: Array<{
+    start_time: string;
+    end_time: string;
+    available: boolean;
+  }>;
+  bookings?: CourtReservation[];
+}
 
 interface CourtsState {
   courts: Court[];
-  currentCourt: Court | null;
+  currentCourt: CourtWithDetails | null;
   loading: boolean;
   error: string | null;
   pagination: {
@@ -23,7 +32,6 @@ const initialState: CourtsState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchCourts = createAsyncThunk(
   'courts/fetchCourts',
   async (params: CourtsQueryParams) => {
@@ -56,7 +64,25 @@ export const bookCourt = createAsyncThunk(
   async ({ courtId, bookingData }: { courtId: string; bookingData: BookCourtRequest }) => {
     const response = await apiService.bookCourt(courtId, bookingData);
     if (!response.success) throw new Error(response.message);
-    return { courtId, booking: response.data };
+    return { courtId, reservation: response.data.reservation };
+  }
+);
+
+export const getCourtAvailability = createAsyncThunk(
+  'courts/getCourtAvailability',
+  async ({ courtId, params }: { courtId: string; params: { date: string; duration?: number } }) => {
+    const response = await apiService.getCourtAvailability(courtId, params);
+    if (!response.success) throw new Error(response.message);
+    return { courtId, availability: response.data || [] };
+  }
+);
+
+export const getCourtBookings = createAsyncThunk(
+  'courts/getCourtBookings',
+  async ({ courtId, params }: { courtId: string; params: { date?: string; status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'no_show' } }) => {
+    const response = await apiService.getCourtBookings(courtId, params);
+    if (!response.success) throw new Error(response.message);
+    return { courtId, bookings: response.data || [] };
   }
 );
 
@@ -64,15 +90,27 @@ const courtsSlice = createSlice({
   name: 'courts',
   initialState,
   reducers: {
-    clearCourts: (state) => {
-      state.courts = [];
-      state.pagination = null;
-    },
     clearError: (state) => {
       state.error = null;
     },
     setCurrentCourt: (state, action) => {
       state.currentCourt = action.payload;
+    },
+    clearCourts: (state) => {
+      state.courts = [];
+      state.pagination = null;
+    },
+    addCourt: (state, action) => {
+      state.courts.unshift(action.payload);
+    },
+    updateCourt: (state, action) => {
+      const index = state.courts.findIndex(court => court.id === action.payload.id);
+      if (index !== -1) {
+        state.courts[index] = action.payload;
+      }
+      if (state.currentCourt && state.currentCourt.id === action.payload.id) {
+        state.currentCourt = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -125,27 +163,60 @@ const courtsSlice = createSlice({
       })
       .addCase(bookCourt.fulfilled, (state, action) => {
         state.loading = false;
-        // Update court with new booking
-        const courtIndex = state.courts.findIndex(c => c.id === action.payload.courtId);
-        if (courtIndex !== -1) {
-          state.courts[courtIndex] = {
-            ...state.courts[courtIndex],
-            total_bookings: state.courts[courtIndex].total_bookings + 1
-          };
-        }
+        // Update current court if it's the same court
         if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
           state.currentCourt = {
             ...state.currentCourt,
             total_bookings: state.currentCourt.total_bookings + 1
           };
         }
+        // Update court in courts array if exists
+        const index = state.courts.findIndex(c => c.id === action.payload.courtId);
+        if (index !== -1) {
+          state.courts[index] = {
+            ...state.courts[index],
+            total_bookings: state.courts[index].total_bookings + 1
+          };
+        }
       })
       .addCase(bookCourt.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to book court';
+      })
+      // Get Court Availability
+      .addCase(getCourtAvailability.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCourtAvailability.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update current court with availability if it's the same court
+        if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
+          state.currentCourt = { ...state.currentCourt, availability: action.payload.availability };
+        }
+      })
+      .addCase(getCourtAvailability.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to get court availability';
+      })
+      // Get Court Bookings
+      .addCase(getCourtBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCourtBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update current court with bookings if it's the same court
+        if (state.currentCourt && state.currentCourt.id === action.payload.courtId) {
+          state.currentCourt = { ...state.currentCourt, bookings: action.payload.bookings };
+        }
+      })
+      .addCase(getCourtBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to get court bookings';
       });
   },
 });
 
-export const { clearCourts, clearError, setCurrentCourt } = courtsSlice.actions;
+export const { clearError, setCurrentCourt, clearCourts, addCourt, updateCourt } = courtsSlice.actions;
 export default courtsSlice.reducer; 

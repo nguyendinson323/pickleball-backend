@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Payment, PaymentsQueryParams, CreatePaymentRequest, ProcessPaymentRequest } from '../../types/api';
 import { apiService } from '../../services/api';
+import { Payment, PaymentsQueryParams, CreatePaymentRequest, ProcessPaymentRequest } from '../../types/api';
 
 interface PaymentsState {
   payments: Payment[];
@@ -23,7 +23,6 @@ const initialState: PaymentsState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchPayments = createAsyncThunk(
   'payments/fetchPayments',
   async (params: PaymentsQueryParams) => {
@@ -44,8 +43,8 @@ export const createPayment = createAsyncThunk(
 
 export const processPayment = createAsyncThunk(
   'payments/processPayment',
-  async ({ paymentId, processData }: { paymentId: string; processData: ProcessPaymentRequest }) => {
-    const response = await apiService.processPayment(paymentId, processData);
+  async ({ paymentId, paymentData }: { paymentId: string; paymentData: ProcessPaymentRequest }) => {
+    const response = await apiService.processPayment(paymentId, paymentData);
     if (!response.success) throw new Error(response.message);
     return response.data;
   }
@@ -55,15 +54,27 @@ const paymentsSlice = createSlice({
   name: 'payments',
   initialState,
   reducers: {
-    clearPayments: (state) => {
-      state.payments = [];
-      state.pagination = null;
-    },
     clearError: (state) => {
       state.error = null;
     },
     setCurrentPayment: (state, action) => {
       state.currentPayment = action.payload;
+    },
+    clearPayments: (state) => {
+      state.payments = [];
+      state.pagination = null;
+    },
+    addPayment: (state, action) => {
+      state.payments.unshift(action.payload);
+    },
+    updatePayment: (state, action) => {
+      const index = state.payments.findIndex(payment => payment.id === action.payload.id);
+      if (index !== -1) {
+        state.payments[index] = action.payload;
+      }
+      if (state.currentPayment && state.currentPayment.id === action.payload.id) {
+        state.currentPayment = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -103,12 +114,12 @@ const paymentsSlice = createSlice({
       })
       .addCase(processPayment.fulfilled, (state, action) => {
         state.loading = false;
-        // Update payment in the list
-        const paymentIndex = state.payments.findIndex(p => p.id === action.payload.payment.id);
-        if (paymentIndex !== -1) {
-          state.payments[paymentIndex] = action.payload.payment;
-        }
         state.currentPayment = action.payload.payment;
+        // Update payment in payments array if exists
+        const index = state.payments.findIndex(p => p.id === action.payload.payment.id);
+        if (index !== -1) {
+          state.payments[index] = action.payload.payment;
+        }
       })
       .addCase(processPayment.rejected, (state, action) => {
         state.loading = false;
@@ -117,5 +128,5 @@ const paymentsSlice = createSlice({
   },
 });
 
-export const { clearPayments, clearError, setCurrentPayment } = paymentsSlice.actions;
+export const { clearError, setCurrentPayment, clearPayments, addPayment, updatePayment } = paymentsSlice.actions;
 export default paymentsSlice.reducer; 

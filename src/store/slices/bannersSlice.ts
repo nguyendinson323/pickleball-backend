@@ -1,50 +1,47 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiService } from '../../services/api';
-import {
-  Banner,
-  BannersQueryParams,
-  CreateBannerRequest,
-  UpdateBannerRequest,
-  UpdateBannerPositionRequest,
-  CarouselBannersResponse,
-  ActiveBannersResponse,
-  BannersResponse,
-  CreateBannerResponse,
-  UpdateBannerResponse,
-  DeleteBannerResponse,
-  ToggleBannerResponse,
-  UpdateBannerPositionResponse,
-  TrackBannerViewResponse,
-  TrackBannerClickResponse,
-  BannerAnalyticsResponse,
-} from '../../types/api';
+import { Banner, BannersQueryParams, CreateBannerRequest, UpdateBannerRequest, UpdateBannerPositionRequest } from '../../types/api';
 
 interface BannersState {
+  banners: Banner[];
   carouselBanners: Banner[];
   activeBanners: Banner[];
-  banners: Banner[];
   currentBanner: Banner | null;
-  analytics: any;
   loading: boolean;
   error: string | null;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  } | null;
 }
 
 const initialState: BannersState = {
+  banners: [],
   carouselBanners: [],
   activeBanners: [],
-  banners: [],
   currentBanner: null,
-  analytics: null,
   loading: false,
   error: null,
+  pagination: null,
 };
 
-// Async thunks
+export const fetchBanners = createAsyncThunk(
+  'banners/fetchBanners',
+  async (params: BannersQueryParams) => {
+    const response = await apiService.getBanners(params);
+    if (!response.success) throw new Error(response.message);
+    return response;
+  }
+);
+
 export const fetchCarouselBanners = createAsyncThunk(
   'banners/fetchCarouselBanners',
   async () => {
     const response = await apiService.getCarouselBanners();
-    return response.data;
+    if (!response.success) throw new Error(response.message);
+    return response.data || [];
   }
 );
 
@@ -52,15 +49,8 @@ export const fetchActiveBanners = createAsyncThunk(
   'banners/fetchActiveBanners',
   async (params: { display_type?: 'carousel' | 'sidebar' | 'popup' | 'notification'; target_audience?: 'all' | 'players' | 'coaches' | 'clubs' | 'partners' | 'admins' }) => {
     const response = await apiService.getActiveBanners(params);
-    return response.data;
-  }
-);
-
-export const fetchBanners = createAsyncThunk(
-  'banners/fetchBanners',
-  async (params: BannersQueryParams) => {
-    const response = await apiService.getBanners(params);
-    return response;
+    if (!response.success) throw new Error(response.message);
+    return response.data || [];
   }
 );
 
@@ -68,6 +58,7 @@ export const createBanner = createAsyncThunk(
   'banners/createBanner',
   async (bannerData: CreateBannerRequest) => {
     const response = await apiService.createBanner(bannerData);
+    if (!response.success) throw new Error(response.message);
     return response.data;
   }
 );
@@ -76,6 +67,7 @@ export const updateBanner = createAsyncThunk(
   'banners/updateBanner',
   async ({ id, bannerData }: { id: string; bannerData: UpdateBannerRequest }) => {
     const response = await apiService.updateBanner(id, bannerData);
+    if (!response.success) throw new Error(response.message);
     return response.data;
   }
 );
@@ -83,7 +75,8 @@ export const updateBanner = createAsyncThunk(
 export const deleteBanner = createAsyncThunk(
   'banners/deleteBanner',
   async (id: string) => {
-    await apiService.deleteBanner(id);
+    const response = await apiService.deleteBanner(id);
+    if (!response.success) throw new Error(response.message);
     return id;
   }
 );
@@ -92,6 +85,7 @@ export const toggleBannerStatus = createAsyncThunk(
   'banners/toggleBannerStatus',
   async (id: string) => {
     const response = await apiService.toggleBannerStatus(id);
+    if (!response.success) throw new Error(response.message);
     return response.data;
   }
 );
@@ -100,6 +94,7 @@ export const updateBannerPosition = createAsyncThunk(
   'banners/updateBannerPosition',
   async ({ id, position }: { id: string; position: number }) => {
     const response = await apiService.updateBannerPosition(id, position);
+    if (!response.success) throw new Error(response.message);
     return response.data;
   }
 );
@@ -107,7 +102,8 @@ export const updateBannerPosition = createAsyncThunk(
 export const trackBannerView = createAsyncThunk(
   'banners/trackBannerView',
   async (id: string) => {
-    await apiService.trackBannerView(id);
+    const response = await apiService.trackBannerView(id);
+    if (!response.success) throw new Error(response.message);
     return id;
   }
 );
@@ -115,16 +111,9 @@ export const trackBannerView = createAsyncThunk(
 export const trackBannerClick = createAsyncThunk(
   'banners/trackBannerClick',
   async (id: string) => {
-    await apiService.trackBannerClick(id);
+    const response = await apiService.trackBannerClick(id);
+    if (!response.success) throw new Error(response.message);
     return id;
-  }
-);
-
-export const fetchBannerAnalytics = createAsyncThunk(
-  'banners/fetchBannerAnalytics',
-  async (params: { start_date?: string; end_date?: string }) => {
-    const response = await apiService.getBannerAnalytics(params);
-    return response.data;
   }
 );
 
@@ -135,13 +124,58 @@ const bannersSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    clearCurrentBanner: (state) => {
-      state.currentBanner = null;
+    setCurrentBanner: (state, action) => {
+      state.currentBanner = action.payload;
+    },
+    clearBanners: (state) => {
+      state.banners = [];
+      state.pagination = null;
+    },
+    clearCarouselBanners: (state) => {
+      state.carouselBanners = [];
+    },
+    clearActiveBanners: (state) => {
+      state.activeBanners = [];
+    },
+    addBanner: (state, action) => {
+      state.banners.unshift(action.payload);
+    },
+    updateBannerInList: (state, action) => {
+      const index = state.banners.findIndex(banner => banner.id === action.payload.id);
+      if (index !== -1) {
+        state.banners[index] = action.payload;
+      }
+      if (state.currentBanner && state.currentBanner.id === action.payload.id) {
+        state.currentBanner = action.payload;
+      }
+      // Update in other arrays if exists
+      const carouselIndex = state.carouselBanners.findIndex(b => b.id === action.payload.id);
+      if (carouselIndex !== -1) {
+        state.carouselBanners[carouselIndex] = action.payload;
+      }
+      const activeIndex = state.activeBanners.findIndex(b => b.id === action.payload.id);
+      if (activeIndex !== -1) {
+        state.activeBanners[activeIndex] = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch carousel banners
+      // Fetch Banners
+      .addCase(fetchBanners.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBanners.fulfilled, (state, action) => {
+        state.loading = false;
+        state.banners = action.payload.data || [];
+        state.pagination = action.payload.pagination || null;
+      })
+      .addCase(fetchBanners.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch banners';
+      })
+      // Fetch Carousel Banners
       .addCase(fetchCarouselBanners.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -154,7 +188,7 @@ const bannersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch carousel banners';
       })
-      // Fetch active banners
+      // Fetch Active Banners
       .addCase(fetchActiveBanners.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -167,60 +201,59 @@ const bannersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch active banners';
       })
-      // Fetch banners
-      .addCase(fetchBanners.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchBanners.fulfilled, (state, action) => {
-        state.loading = false;
-        state.banners = action.payload.data || [];
-      })
-      .addCase(fetchBanners.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch banners';
-      })
-      // Create banner
+      // Create Banner
       .addCase(createBanner.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createBanner.fulfilled, (state, action) => {
         state.loading = false;
-        state.banners.push(action.payload);
+        state.banners.unshift(action.payload);
+        state.currentBanner = action.payload;
       })
       .addCase(createBanner.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to create banner';
       })
-      // Update banner
+      // Update Banner
       .addCase(updateBanner.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateBanner.fulfilled, (state, action) => {
         state.loading = false;
+        state.currentBanner = action.payload;
+        // Update banner in banners array if exists
         const index = state.banners.findIndex(banner => banner.id === action.payload.id);
         if (index !== -1) {
           state.banners[index] = action.payload;
         }
-        if (state.currentBanner?.id === action.payload.id) {
-          state.currentBanner = action.payload;
+        // Update in other arrays if exists
+        const carouselIndex = state.carouselBanners.findIndex(b => b.id === action.payload.id);
+        if (carouselIndex !== -1) {
+          state.carouselBanners[carouselIndex] = action.payload;
+        }
+        const activeIndex = state.activeBanners.findIndex(b => b.id === action.payload.id);
+        if (activeIndex !== -1) {
+          state.activeBanners[activeIndex] = action.payload;
         }
       })
       .addCase(updateBanner.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update banner';
       })
-      // Delete banner
+      // Delete Banner
       .addCase(deleteBanner.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteBanner.fulfilled, (state, action) => {
         state.loading = false;
-        state.banners = state.banners.filter(banner => banner.id !== action.payload);
-        if (state.currentBanner?.id === action.payload) {
+        // Remove banner from all arrays
+        state.banners = state.banners.filter(b => b.id !== action.payload);
+        state.carouselBanners = state.carouselBanners.filter(b => b.id !== action.payload);
+        state.activeBanners = state.activeBanners.filter(b => b.id !== action.payload);
+        if (state.currentBanner && state.currentBanner.id === action.payload) {
           state.currentBanner = null;
         }
       })
@@ -228,73 +261,100 @@ const bannersSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to delete banner';
       })
-      // Toggle banner status
+      // Toggle Banner Status
       .addCase(toggleBannerStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(toggleBannerStatus.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.banners.findIndex(banner => banner.id === action.payload.id);
+        // Update banner in all arrays
+        const updatedBanner = action.payload;
+        const index = state.banners.findIndex(b => b.id === updatedBanner.id);
         if (index !== -1) {
-          state.banners[index] = action.payload;
+          state.banners[index] = updatedBanner;
         }
-        if (state.currentBanner?.id === action.payload.id) {
-          state.currentBanner = action.payload;
+        const carouselIndex = state.carouselBanners.findIndex(b => b.id === updatedBanner.id);
+        if (carouselIndex !== -1) {
+          state.carouselBanners[carouselIndex] = updatedBanner;
+        }
+        const activeIndex = state.activeBanners.findIndex(b => b.id === updatedBanner.id);
+        if (activeIndex !== -1) {
+          state.activeBanners[activeIndex] = updatedBanner;
+        }
+        if (state.currentBanner && state.currentBanner.id === updatedBanner.id) {
+          state.currentBanner = updatedBanner;
         }
       })
       .addCase(toggleBannerStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to toggle banner status';
       })
-      // Update banner position
+      // Update Banner Position
       .addCase(updateBannerPosition.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateBannerPosition.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.banners.findIndex(banner => banner.id === action.payload.id);
+        // Update banner in all arrays
+        const updatedBanner = action.payload;
+        const index = state.banners.findIndex(b => b.id === updatedBanner.id);
         if (index !== -1) {
-          state.banners[index] = action.payload;
+          state.banners[index] = updatedBanner;
         }
-        if (state.currentBanner?.id === action.payload.id) {
-          state.currentBanner = action.payload;
+        const carouselIndex = state.carouselBanners.findIndex(b => b.id === updatedBanner.id);
+        if (carouselIndex !== -1) {
+          state.carouselBanners[carouselIndex] = updatedBanner;
+        }
+        const activeIndex = state.activeBanners.findIndex(b => b.id === updatedBanner.id);
+        if (activeIndex !== -1) {
+          state.activeBanners[activeIndex] = updatedBanner;
+        }
+        if (state.currentBanner && state.currentBanner.id === updatedBanner.id) {
+          state.currentBanner = updatedBanner;
         }
       })
       .addCase(updateBannerPosition.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update banner position';
       })
-      // Track banner view
+      // Track Banner View
       .addCase(trackBannerView.fulfilled, (state, action) => {
-        const banner = state.banners.find(b => b.id === action.payload);
-        if (banner) {
-          banner.view_count += 1;
+        // Update view count in all arrays
+        const bannerId = action.payload;
+        const updateViewCount = (banner: Banner) => {
+          if (banner.id === bannerId) {
+            return { ...banner, view_count: banner.view_count + 1 };
+          }
+          return banner;
+        };
+        state.banners = state.banners.map(updateViewCount);
+        state.carouselBanners = state.carouselBanners.map(updateViewCount);
+        state.activeBanners = state.activeBanners.map(updateViewCount);
+        if (state.currentBanner && state.currentBanner.id === bannerId) {
+          state.currentBanner = { ...state.currentBanner, view_count: state.currentBanner.view_count + 1 };
         }
       })
-      // Track banner click
+      // Track Banner Click
       .addCase(trackBannerClick.fulfilled, (state, action) => {
-        const banner = state.banners.find(b => b.id === action.payload);
-        if (banner) {
-          banner.click_count += 1;
+        // Update click count in all arrays
+        const bannerId = action.payload;
+        const updateClickCount = (banner: Banner) => {
+          if (banner.id === bannerId) {
+            return { ...banner, click_count: banner.click_count + 1 };
+          }
+          return banner;
+        };
+        state.banners = state.banners.map(updateClickCount);
+        state.carouselBanners = state.carouselBanners.map(updateClickCount);
+        state.activeBanners = state.activeBanners.map(updateClickCount);
+        if (state.currentBanner && state.currentBanner.id === bannerId) {
+          state.currentBanner = { ...state.currentBanner, click_count: state.currentBanner.click_count + 1 };
         }
-      })
-      // Fetch banner analytics
-      .addCase(fetchBannerAnalytics.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchBannerAnalytics.fulfilled, (state, action) => {
-        state.loading = false;
-        state.analytics = action.payload;
-      })
-      .addCase(fetchBannerAnalytics.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch banner analytics';
       });
   },
 });
 
-export const { clearError, clearCurrentBanner } = bannersSlice.actions;
+export const { clearError, setCurrentBanner, clearBanners, clearCarouselBanners, clearActiveBanners, addBanner, updateBannerInList } = bannersSlice.actions;
 export default bannersSlice.reducer; 

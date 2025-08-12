@@ -146,18 +146,25 @@ class ApiService {
       ...options,
     };
 
-    const response = await fetch(url, config);
-    const data = await response.json();
+    try {
+      const response = await fetch(url, config);
+      const data = await response.json();
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Handle token refresh or logout
-        store.dispatch({ type: 'auth/logout' });
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Handle token refresh or logout
+          store.dispatch({ type: 'auth/logout' });
+        }
+        throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
       }
-      throw new Error(data.message || 'API request failed');
-    }
 
-    return data;
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred');
+    }
   }
 
   // Auth methods
@@ -487,6 +494,22 @@ class ApiService {
 
   getToken(): string | null {
     return this.token;
+  }
+
+  // Utility methods
+  isAuthenticated(): boolean {
+    return !!this.token;
+  }
+
+  // Error handling
+  handleError(error: any): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+    if (typeof error === 'string') {
+      return error;
+    }
+    return 'An unexpected error occurred';
   }
 }
 

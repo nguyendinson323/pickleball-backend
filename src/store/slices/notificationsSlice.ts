@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Notification, NotificationsQueryParams } from '../../types/api';
 import { apiService } from '../../services/api';
+import { Notification, NotificationsQueryParams } from '../../types/api';
 
 interface NotificationsState {
   notifications: Notification[];
@@ -23,7 +23,6 @@ const initialState: NotificationsState = {
   unreadCount: 0,
 };
 
-// Async thunks
 export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (params: NotificationsQueryParams) => {
@@ -34,7 +33,7 @@ export const fetchNotifications = createAsyncThunk(
 );
 
 export const markNotificationAsRead = createAsyncThunk(
-  'notifications/markAsRead',
+  'notifications/markNotificationAsRead',
   async (notificationId: string) => {
     const response = await apiService.markNotificationAsRead(notificationId);
     if (!response.success) throw new Error(response.message);
@@ -43,7 +42,7 @@ export const markNotificationAsRead = createAsyncThunk(
 );
 
 export const markAllNotificationsAsRead = createAsyncThunk(
-  'notifications/markAllAsRead',
+  'notifications/markAllNotificationsAsRead',
   async () => {
     const response = await apiService.markAllNotificationsAsRead();
     if (!response.success) throw new Error(response.message);
@@ -55,19 +54,30 @@ const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
     clearNotifications: (state) => {
       state.notifications = [];
       state.pagination = null;
-      state.unreadCount = 0;
-    },
-    clearError: (state) => {
-      state.error = null;
     },
     addNotification: (state, action) => {
       state.notifications.unshift(action.payload);
       if (!action.payload.is_read) {
         state.unreadCount += 1;
       }
+    },
+    removeNotification: (state, action) => {
+      const index = state.notifications.findIndex(n => n.id === action.payload);
+      if (index !== -1) {
+        if (!state.notifications[index].is_read) {
+          state.unreadCount = Math.max(0, state.unreadCount - 1);
+        }
+        state.notifications.splice(index, 1);
+      }
+    },
+    updateUnreadCount: (state, action) => {
+      state.unreadCount = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -88,7 +98,7 @@ const notificationsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch notifications';
       })
-      // Mark as Read
+      // Mark Notification as Read
       .addCase(markNotificationAsRead.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -99,16 +109,17 @@ const notificationsSlice = createSlice({
         const index = state.notifications.findIndex(n => n.id === action.payload.id);
         if (index !== -1) {
           state.notifications[index] = action.payload;
-          if (action.payload.is_read && !state.notifications[index].is_read) {
-            state.unreadCount = Math.max(0, state.unreadCount - 1);
-          }
+        }
+        // Update unread count if notification was unread
+        if (action.payload.is_read && state.unreadCount > 0) {
+          state.unreadCount = Math.max(0, state.unreadCount - 1);
         }
       })
       .addCase(markNotificationAsRead.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to mark notification as read';
       })
-      // Mark All as Read
+      // Mark All Notifications as Read
       .addCase(markAllNotificationsAsRead.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -126,5 +137,5 @@ const notificationsSlice = createSlice({
   },
 });
 
-export const { clearNotifications, clearError, addNotification } = notificationsSlice.actions;
+export const { clearError, clearNotifications, addNotification, removeNotification, updateUnreadCount } = notificationsSlice.actions;
 export default notificationsSlice.reducer; 

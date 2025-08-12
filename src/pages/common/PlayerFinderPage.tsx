@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { searchPlayers, getNearbyPlayers, getPlayerFinderPreferences, updatePlayerFinderPreferences, togglePlayerFinderStatus, sendMatchRequest } from '../../store/slices/playerFinderSlice';
+import { searchPlayers, fetchNearbyPlayers, fetchPlayerFinderPreferences, updatePlayerFinderPreferences, togglePlayerFinderStatus, sendMatchRequest } from '../../store/slices/playerFinderSlice';
 import { User, UpdatePlayerFinderPreferencesRequest, SendMatchRequestRequest } from '../../types/api';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -41,8 +41,8 @@ const PlayerFinderPage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      dispatch(getPlayerFinderPreferences());
-      dispatch(getNearbyPlayers(10));
+      dispatch(fetchPlayerFinderPreferences());
+      dispatch(fetchNearbyPlayers(10));
     }
   }, [dispatch, user]);
 

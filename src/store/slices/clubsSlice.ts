@@ -1,45 +1,15 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { apiService } from '../../services/api';
+import { Club, ClubsQueryParams, CreateClubRequest, Court, Tournament } from '../../types/api';
 
-interface Club {
-  id: string;
-  name: string;
-  description: string;
-  logo?: string;
-  banner?: string;
-  founded: string;
-  type: 'public' | 'private' | 'semi-private';
-  category: 'recreation' | 'competitive' | 'social' | 'training';
-  website?: string;
-  location: string;
-  rating: number;
-  memberCount: number;
-  courtCount: number;
-  amenities: string[];
-  courts?: any[];
-  tournaments?: any[];
-}
-
-interface ClubsQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  type?: string;
-  category?: string;
-  location?: string;
-}
-
-interface CreateClubRequest {
-  name: string;
-  description: string;
-  type: string;
-  category: string;
-  location: string;
-  website?: string;
+interface ClubWithDetails extends Club {
+  courts?: Court[];
+  tournaments?: Tournament[];
 }
 
 interface ClubsState {
   clubs: Club[];
-  currentClub: Club | null;
+  currentClub: ClubWithDetails | null;
   loading: boolean;
   error: string | null;
   pagination: {
@@ -58,58 +28,48 @@ const initialState: ClubsState = {
   pagination: null,
 };
 
-// Async thunks
 export const fetchClubs = createAsyncThunk(
   'clubs/fetchClubs',
   async (params: ClubsQueryParams) => {
-    const queryString = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) queryString.append(key, value.toString());
-    });
-    
-    const response = await fetch(`/api/clubs?${queryString}`);
-    if (!response.ok) throw new Error('Failed to fetch clubs');
-    return response.json();
+    const response = await apiService.getClubs(params);
+    if (!response.success) throw new Error(response.message);
+    return response;
   }
 );
 
 export const fetchClub = createAsyncThunk(
   'clubs/fetchClub',
   async (id: string) => {
-    const response = await fetch(`/api/clubs/${id}`);
-    if (!response.ok) throw new Error('Failed to fetch club');
-    return response.json();
+    const response = await apiService.getClub(id);
+    if (!response.success) throw new Error(response.message);
+    return response.data;
   }
 );
 
 export const createClub = createAsyncThunk(
   'clubs/createClub',
   async (clubData: CreateClubRequest) => {
-    const response = await fetch('/api/clubs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(clubData),
-    });
-    if (!response.ok) throw new Error('Failed to create club');
-    return response.json();
+    const response = await apiService.createClub(clubData);
+    if (!response.success) throw new Error(response.message);
+    return response.data;
   }
 );
 
 export const fetchClubCourts = createAsyncThunk(
   'clubs/fetchClubCourts',
   async (clubId: string) => {
-    const response = await fetch(`/api/clubs/${clubId}/courts`);
-    if (!response.ok) throw new Error('Failed to fetch club courts');
-    return { clubId, courts: await response.json() };
+    const response = await apiService.getClubCourts(clubId);
+    if (!response.success) throw new Error(response.message);
+    return { clubId, courts: response.data || [] };
   }
 );
 
 export const fetchClubTournaments = createAsyncThunk(
   'clubs/fetchClubTournaments',
   async (clubId: string) => {
-    const response = await fetch(`/api/clubs/${clubId}/tournaments`);
-    if (!response.ok) throw new Error('Failed to fetch club tournaments');
-    return { clubId, tournaments: await response.json() };
+    const response = await apiService.getClubTournaments(clubId);
+    if (!response.success) throw new Error(response.message);
+    return { clubId, tournaments: response.data || [] };
   }
 );
 
@@ -117,15 +77,27 @@ const clubsSlice = createSlice({
   name: 'clubs',
   initialState,
   reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+    setCurrentClub: (state, action) => {
+      state.currentClub = action.payload;
+    },
     clearClubs: (state) => {
       state.clubs = [];
       state.pagination = null;
     },
-    clearError: (state) => {
-      state.error = null;
+    addClub: (state, action) => {
+      state.clubs.unshift(action.payload);
     },
-    setCurrentClub: (state, action: PayloadAction<Club>) => {
-      state.currentClub = action.payload;
+    updateClub: (state, action) => {
+      const index = state.clubs.findIndex(club => club.id === action.payload.id);
+      if (index !== -1) {
+        state.clubs[index] = action.payload;
+      }
+      if (state.currentClub && state.currentClub.id === action.payload.id) {
+        state.currentClub = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -178,11 +150,7 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClubCourts.fulfilled, (state, action) => {
         state.loading = false;
-        // Update the club with courts data
-        const clubIndex = state.clubs.findIndex(club => club.id === action.payload.clubId);
-        if (clubIndex !== -1) {
-          state.clubs[clubIndex] = { ...state.clubs[clubIndex], courts: action.payload.courts };
-        }
+        // Update current club with courts if it's the same club
         if (state.currentClub && state.currentClub.id === action.payload.clubId) {
           state.currentClub = { ...state.currentClub, courts: action.payload.courts };
         }
@@ -198,11 +166,7 @@ const clubsSlice = createSlice({
       })
       .addCase(fetchClubTournaments.fulfilled, (state, action) => {
         state.loading = false;
-        // Update the club with tournaments data
-        const clubIndex = state.clubs.findIndex(club => club.id === action.payload.clubId);
-        if (clubIndex !== -1) {
-          state.clubs[clubIndex] = { ...state.clubs[clubIndex], tournaments: action.payload.tournaments };
-        }
+        // Update current club with tournaments if it's the same club
         if (state.currentClub && state.currentClub.id === action.payload.clubId) {
           state.currentClub = { ...state.currentClub, tournaments: action.payload.tournaments };
         }
@@ -214,5 +178,5 @@ const clubsSlice = createSlice({
   },
 });
 
-export const { clearClubs, clearError, setCurrentClub } = clubsSlice.actions;
+export const { clearError, setCurrentClub, clearClubs, addClub, updateClub } = clubsSlice.actions;
 export default clubsSlice.reducer; 
