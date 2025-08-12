@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
 import { AppDispatch, RootState } from '../../store'
 import { loginUser } from '../../store/slices/authSlice'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Label } from '../../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { toast } from 'sonner'
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -16,42 +17,48 @@ const LoginPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { loading, error } = useSelector((state: RootState) => state.auth)
+  const { pending } = useSelector((state: RootState) => state.pending)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
-      const result = await dispatch(loginUser(formData)).unwrap()
+      const result = await dispatch(loginUser(formData))
       toast.success('Login successful!')
       
       // Navigate to appropriate dashboard based on user type
-      // Handle the API response structure properly
-      const response = result as any
-      const userType = response?.user?.user_type || response?.user_type
-      switch (userType) {
-        case 'player':
-          navigate('/player/dashboard')
-          break
-        case 'coach':
-          navigate('/coach/dashboard')
-          break
-        case 'club':
-          navigate('/club/dashboard')
-          break
-        case 'partner':
-          navigate('/partner/dashboard')
-          break
-        case 'state':
-          navigate('/state/dashboard')
-          break
-        case 'admin':
-          navigate('/admin/dashboard')
-          break
-        case 'super_admin':
-          navigate('/super-admin/dashboard')
-          break
-        default:
-          navigate('/player/dashboard')
+      // Handle the API response structure properly using types
+      const response = result as any;
+      if (response?.data?.user?.user_type) {
+        const userType = response.data.user.user_type;
+        switch (userType) {
+          case 'player':
+            navigate('/player/dashboard')
+            break
+          case 'coach':
+            navigate('/coach/dashboard')
+            break
+          case 'club':
+            navigate('/club/dashboard')
+            break
+          case 'partner':
+            navigate('/partner/dashboard')
+            break
+          case 'state':
+            navigate('/state/dashboard')
+            break
+          case 'admin':
+            navigate('/admin/dashboard')
+            break
+          case 'super_admin':
+            navigate('/super-admin/dashboard')
+            break
+          default:
+            navigate('/player/dashboard')
+        }
+      } else {
+        // Fallback navigation
+        navigate('/player/dashboard')
       }
     } catch (err) {
       toast.error(error || 'Login failed')
@@ -64,6 +71,9 @@ const LoginPage = () => {
       [e.target.name]: e.target.value,
     })
   }
+
+  // Check if any action is pending
+  const isAnyActionPending = pending
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -97,6 +107,7 @@ const LoginPage = () => {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnyActionPending}
                 />
               </div>
               <div className="space-y-2">
@@ -110,18 +121,27 @@ const LoginPage = () => {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnyActionPending}
                 />
               </div>
               <div>
-                <Button type="submit" className="animate-on-scroll w-full hover:scale-105 transition-transform duration-300" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign in'}
+                <Button 
+                  type="submit" 
+                  className="animate-on-scroll w-full hover:scale-105 transition-transform duration-300" 
+                  disabled={loading || isAnyActionPending}
+                >
+                  {loading || isAnyActionPending ? 'Signing in...' : 'Sign in'}
                 </Button>
               </div>
             </form>
             <div className="mt-4 text-center">
               <p className="animate-on-scroll text-sm text-gray-600">
                 Don't have an account?{' '}
-                <Link to="/register/select-type" className="text-blue-600 hover:text-blue-500 hover:scale-105 transition-transform duration-300">
+                <Link 
+                  to="/register/select-type" 
+                  className="text-blue-600 hover:text-blue-500 hover:scale-105 transition-transform duration-300"
+                  style={{ pointerEvents: isAnyActionPending ? 'none' : 'auto' }}
+                >
                   Sign up
                 </Link>
               </p>

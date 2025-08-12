@@ -1,6 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, LoginRequest, RegisterRequest } from '../../types/api';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { User, LoginRequest, RegisterRequest, LoginResponse, RegisterResponse, ProfileResponse } from '../../types/api';
 import { api } from '../../lib/api';
+import { setPending, clearPending } from './pendingSlice';
 
 interface AuthState {
   user: User | null;
@@ -20,26 +21,60 @@ const initialState: AuthState = {
   isAuthenticated: !!localStorage.getItem('token'),
 };
 
-export const loginUser = createAsyncThunk(
-  'auth/login',
-  async (credentials: LoginRequest) => {
-    return await api.post('/auth/login', credentials);
+// Action creators that manage pending state
+export const loginUser = (credentials: LoginRequest) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'auth/loginStart' });
+    
+    const result = await api.post<LoginResponse>('/auth/login', credentials);
+    
+    dispatch({ type: 'auth/loginSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'auth/loginFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
-export const registerUser = createAsyncThunk(
-  'auth/register',
-  async (userData: RegisterRequest) => {
-    return await api.post('/auth/register', userData);
+export const registerUser = (userData: RegisterRequest) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'auth/registerStart' });
+    
+    const result = await api.post<RegisterResponse>('/auth/register', userData);
+    
+    dispatch({ type: 'auth/registerSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'auth/registerFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
-export const getProfile = createAsyncThunk(
-  'auth/getProfile',
-  async () => {
-    return await api.get('/auth/profile');
+export const getProfile = () => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'auth/getProfileStart' });
+    
+    const result = await api.get<ProfileResponse>('/auth/profile');
+    
+    dispatch({ type: 'auth/getProfileSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'auth/getProfileFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
 const authSlice = createSlice({
   name: 'auth',
@@ -68,65 +103,65 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Login
-      .addCase(loginUser.pending, (state) => {
+      .addCase('auth/loginStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase('auth/loginSuccess', (state, action: any) => {
         state.loading = false;
-        const payload = action.payload as any;
-        if (payload?.user && payload?.tokens) {
-          state.user = payload.user;
-          state.token = payload.tokens.accessToken;
-          state.refresh_token = payload.tokens.refreshToken;
+        const payload = action.payload as LoginResponse;
+        if (payload?.data) {
+          state.user = payload.data.user;
+          state.token = payload.data.tokens.accessToken;
+          state.refresh_token = payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
-          localStorage.setItem('token', payload.tokens.accessToken);
-          localStorage.setItem('refresh_token', payload.tokens.refreshToken);
+          localStorage.setItem('token', payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
         }
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase('auth/loginFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Login failed';
+        state.error = action.payload?.message || 'Login failed';
         state.isAuthenticated = false;
       })
       // Register
-      .addCase(registerUser.pending, (state) => {
+      .addCase('auth/registerStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase('auth/registerSuccess', (state, action: any) => {
         state.loading = false;
-        const payload = action.payload as any;
-        if (payload?.user && payload?.tokens) {
-          state.user = payload.user;
-          state.token = payload.tokens.accessToken;
-          state.refresh_token = payload.tokens.refreshToken;
+        const payload = action.payload as RegisterResponse;
+        if (payload?.data) {
+          state.user = payload.data.user;
+          state.token = payload.data.tokens.accessToken;
+          state.refresh_token = payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
-          localStorage.setItem('token', payload.tokens.accessToken);
-          localStorage.setItem('refresh_token', payload.tokens.refreshToken);
+          localStorage.setItem('token', payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
         }
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase('auth/registerFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Registration failed';
+        state.error = action.payload?.message || 'Registration failed';
         state.isAuthenticated = false;
       })
       // Get Profile
-      .addCase(getProfile.pending, (state) => {
+      .addCase('auth/getProfileStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getProfile.fulfilled, (state, action) => {
+      .addCase('auth/getProfileSuccess', (state, action: any) => {
         state.loading = false;
-        const payload = action.payload as any;
-        if (payload) {
-          state.user = payload;
+        const payload = action.payload as ProfileResponse;
+        if (payload?.data) {
+          state.user = payload.data;
           state.isAuthenticated = true;
         }
       })
-      .addCase(getProfile.rejected, (state, action) => {
+      .addCase('auth/getProfileFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to get profile';
+        state.error = action.payload?.message || 'Failed to get profile';
         state.isAuthenticated = false;
       });
   },

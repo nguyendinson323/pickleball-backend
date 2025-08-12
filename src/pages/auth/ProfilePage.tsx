@@ -80,7 +80,7 @@ const ProfilePage = () => {
         ...editForm,
         skill_level: editForm.skill_level || undefined
       };
-      await dispatch(updateUser({ id: user.id, userData })).unwrap();
+      await dispatch(updateUser({ id: user.id, userData }));
       toast.success('Profile updated successfully!');
       setIsEditing(false);
     } catch (error) {

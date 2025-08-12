@@ -111,14 +111,40 @@ const OptionalFieldsPage = () => {
         ),
       };
 
-      await dispatch(registerUser(registrationData)).unwrap();
+      const result = await dispatch(registerUser(registrationData));
       
       // Clear localStorage
       localStorage.removeItem('registration_user_type');
       localStorage.removeItem('registration_required_fields');
       
       toast.success('Registration successful! Welcome to the pickleball community!');
-      navigate('/dashboard');
+      
+      // Navigate to appropriate dashboard based on user type
+      const response = result as any;
+      if (response?.data?.user?.user_type) {
+        const userType = response.data.user.user_type;
+        switch (userType) {
+          case 'player':
+            navigate('/player/dashboard');
+            break;
+          case 'coach':
+            navigate('/coach/dashboard');
+            break;
+          case 'club':
+            navigate('/club/dashboard');
+            break;
+          case 'partner':
+            navigate('/partner/dashboard');
+            break;
+          case 'state':
+            navigate('/state/dashboard');
+            break;
+          default:
+            navigate('/player/dashboard');
+        }
+      } else {
+        navigate('/player/dashboard');
+      }
     } catch (err) {
       toast.error(error || 'Registration failed');
     }
@@ -135,14 +161,40 @@ const OptionalFieldsPage = () => {
         ...requiredFields,
       };
 
-      await dispatch(registerUser(registrationData)).unwrap();
+      const result = await dispatch(registerUser(registrationData));
       
       // Clear localStorage
       localStorage.removeItem('registration_user_type');
       localStorage.removeItem('registration_required_fields');
       
       toast.success('Registration successful! You can complete your profile later.');
-      navigate('/dashboard');
+      
+      // Navigate to appropriate dashboard based on user type
+      const response = result as any;
+      if (response?.data?.user?.user_type) {
+        const userType = response.data.user.user_type;
+        switch (userType) {
+          case 'player':
+            navigate('/player/dashboard');
+            break;
+          case 'coach':
+            navigate('/coach/dashboard');
+            break;
+          case 'club':
+            navigate('/club/dashboard');
+            break;
+          case 'partner':
+            navigate('/partner/dashboard');
+            break;
+          case 'state':
+            navigate('/state/dashboard');
+            break;
+          default:
+            navigate('/player/dashboard');
+        }
+      } else {
+        navigate('/player/dashboard');
+      }
     } catch (err) {
       toast.error(error || 'Registration failed');
     }

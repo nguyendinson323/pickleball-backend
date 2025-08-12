@@ -12,6 +12,7 @@ import statsReducer from './slices/statsSlice'
 import bannersReducer from './slices/bannersSlice'
 import playerFinderReducer from './slices/playerFinderSlice'
 import courtReservationsReducer from './slices/courtReservationsSlice'
+import pendingReducer from './slices/pendingSlice'
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     banners: bannersReducer,
     playerFinder: playerFinderReducer,
     courtReservations: courtReservationsReducer,
+    pending: pendingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

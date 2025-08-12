@@ -101,42 +101,42 @@ const RequiredFieldsPage = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        ...(userType === 'club' || userType === 'partner' 
-          ? { business_name: formData.business_name }
-          : { full_name: formData.full_name }
-        ),
+        full_name: formData.full_name,
+        business_name: formData.business_name,
       };
 
-      const result = await dispatch(registerUser(registrationData)).unwrap();
-      toast.success('Registration successful!');
+      const result = await dispatch(registerUser(registrationData));
+      
+      // Clear localStorage
+      localStorage.removeItem('registration_user_type');
+      
+      toast.success('Registration successful! Welcome to the pickleball community!');
       
       // Navigate to appropriate dashboard based on user type
       const response = result as any;
-      const resultUserType = response?.user?.user_type || response?.user_type;
-      switch (resultUserType) {
-        case 'player':
-          navigate('/player/dashboard')
-          break
-        case 'coach':
-          navigate('/coach/dashboard')
-          break
-        case 'club':
-          navigate('/club/dashboard')
-          break
-        case 'partner':
-          navigate('/partner/dashboard')
-          break
-        case 'state':
-          navigate('/state/dashboard')
-          break
-        case 'admin':
-          navigate('/admin/dashboard')
-          break
-        case 'super_admin':
-          navigate('/super-admin/dashboard')
-          break
-        default:
-          navigate('/player/dashboard')
+      if (response?.data?.user?.user_type) {
+        const resultUserType = response.data.user.user_type;
+        switch (resultUserType) {
+          case 'player':
+            navigate('/player/dashboard');
+            break;
+          case 'coach':
+            navigate('/coach/dashboard');
+            break;
+          case 'club':
+            navigate('/club/dashboard');
+            break;
+          case 'partner':
+            navigate('/partner/dashboard');
+            break;
+          case 'state':
+            navigate('/state/dashboard');
+            break;
+          default:
+            navigate('/player/dashboard');
+        }
+      } else {
+        navigate('/player/dashboard');
       }
     } catch (err) {
       toast.error(error || 'Registration failed');

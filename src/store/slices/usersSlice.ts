@@ -1,6 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, UsersQueryParams, UpdateUserRequest } from '../../types/api';
+import { createSlice } from '@reduxjs/toolkit';
+import { User, UsersQueryParams, UpdateUserRequest, UsersResponse, PlayersResponse, UserResponse, UpdateUserResponse } from '../../types/api';
 import { api } from '../../lib/api';
+import { setPending, clearPending } from './pendingSlice';
 
 interface UsersState {
   users: User[];
@@ -23,35 +24,80 @@ const initialState: UsersState = {
   pagination: null,
 };
 
-export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
-  async (params: UsersQueryParams) => {
+// Action creators that manage pending state
+export const fetchUsers = (params: UsersQueryParams) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'users/fetchUsersStart' });
+    
     const queryString = new URLSearchParams(params as Record<string, string>).toString();
-    return await api.get(`/users?${queryString}`);
+    const result = await api.get<UsersResponse>(`/users?${queryString}`);
+    
+    dispatch({ type: 'users/fetchUsersSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'users/fetchUsersFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
-export const fetchPlayers = createAsyncThunk(
-  'users/fetchPlayers',
-  async (params: Partial<UsersQueryParams>) => {
+export const fetchPlayers = (params: Partial<UsersQueryParams>) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'users/fetchPlayersStart' });
+    
     const queryString = new URLSearchParams(params as Record<string, string>).toString();
-    return await api.get(`/users/players?${queryString}`);
+    const result = await api.get<PlayersResponse>(`/users/players?${queryString}`);
+    
+    dispatch({ type: 'users/fetchPlayersSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'users/fetchPlayersFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
-export const fetchUser = createAsyncThunk(
-  'users/fetchUser',
-  async (id: string) => {
-    return await api.get(`/users/${id}`);
+export const fetchUser = (id: string) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'users/fetchUserStart' });
+    
+    const result = await api.get<UserResponse>(`/users/${id}`);
+    
+    dispatch({ type: 'users/fetchUserSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'users/fetchUserFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
-export const updateUser = createAsyncThunk(
-  'users/updateUser',
-  async ({ id, userData }: { id: string; userData: UpdateUserRequest }) => {
-    return await api.put(`/users/${id}`, userData);
+export const updateUser = ({ id, userData }: { id: string; userData: UpdateUserRequest }) => async (dispatch: any) => {
+  try {
+    dispatch(setPending());
+    dispatch({ type: 'users/updateUserStart' });
+    
+    const result = await api.put<UpdateUserResponse>(`/users/${id}`, userData);
+    
+    dispatch({ type: 'users/updateUserSuccess', payload: result });
+    
+    return result;
+  } catch (error) {
+    dispatch({ type: 'users/updateUserFailure', payload: error });
+    throw error;
+  } finally {
+    dispatch(clearPending());
   }
-);
+};
 
 const usersSlice = createSlice({
   name: 'users',
@@ -71,71 +117,71 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Fetch Users
-      .addCase(fetchUsers.pending, (state) => {
+      .addCase('users/fetchUsersStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
+      .addCase('users/fetchUsersSuccess', (state, action: any) => {
         state.loading = false;
         const payload = action.payload as any;
         state.users = payload?.data || [];
         state.pagination = payload?.pagination || null;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
+      .addCase('users/fetchUsersFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch users';
+        state.error = action.payload?.message || 'Failed to fetch users';
       })
       // Fetch Players
-      .addCase(fetchPlayers.pending, (state) => {
+      .addCase('users/fetchPlayersStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPlayers.fulfilled, (state, action) => {
+      .addCase('users/fetchPlayersSuccess', (state, action: any) => {
         state.loading = false;
         const payload = action.payload as any;
         state.users = payload?.data || [];
         state.pagination = payload?.pagination || null;
       })
-      .addCase(fetchPlayers.rejected, (state, action) => {
+      .addCase('users/fetchPlayersFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch players';
+        state.error = action.payload?.message || 'Failed to fetch players';
       })
       // Fetch User
-      .addCase(fetchUser.pending, (state) => {
+      .addCase('users/fetchUserStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase('users/fetchUserSuccess', (state, action: any) => {
         state.loading = false;
         const payload = action.payload as any;
-        if (payload) {
-          state.currentUser = payload;
+        if (payload?.data) {
+          state.currentUser = payload.data;
         }
       })
-      .addCase(fetchUser.rejected, (state, action) => {
+      .addCase('users/fetchUserFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch user';
+        state.error = action.payload?.message || 'Failed to fetch user';
       })
       // Update User
-      .addCase(updateUser.pending, (state) => {
+      .addCase('users/updateUserStart', (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase('users/updateUserSuccess', (state, action: any) => {
         state.loading = false;
         const payload = action.payload as any;
-        if (payload) {
-          state.currentUser = payload;
+        if (payload?.data) {
+          state.currentUser = payload.data;
           // Update user in users array if exists
-          const index = state.users.findIndex(user => user.id === payload.id);
+          const index = state.users.findIndex(user => user.id === payload.data.id);
           if (index !== -1) {
-            state.users[index] = payload;
+            state.users[index] = payload.data;
           }
         }
       })
-      .addCase(updateUser.rejected, (state, action) => {
+      .addCase('users/updateUserFailure', (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to update user';
+        state.error = action.payload?.message || 'Failed to update user';
       });
   },
 });
