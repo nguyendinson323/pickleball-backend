@@ -116,7 +116,15 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   }
 
   // For logged-in users, combine base public + common tabs + private tabs
-  const mainNavigation = [...basePublicNavigation, ...commonLoggedInTabs]
+  const mainNavigation = [...basePublicNavigation]
+  
+  // Filter common tabs based on user type - admin users don't need membership tab
+  let filteredCommonTabs = [...commonLoggedInTabs]
+  if (user.user_type === 'admin' || user.user_type === 'super_admin') {
+    filteredCommonTabs = filteredCommonTabs.filter(tab => tab.name !== 'Membership')
+  }
+  
+  const mainNavigationWithCommon = [...mainNavigation, ...filteredCommonTabs]
   
   // Get private tabs based on user_type (this is the primary navigation)
   const privateTabs = getPrivateTabsByUserType(user.user_type)
@@ -124,7 +132,7 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   // Super admin user_type gets additional admin tabs
   if (user.user_type === 'super_admin') {
     return {
-      main: mainNavigation,
+      main: mainNavigationWithCommon,
       user: privateTabs,  // Use user_type-based tabs
       admin: superAdminAdminTabs
     }
@@ -133,7 +141,7 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   // Admin user_type gets basic admin tabs
   if (user.user_type === 'admin') {
     return {
-      main: mainNavigation,
+      main: mainNavigationWithCommon,
       user: privateTabs,  // Use user_type-based tabs
       admin: [
         { name: 'Admin Dashboard', href: '/admin', public: false },
@@ -144,7 +152,7 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
 
   // Regular users get only their type-specific private tabs
   return {
-    main: mainNavigation,
+    main: mainNavigationWithCommon,
     user: privateTabs
   }
 }
