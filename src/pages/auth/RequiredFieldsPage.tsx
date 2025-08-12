@@ -107,9 +107,36 @@ const RequiredFieldsPage = () => {
         ),
       };
 
-      await dispatch(registerUser(registrationData)).unwrap();
+      const result = await dispatch(registerUser(registrationData)).unwrap();
       toast.success('Registration successful!');
-      navigate('/dashboard');
+      
+      // Navigate to appropriate dashboard based on user type
+      const resultUserType = result.user.user_type
+      switch (resultUserType) {
+        case 'player':
+          navigate('/player/dashboard')
+          break
+        case 'coach':
+          navigate('/coach/dashboard')
+          break
+        case 'club':
+          navigate('/club/dashboard')
+          break
+        case 'partner':
+          navigate('/partner/dashboard')
+          break
+        case 'state':
+          navigate('/state/dashboard')
+          break
+        case 'admin':
+          navigate('/admin/dashboard')
+          break
+        case 'super_admin':
+          navigate('/super-admin/dashboard')
+          break
+        default:
+          navigate('/player/dashboard')
+      }
     } catch (err) {
       toast.error(error || 'Registration failed');
     }

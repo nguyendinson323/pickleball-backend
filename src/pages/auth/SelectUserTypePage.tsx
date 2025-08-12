@@ -9,6 +9,7 @@ import {
   Users, 
   Building2, 
   Handshake, 
+  MapPin,
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
@@ -45,6 +46,14 @@ const userTypes = [
     icon: Handshake,
     color: 'bg-orange-500',
     features: ['Equipment sales', 'Sponsorship opportunities', 'Business networking', 'Event partnerships']
+  },
+  {
+    type: 'state',
+    title: 'State Committee',
+    description: 'Manage state-level pickleball activities and regional associations',
+    icon: MapPin,
+    color: 'bg-red-500',
+    features: ['State tournaments', 'Regional management', 'Member oversight', 'State microsite']
   }
 ];
 

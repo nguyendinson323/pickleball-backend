@@ -21,9 +21,36 @@ const LoginPage = () => {
     e.preventDefault()
     
     try {
-      await dispatch(loginUser(formData)).unwrap()
+      const result = await dispatch(loginUser(formData)).unwrap()
       toast.success('Login successful!')
-      navigate('/dashboard')
+      
+      // Navigate to appropriate dashboard based on user type
+      const userType = result.user.user_type
+      switch (userType) {
+        case 'player':
+          navigate('/player/dashboard')
+          break
+        case 'coach':
+          navigate('/coach/dashboard')
+          break
+        case 'club':
+          navigate('/club/dashboard')
+          break
+        case 'partner':
+          navigate('/partner/dashboard')
+          break
+        case 'state':
+          navigate('/state/dashboard')
+          break
+        case 'admin':
+          navigate('/admin/dashboard')
+          break
+        case 'super_admin':
+          navigate('/super-admin/dashboard')
+          break
+        default:
+          navigate('/player/dashboard')
+      }
     } catch (err) {
       toast.error(error || 'Login failed')
     }

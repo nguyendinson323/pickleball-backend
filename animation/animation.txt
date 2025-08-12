@@ -67,3 +67,5 @@ Here’s a **smooth-animation strategy** for your Pickleball Federation landing 
 I hope to use animation effect for every div, img, h1~h6, p, input and button tags.
 and in one screen, the animation style should differ for every tag.
 I don't like animation delay effect.
+don't use any Libraries for animation. I like to use TailwindCSS with raw css.
+you can create a perfect index.css file and use it for every page frequently
