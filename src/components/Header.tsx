@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
 import { logout } from '../store/slices/authSlice'
@@ -27,6 +27,7 @@ import { getUserNavigation, basePublicNavigation, commonLoggedInTabs } from '../
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
   const { user, token } = useSelector((state: RootState) => state.auth)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -39,6 +40,7 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout())
+    navigate('/')
   }
 
   const isActive = (path: string) => location.pathname === path

@@ -1,8 +1,0 @@
-first, I strongly urge you to do everything yourself with your best.
-I really don't like you to stop working and ask me anything.
-I hope you do everything with yourself without my agree.
-I don't like any emoji in the code so you must not embed any emoji proceeding this project.
-and you don't need to show me your workflow as chat.
-complete the MVP perfectly.
-while proceeding MVP, keep the whole project logic to make it to be able to expand and embed full comment for each item.
-Above all, the most important thing is that the integration between the front-end and back-end should proceed smoothly while maintaining the project's logic.

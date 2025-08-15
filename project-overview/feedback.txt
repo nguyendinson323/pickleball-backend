@@ -1,0 +1,39 @@
+When I logged out from the administrator profile, this came up — shouldn’t it be redirected to the homepage?
+Regarding the player search feature, we believe it’s necessary to add a function that allows players to enable or disable the option to be found in the database, for privacy reasons.
+In other words, from their profile they should be able to toggle a button that says “Can Be Found” / “Not Visible”, along with a note or explanation stating that if they activate this button, they will not appear in the player search results.
+This is intended for cases where, for example, some people do not wish to be found by other players and prefer to keep their personal information restricted.For those who do wish to be visible, we could make it so that in the player search results, a simplified list of information is displayed so other players can contact them.
+ADMIN DASHBOARD
+1. In the admin dashboard, the messaging inbox for sending announcements to clubs, players, and state committees is missing. Remember this part is important (I assume you haven’t implemented this yet since it doesn’t appear in any of the other profiles either).
+2. While player affiliations can be viewed, this feature is not yet fully developed. 
+It’s important to also view separately the affiliations of clubs, state committees, coaches, etc., from which a CSV report can be generated to see how many are active, how many have not renewed, how many haven’t participated in tournaments, and other relevant data.
+3. There should also be a tab for everything related to rankings — player position changes and the ability to control the ranking system in case of any errors.
+4. A tab is missing for managing the microsites of state committees and clubs, where it should be possible at least to supervise and modify the content of each one.
+o Include an option to deactivate microsites or remove inappropriate content.
+5. The court management button is not actually used by the admin account since the federation does not own courts. If we ever did, we would create an associate profile to upload the courts. Instead, this court management function should be used to monitor the activity and performance of courts uploaded by clubs or associates.
+6. It’s necessary to add a tab for the management and editing of club microsites. 
+It should be possible to supervise and modify visible content on the microsites of clubs and partners.
+Also, remember to implement the part I already sent you about each player being required to upload a personal ID, along with some other small suggestions regarding users.
+This part: Regarding the login forms: 
+Also, the system must verify that the username is not already in the database to avoid conflicts, or the system could generate a username for them. 
+Alternatively, we could use the CURP as the username, which would save us all the extra steps, since the CURP is a unique, unrepeatable identification key for each person. I’ll leave it to your discretion to choose whichever is easiest for you. 
+2. There is no mechanism to upload a personal photo with the ability to center and crop it (similar to Facebook). 
+3. There must be a mechanism to allow the user to upload a scanned copy of their official ID in PDF, PNG, or JPG format. 
+5. Remember that at the end there should be a checkbox that the user must accept, which displays the privacy notice or allows them to download it. I will send you the document.
+I noticed that when you enter the player profile, it allows you to upload a photo. However, we would like this to be done during the profile creation process, because some people forget to upload their photo, and since there are many players, it later becomes a problem to keep reminding them to do so.
+Either upload the document so they can download it, or simply paste the text on a page so they can view it — I’ll leave that up to whatever is easiest for you. Just remember that there must be a checkbox for them to accept it during the profile creation process.
+Player
+1. In the player section, remember there should be a tab to display the player’s digital credential, a simplified version of their registration information (the information that should appear there is in the second document I sent you — it must include a QR code and other elements).
+Coach
+2.- Regarding this section, I really liked your proposal for supervision elements, scheduling training sessions, training plans, and other features. I also want to take this opportunity to commend you for making these decisions on your own based on the needs of each profile (we’ve noticed this), and this is very helpful for us because we want to build a complete platform that is useful to all role types involved in practicing this sport.
+For this profile, I would only add the feature to display the match history in which they served as a referee, so it appears in their career or work record.
+The goal is that from within the same platform, when someone organizes a tournament, they can select a referee from a list of referees available in the platform. This would help us track how many events they have participated in and how active they have been. Likewise, in each tournament’s information, players would be able to see who the referee will be.
+Club
+3.-Regarding the court rental section, I’m not sure how far along you are with it, so I’ll share my opinion based on the assumption that you may already have some plans in place that you haven’t yet completed.
+For this section, we would like to see that when selecting a court, it displays a calendar, and when entering a specific day, you can view the time slots during which that court is already reserved. This should be presented in a very visual way so players can easily see which slots are available.
+Naturally, this section should also have its own menu to manage invoices, payments, and generate reports on court usage.
+Also remember that clubs can organize tournaments, so add a tab or button for them to organize their tournaments. This tournament section should also include options to manage their invoices, expenses, and generate a profit report for an organized tournament.
+Likewise, add the section for configuring their club microsite, where they can display their information, logos, courts, banners, tournaments, etc.
+4.-. State or “State Committee”
+This section looks quite complete; you just need to advance a bit more in the functionalities so we can see how each feature works.
+As with clubs, it is also missing the part for managing the state committee microsite, where they can display their information, logos, courts, banners, tournaments, etc.
+The only thing I didn’t see is the ability to create or manage tournaments. This part is very important because they organize tournaments throughout the entire state or region.
