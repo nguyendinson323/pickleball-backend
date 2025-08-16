@@ -26,6 +26,60 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * Helper function to create consistent user response (excluding sensitive data)
+ * This ensures that all user types (player, coach, club, partner, state, admin) 
+ * receive their complete profile information in all API responses, while 
+ * maintaining security by excluding sensitive fields like passwords and tokens.
+ * 
+ * @param {Object} user - User object from database
+ * @returns {Object} - Cleaned user response object with all profile fields
+ */
+const createUserResponse = (user) => {
+  return {
+    id: user.id,
+    user_type: user.user_type,
+    username: user.username,
+    email: user.email,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    full_name: user.full_name,
+    date_of_birth: user.date_of_birth,
+    age: user.age,
+    gender: user.gender,
+    state: user.state,
+    city: user.city,
+    address: user.address,
+    latitude: user.latitude,
+    longitude: user.longitude,
+    phone: user.phone,
+    whatsapp: user.whatsapp,
+    skill_level: user.skill_level,
+    curp: user.curp,
+    rfc: user.rfc,
+    business_name: user.business_name,
+    contact_person: user.contact_person,
+    job_title: user.job_title,
+    website: user.website,
+    social_media: user.social_media,
+    profile_photo: user.profile_photo,
+    logo: user.logo,
+    membership_status: user.membership_status,
+    membership_expires_at: user.membership_expires_at,
+    subscription_plan: user.subscription_plan,
+    email_verified: user.email_verified,
+    last_login: user.last_login,
+    preferences: user.preferences,
+    is_active: user.is_active,
+    is_verified: user.is_verified,
+    verification_documents: user.verification_documents,
+    notes: user.notes,
+    can_be_found: user.can_be_found,
+    created_at: user.created_at,
+    updated_at: user.updated_at
+  };
+};
+
+/**
  * Generate JWT tokens
  * @param {Object} user - User object
  * @returns {Object} Tokens object
@@ -228,19 +282,8 @@ const register = async (req, res) => {
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
 
-    // Remove sensitive data from response
-    const userResponse = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      full_name: user.full_name,
-      user_type: user.user_type,
-      email_verified: user.email_verified,
-      is_active: user.is_active,
-      created_at: user.created_at,
-      profile_photo: user.profile_photo, // Include profile photo path
-      verification_documents: user.verification_documents // Include verification documents
-    };
+    // Send complete user data (excluding sensitive fields)
+    const userResponse = createUserResponse(user);
 
     res.status(HTTP_STATUS.CREATED).json({
       success: true,
@@ -353,20 +396,8 @@ const login = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user);
     console.log('✅ Tokens generated');
 
-    // Remove sensitive data from response
-    const userResponse = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      full_name: user.full_name,
-      user_type: user.user_type,
-      email_verified: user.email_verified,
-      is_active: user.is_active,
-      membership_status: user.membership_status,
-      last_login: user.last_login,
-      profile_photo: user.profile_photo, // Include profile photo path
-      verification_documents: user.verification_documents // Include verification documents
-    };
+    // Send complete user data (excluding sensitive fields)
+    const userResponse = createUserResponse(user);
 
     console.log('📤 Sending response...');
     console.log('User response:', userResponse);
@@ -630,10 +661,13 @@ const getProfile = async (req, res) => {
       throw createError.notFound('User not found');
     }
 
+    // Send complete user data (excluding sensitive fields)
+    const userResponse = createUserResponse(userProfile);
+
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.PROFILE_RETRIEVED,
-      data: { user: userProfile }
+      data: userResponse
     });
   } catch (error) {
     logger.error('Error in getProfile:', error);
@@ -711,10 +745,13 @@ const updateProfile = async (req, res) => {
       attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] }
     });
 
+    // Send complete user data (excluding sensitive fields)
+    const userResponse = createUserResponse(updatedUser);
+
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.PROFILE_UPDATED,
-      data: { user: updatedUser }
+      data: userResponse
     });
   } catch (error) {
     logger.error('Error in updateProfile:', error);
