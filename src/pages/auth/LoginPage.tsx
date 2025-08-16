@@ -19,9 +19,6 @@ const LoginPage = () => {
   const { loading, error, user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const { pending } = useSelector((state: RootState) => state.pending)
   
-  // Debug: Log current auth state
-  console.log('Current auth state:', { loading, error, user, isAuthenticated, pending })
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     

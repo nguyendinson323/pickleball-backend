@@ -14,6 +14,7 @@ import {
 } from './ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
+import ProfilePhoto from './ui/ProfilePhoto'
 import { 
   Menu, 
   X, 
@@ -24,6 +25,7 @@ import {
   LogOut
 } from 'lucide-react'
 import { getUserNavigation, basePublicNavigation, commonLoggedInTabs } from '../lib/navigation'
+import { imageBaseURL } from '../lib/const'
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -165,28 +167,61 @@ const Header = () => {
               <div className="relative">
                 <DropdownMenu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 transition-all duration-200 group">
-                      <Avatar className="h-10 w-10 ring-2 ring-transparent group-hover:ring-blue-200 transition-all duration-200">
-                        <AvatarImage src={user?.profile_photo} alt={getUserDisplayName()} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-medium">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
+                    <div className="flex items-center space-x-3 hover:bg-gray-100 rounded-lg p-2 transition-all duration-200 cursor-pointer">
+                      <div className="relative">
+                        <Avatar className="h-10 w-10 ring-2 ring-transparent group-hover:ring-blue-200 transition-all duration-200">
+                          <AvatarImage 
+                            src={user?.profile_photo ? `${imageBaseURL}${user.profile_photo}` : undefined} 
+                            alt={getUserDisplayName()}
+                            onLoad={() => console.log('✅ Profile photo loaded successfully:', `${imageBaseURL}${user.profile_photo}`)}
+                            onError={(e) => console.log('❌ Profile photo failed to load:', `${imageBaseURL}${user.profile_photo}`, e)}
+                          />
+                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-medium">
+                            {getUserInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* Show a small indicator when profile photo is available */}
+                        {user?.profile_photo && (
+                          <div 
+                            className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm cursor-help"
+                            title="Profile photo uploaded"
+                          />
+                        )}
+                      </div>
+                      {/* Show user name when profile photo is available */}
+                      {user?.profile_photo && (
+                        <div className="hidden lg:block">
+                          <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
+                          <p className="text-xs text-gray-500">{user?.user_type}</p>
+                          {/* Debug info - remove in production */}
+                        </div>
+                      )}
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 p-4" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal p-0 mb-3">
-                      <div className="flex flex-col space-y-2">
-                        <p className="text-sm font-semibold leading-none text-gray-900">
-                          {getUserDisplayName()}
-                        </p>
-                        <p className="text-xs leading-none text-gray-500">
-                          {user?.email}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="secondary" className="text-xs capitalize">
-                            {user?.user_type}
-                          </Badge>
+                      <div className="flex flex-col space-y-3">
+                        {/* Profile Photo Display */}
+                        <div className="flex justify-center">
+                          <ProfilePhoto 
+                            profilePhoto={user?.profile_photo}
+                            alt={getUserDisplayName()}
+                            size="lg"
+                            className="ring-2 ring-gray-200"
+                          />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold leading-none text-gray-900">
+                            {getUserDisplayName()}
+                          </p>
+                          <p className="text-xs leading-none text-gray-500 mt-1">
+                            {user?.email}
+                          </p>
+                          <div className="flex items-center justify-center mt-2">
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              {user?.user_type}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                     </DropdownMenuLabel>
@@ -328,7 +363,10 @@ const Header = () => {
                   <div className="px-4 py-3 border-t border-gray-100">
                     <div className="flex items-center space-x-3 mb-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.profile_photo} alt={getUserDisplayName()} />
+                        <AvatarImage 
+                          src={user?.profile_photo ? `${imageBaseURL}${user.profile_photo}` : undefined} 
+                          alt={getUserDisplayName()} 
+                        />
                         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-medium">
                           {getUserInitials()}
                         </AvatarFallback>

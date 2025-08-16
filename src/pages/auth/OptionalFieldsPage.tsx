@@ -128,14 +128,15 @@ const OptionalFieldsPage = () => {
           return;
         }
       }
-
+      console.log('formData', formData);
+      
       // Create FormData for file uploads
       const formDataToSend = new FormData();
       
       // Add basic registration data
       formDataToSend.append('user_type', userType);
       Object.entries(requiredFields).forEach(([key, value]) => {
-        if (typeof value === 'string' || typeof value === 'number') {
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
           formDataToSend.append(key, String(value));
         }
       });
@@ -153,6 +154,51 @@ const OptionalFieldsPage = () => {
       }
       if (files.verification_document) {
         formDataToSend.append('verification_document', files.verification_document);
+      }
+
+      // Validate required fields before sending
+      const validationErrors = [];
+      
+      // Check for missing required fields for players and coaches
+      if (userType === 'player' || userType === 'coach') {
+        if (!files.profile_photo) {
+          validationErrors.push('Profile photo is required');
+        }
+        if (!files.verification_document) {
+          validationErrors.push('Verification document is required');
+        }
+        if (!requiredFields.full_name || requiredFields.full_name.trim() === '') {
+          validationErrors.push('Full name is required');
+        }
+      }
+      
+      // Check for missing required fields for clubs and partners
+      if (userType === 'club' || userType === 'partner') {
+        if (!requiredFields.business_name || requiredFields.business_name.trim() === '') {
+          validationErrors.push('Business name is required');
+        }
+      }
+      
+      // Check privacy policy acceptance
+      if (!requiredFields.privacy_policy_accepted) {
+        validationErrors.push('You must accept the privacy policy');
+      }
+      
+      // Check other required fields
+      if (!requiredFields.username || requiredFields.username.trim() === '') {
+        validationErrors.push('Username is required');
+      }
+      if (!requiredFields.email || requiredFields.email.trim() === '') {
+        validationErrors.push('Email is required');
+      }
+      if (!requiredFields.password || requiredFields.password.trim() === '') {
+        validationErrors.push('Password is required');
+      }
+      
+      // If there are validation errors, show them and stop
+      if (validationErrors.length > 0) {
+        toast.error(`Please fix the following issues:\n${validationErrors.join('\n')}`);
+        return;
       }
 
       const result = await dispatch(registerUser(formDataToSend));
@@ -213,6 +259,38 @@ const OptionalFieldsPage = () => {
         user_type: userType as any,
         ...requiredFields,
       };
+
+      // Validate required fields before sending
+      const validationErrors = [];
+      
+      // Check for missing required fields for clubs and partners
+      if (userType === 'club' || userType === 'partner') {
+        if (!requiredFields.business_name || requiredFields.business_name.trim() === '') {
+          validationErrors.push('Business name is required');
+        }
+      }
+      
+      // Check privacy policy acceptance
+      if (!requiredFields.privacy_policy_accepted) {
+        validationErrors.push('You must accept the privacy policy');
+      }
+      
+      // Check other required fields
+      if (!requiredFields.username || requiredFields.username.trim() === '') {
+        validationErrors.push('Username is required');
+      }
+      if (!requiredFields.email || requiredFields.email.trim() === '') {
+        validationErrors.push('Email is required');
+      }
+      if (!requiredFields.password || requiredFields.password.trim() === '') {
+        validationErrors.push('Password is required');
+      }
+      
+      // If there are validation errors, show them and stop
+      if (validationErrors.length > 0) {
+        toast.error(`Please fix the following issues:\n${validationErrors.join('\n')}`);
+        return;
+      }
 
       const result = await dispatch(registerUser(registrationData));
       
@@ -328,6 +406,114 @@ const OptionalFieldsPage = () => {
           </p>
         </div>
 
+        {/* File Upload Section for Players and Coaches */}
+        {(userType === 'player' || userType === 'coach') && (
+          <div className="mt-8">
+            <Card className="animate-on-scroll w-full">
+              <CardHeader>
+                <CardTitle className="animate-on-scroll text-xl flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Required Documents
+                </CardTitle>
+                <CardDescription className="animate-on-scroll">
+                  Please upload your profile photo and verification document
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-6">
+                  {/* Profile Photo Upload */}
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="profile_photo" className="animate-on-scroll">
+                      Profile Photo *
+                    </Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                      {files.profile_photo ? (
+                        <div className="space-y-2">
+                          <div className="w-20 h-20 mx-auto rounded-full overflow-hidden bg-gray-100">
+                            <img
+                              src={URL.createObjectURL(files.profile_photo)}
+                              alt="Profile preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <p className="text-sm text-gray-600">{files.profile_photo.name}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleFileChange('profile_photo', null)}
+                          >
+                            Remove Photo
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-gray-500">Click to upload or drag and drop</p>
+                          <p className="text-xs text-gray-400">PNG, JPG, WebP up to 5MB</p>
+                          <input
+                            id="profile_photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange('profile_photo', e.target.files?.[0] || null)}
+                            className="hidden"
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={() => document.getElementById('profile_photo')?.click()}
+                          >
+                            Choose Photo
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Verification Document Upload */}
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="verification_document" className="animate-on-scroll">
+                      Verification Document (INE/Passport) *
+                    </Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                      {files.verification_document ? (
+                        <div className="space-y-2">
+                          <div className="w-16 h-20 mx-auto bg-gray-100 rounded flex items-center justify-center">
+                            <span className="text-2xl">📄</span>
+                          </div>
+                          <p className="text-sm text-gray-600">{files.verification_document.name}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleFileChange('verification_document', null)}
+                          >
+                            Remove Document
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-gray-500">Click to upload or drag and drop</p>
+                          <p className="text-xs text-gray-400">PDF, PNG, JPG up to 5MB</p>
+                          <input
+                            id="verification_document"
+                            type="file"
+                            accept=".pdf,.png,.jpg,.jpeg"
+                            onChange={(e) => handleFileChange('verification_document', e.target.files?.[0] || null)}
+                            className="hidden"
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={() => document.getElementById('verification_document')?.click()}
+                          >
+                            Choose Document
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
             <Card className="animate-on-scroll w-full">
@@ -367,112 +553,6 @@ const OptionalFieldsPage = () => {
             </Card>
           </div>
         </div>
-
-        {/* File Upload Section for Players and Coaches */}
-        {(userType === 'player' || userType === 'coach') && (
-          <div className="mt-8">
-            <Card className="animate-on-scroll w-full">
-              <CardHeader>
-                <CardTitle className="animate-on-scroll text-xl flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  Required Documents
-                </CardTitle>
-                <CardDescription className="animate-on-scroll">
-                  Please upload your profile photo and verification document
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Profile Photo Upload */}
-                <div className="space-y-2">
-                  <Label htmlFor="profile_photo" className="animate-on-scroll">
-                    Profile Photo *
-                  </Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                    {files.profile_photo ? (
-                      <div className="space-y-2">
-                        <div className="w-20 h-20 mx-auto rounded-full overflow-hidden bg-gray-100">
-                          <img
-                            src={URL.createObjectURL(files.profile_photo)}
-                            alt="Profile preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <p className="text-sm text-gray-600">{files.profile_photo.name}</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleFileChange('profile_photo', null)}
-                        >
-                          Remove Photo
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-gray-500">Click to upload or drag and drop</p>
-                        <p className="text-xs text-gray-400">PNG, JPG, WebP up to 5MB</p>
-                        <input
-                          id="profile_photo"
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleFileChange('profile_photo', e.target.files?.[0] || null)}
-                          className="hidden"
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={() => document.getElementById('profile_photo')?.click()}
-                        >
-                          Choose Photo
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Verification Document Upload */}
-                <div className="space-y-2">
-                  <Label htmlFor="verification_document" className="animate-on-scroll">
-                    Verification Document (INE/Passport) *
-                  </Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                    {files.verification_document ? (
-                      <div className="space-y-2">
-                        <div className="w-16 h-20 mx-auto bg-gray-100 rounded flex items-center justify-center">
-                          <span className="text-2xl">📄</span>
-                        </div>
-                        <p className="text-sm text-gray-600">{files.verification_document.name}</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleFileChange('verification_document', null)}
-                        >
-                          Remove Document
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-gray-500">Click to upload or drag and drop</p>
-                        <p className="text-xs text-gray-400">PDF, PNG, JPG up to 5MB</p>
-                        <input
-                          id="verification_document"
-                          type="file"
-                          accept=".pdf,.png,.jpg,.jpeg"
-                          onChange={(e) => handleFileChange('verification_document', e.target.files?.[0] || null)}
-                          className="hidden"
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={() => document.getElementById('verification_document')?.click()}
-                        >
-                          Choose Document
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <Button

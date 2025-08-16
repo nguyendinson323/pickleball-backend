@@ -108,7 +108,9 @@ const authSlice = createSlice({
           console.log('Login successful - User and tokens stored in Redux:', {
             user: payload.data.user,
             hasToken: !!payload.data.tokens.accessToken,
-            hasRefreshToken: !!payload.data.tokens.refreshToken
+            hasRefreshToken: !!payload.data.tokens.refreshToken,
+            profilePhoto: payload.data.user.profile_photo,
+            verificationDocuments: payload.data.user.verification_documents
           });
         } else {
           console.error('Invalid login response structure:', payload);
@@ -143,7 +145,9 @@ const authSlice = createSlice({
           console.log('Registration successful - User and tokens stored in Redux:', {
             user: payload.data.user,
             hasToken: !!payload.data.tokens.accessToken,
-            hasRefreshToken: !!payload.data.tokens.refreshToken
+            hasRefreshToken: !!payload.data.tokens.refreshToken,
+            profilePhoto: payload.data.user.profile_photo,
+            verificationDocuments: payload.data.user.verification_documents
           });
         } else {
           console.error('Invalid register response structure:', payload);
@@ -166,6 +170,12 @@ const authSlice = createSlice({
         if (payload?.data) {
           state.user = payload.data;
           state.isAuthenticated = true;
+          
+          console.log('Profile retrieved successfully:', {
+            user: payload.data,
+            profilePhoto: payload.data.profile_photo,
+            verificationDocuments: payload.data.verification_documents
+          });
         }
       })
       .addCase(getProfile.rejected, (state, action) => {
@@ -185,7 +195,11 @@ const authSlice = createSlice({
         if (payload?.data) {
           state.user = payload.data;
           state.isAuthenticated = true;
-          console.log('Auth state restored successfully:', payload.data);
+          console.log('Auth state restored successfully:', {
+            user: payload.data,
+            profilePhoto: payload.data.profile_photo,
+            verificationDocuments: payload.data.verification_documents
+          });
         }
       })
       .addCase(restoreAuthState.rejected, (state, action) => {

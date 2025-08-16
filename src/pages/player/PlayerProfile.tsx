@@ -9,6 +9,8 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Switch } from '../../components/ui/switch';
+import ProfilePhoto from '../../components/ui/ProfilePhoto';
+import { imageBaseURL } from '../../lib/const';
 import { 
   User, 
   MapPin, 
@@ -20,7 +22,8 @@ import {
   Calendar,
   Eye,
   EyeOff,
-  Shield
+  Shield,
+  Camera
 } from 'lucide-react';
 import { api } from '../../lib/api';
 import { toast } from 'sonner';
@@ -28,6 +31,20 @@ import { toast } from 'sonner';
 const PlayerProfile = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Debug: Log user data including profile photo
+  console.log('🖼️ PlayerProfile - User data:', {
+    id: user?.id,
+    username: user?.username,
+    full_name: user?.full_name,
+    first_name: user?.first_name,
+    last_name: user?.last_name,
+    email: user?.email,
+    profile_photo: user?.profile_photo,
+    hasProfilePhoto: !!user?.profile_photo,
+    user_type: user?.user_type
+  });
+  
   const [profileData, setProfileData] = useState({
     username: user?.username || '',
     email: user?.email || '',
@@ -441,16 +458,65 @@ const PlayerProfile = () => {
                 <CardTitle>Profile Photo</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
-                  <AvatarImage src={profileData.profilePhoto} />
-                  <AvatarFallback className="text-2xl">
-                    {profileData.firstName?.charAt(0)}{profileData.lastName?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <ProfilePhoto
+                    profilePhoto={user?.profile_photo}
+                    alt={user?.full_name || user?.username || 'Player'}
+                    size="xl"
+                    className="mx-auto ring-4 ring-white shadow-lg"
+                  />
+                  {isEditing && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="absolute bottom-2 right-2 rounded-full w-10 h-10 p-0 hover:scale-110 transition-transform duration-300 bg-white shadow-md"
+                      title="Change Profile Photo"
+                    >
+                      <Camera className="h-5 w-5" />
+                    </Button>
+                  )}
+                  
+                  {/* Show a small indicator when profile photo is available */}
+                  {user?.profile_photo && (
+                    <div
+                      className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"
+                      title="Profile photo uploaded"
+                    />
+                  )}
+                </div>
+                
+                {/* Status message */}
+                {user?.profile_photo ? (
+                  <div className="mt-2 text-xs text-green-600 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Profile photo loaded successfully
+                  </div>
+                ) : (
+                  <div className="mt-2 text-xs text-gray-500 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                    No profile photo uploaded
+                  </div>
+                )}
+                
+                {/* Debug info - remove in production */}
+                {user?.profile_photo && (
+                  <div className="mt-2 text-xs text-blue-500">
+                    Photo: {user.profile_photo}
+                  </div>
+                )}
+                
                 {isEditing && (
-                  <Button variant="outline" size="sm" className="w-full">
-                    Change Photo
-                  </Button>
+                  <div className="mt-4 space-y-2">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Camera className="h-4 w-4 mr-2" />
+                      Change Photo
+                    </Button>
+                    {user?.profile_photo && (
+                      <Button variant="outline" size="sm" className="w-full text-red-600 hover:text-red-700">
+                        Remove Photo
+                      </Button>
+                    )}
+                  </div>
                 )}
               </CardContent>
             </Card>

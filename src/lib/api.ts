@@ -16,6 +16,13 @@ apiClient.interceptors.request.use((config) => {
   } else {
     delete config.headers.Authorization;
   }
+  
+  // Automatically set Content-Type for FormData (file uploads)
+  if (config.data instanceof FormData) {
+    // Remove the hardcoded Content-Type to let axios set it automatically for FormData
+    delete config.headers['Content-Type'];
+  }
+  
   return config;
 });
 

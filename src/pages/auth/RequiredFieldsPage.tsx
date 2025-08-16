@@ -38,9 +38,13 @@ const RequiredFieldsPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
+    console.log('Form field change:', { name, value, type, checked, newValue });
+    
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue,
     });
   };
 
@@ -73,6 +77,8 @@ const RequiredFieldsPage = () => {
       }
       
       // Require privacy policy acceptance for players and coaches
+      console.log('Validating privacy policy for:', userType);
+      console.log('Privacy policy value:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
       if (!formData.privacy_policy_accepted) {
         toast.error('You must accept the privacy policy to continue');
         return false;
@@ -102,7 +108,17 @@ const RequiredFieldsPage = () => {
   };
 
   const handleSkipToRegister = async () => {
+    console.log('handleSkipToRegister called');
+    console.log('Current form data:', formData);
+    console.log('Privacy policy accepted:', formData.privacy_policy_accepted);
+    
     if (!validateForm()) return;
+
+    // Players and coaches must go through the full registration process (including file uploads)
+    if (userType === 'player' || userType === 'coach') {
+      toast.error('Players and coaches must complete the full registration process including document uploads');
+      return;
+    }
 
     try {
       const registrationData = {
@@ -112,8 +128,13 @@ const RequiredFieldsPage = () => {
         password: formData.password,
         full_name: formData.full_name,
         business_name: formData.business_name,
-        privacy_policy_accepted: formData.privacy_policy_accepted,
+        privacy_policy_accepted: Boolean(formData.privacy_policy_accepted),
       };
+
+      console.log('Sending registration data:', registrationData);
+      console.log('Privacy policy accepted:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
+      console.log('Form data state:', formData);
+      console.log('User type:', userType);
 
       const result = await dispatch(registerUser(registrationData));
       
@@ -134,12 +155,6 @@ const RequiredFieldsPage = () => {
         // Navigate to appropriate dashboard based on user type
         const userType = apiResponse.data.user.user_type;
         switch (userType) {
-          case 'player':
-            navigate('/player/dashboard');
-            break;
-          case 'coach':
-            navigate('/coach/dashboard');
-            break;
           case 'club':
             navigate('/club/dashboard');
             break;
@@ -150,7 +165,7 @@ const RequiredFieldsPage = () => {
             navigate('/state/dashboard');
             break;
           default:
-            navigate('/player/dashboard');
+            navigate('/club/dashboard');
         }
       } else {
         // Registration failed - show error and stay on page
@@ -266,6 +281,9 @@ const RequiredFieldsPage = () => {
                       required
                       className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
+                    <span className="ml-2 text-sm text-gray-600">
+                      Current value: {formData.privacy_policy_accepted ? 'true' : 'false'}
+                    </span>
                     <div className="text-sm text-gray-700">
                       <label htmlFor="privacy_policy_accepted" className="font-medium">
                         I have read and accept the{' '}
@@ -305,8 +323,9 @@ const RequiredFieldsPage = () => {
             <Button
               variant="outline"
               onClick={handleSkipToRegister}
-              disabled={loading}
-              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300"
+              disabled={loading || userType === 'player' || userType === 'coach'}
+              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={userType === 'player' || userType === 'coach' ? 'Players and coaches must complete full registration' : 'Skip optional fields and register now'}
             >
               {loading ? 'Creating Account...' : 'Skip & Register Now'}
             </Button>

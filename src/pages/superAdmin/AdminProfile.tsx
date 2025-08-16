@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import React, { useState, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -10,6 +10,9 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Switch } from '../../components/ui/switch';
+import ProfilePhoto from '../../components/ui/ProfilePhoto';
+import { imageBaseURL } from '../../lib/const';
+import { toast } from 'sonner';
 import { 
   Shield, 
   User,
@@ -30,8 +33,98 @@ import {
 } from 'lucide-react';
 
 const AdminProfile = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Profile photo management functions
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('profile_photo', file);
+
+      const response = await fetch(`${imageBaseURL}/api/v1/auth/profile/photo`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success('Profile photo uploaded successfully!');
+        // Refresh the page or update user data to show new photo
+        window.location.reload();
+      } else {
+        throw new Error(result.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to upload photo');
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handlePhotoRemove = async () => {
+    if (!user?.profile_photo) return;
+
+    if (!confirm('Are you sure you want to remove your profile photo?')) {
+      return;
+    }
+
+    try {
+      // For now, we'll just show a message since the backend doesn't have a remove endpoint
+      // You can implement this later by adding a DELETE endpoint
+      toast.info('Profile photo removal functionality coming soon!');
+      
+      // TODO: Implement actual photo removal when backend supports it
+      // const response = await fetch(`${imageBaseURL}/api/v1/auth/profile/photo`, {
+      //   method: 'DELETE',
+      //   headers: {
+      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+      //   }
+      // });
+      
+    } catch (error) {
+      console.error('Photo removal error:', error);
+      toast.error('Failed to remove photo');
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
 
   // Mock admin profile data
   const [adminData, setAdminData] = useState({
@@ -187,7 +280,7 @@ const AdminProfile = () => {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      value={isEditing ? editedData.personalInfo.firstName : adminData.personalInfo.firstName}
+                      value={isEditing ? editedData.personalInfo.firstName : (user?.first_name || adminData.personalInfo.firstName)}
                       onChange={(e) => handleInputChange('personalInfo', 'firstName', e.target.value)}
                       disabled={!isEditing}
                     />
@@ -196,7 +289,7 @@ const AdminProfile = () => {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      value={isEditing ? editedData.personalInfo.lastName : adminData.personalInfo.lastName}
+                      value={isEditing ? editedData.personalInfo.lastName : (user?.last_name || adminData.personalInfo.lastName)}
                       onChange={(e) => handleInputChange('personalInfo', 'lastName', e.target.value)}
                       disabled={!isEditing}
                     />
@@ -206,7 +299,7 @@ const AdminProfile = () => {
                     <Input
                       id="email"
                       type="email"
-                      value={isEditing ? editedData.personalInfo.email : adminData.personalInfo.email}
+                      value={isEditing ? editedData.personalInfo.email : (user?.email || adminData.personalInfo.email)}
                       onChange={(e) => handleInputChange('personalInfo', 'email', e.target.value)}
                       disabled={!isEditing}
                     />
@@ -215,7 +308,7 @@ const AdminProfile = () => {
                     <Label htmlFor="phone">Phone</Label>
                     <Input
                       id="phone"
-                      value={isEditing ? editedData.personalInfo.phone : adminData.personalInfo.phone}
+                      value={isEditing ? editedData.personalInfo.phone : (user?.phone || adminData.personalInfo.phone)}
                       onChange={(e) => handleInputChange('personalInfo', 'phone', e.target.value)}
                       disabled={!isEditing}
                     />
@@ -379,17 +472,81 @@ const AdminProfile = () => {
                 <CardTitle>Profile Photo</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <Avatar className="h-24 w-24 mx-auto mb-4">
-                  <AvatarImage src={adminData.personalInfo.profilePhoto} />
-                  <AvatarFallback className="bg-gradient-to-br from-red-500 to-blue-600 text-white text-2xl">
-                    {adminData.personalInfo.firstName[0]}{adminData.personalInfo.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <ProfilePhoto
+                    profilePhoto={user?.profile_photo}
+                    alt={user?.full_name || user?.username || 'Admin User'}
+                    size="xl"
+                    className="mx-auto ring-4 ring-white shadow-lg"
+                  />
+                  {isEditing && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="absolute bottom-2 right-2 rounded-full w-10 h-10 p-0 hover:scale-110 transition-transform duration-300 bg-white shadow-md"
+                      title="Change Profile Photo"
+                      onClick={triggerFileUpload}
+                      disabled={isUploading}
+                    >
+                      <Camera className="h-5 w-5" />
+                    </Button>
+                  )}
+                  
+                  {/* Show a small indicator when profile photo is available */}
+                  {user?.profile_photo && (
+                    <div
+                      className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"
+                      title="Profile photo uploaded"
+                    />
+                  )}
+                </div>
+                
+                {/* Hidden file input for photo upload */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+                
+                {/* Status message */}
+                {user?.profile_photo ? (
+                  <div className="mt-2 text-xs text-green-600 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Profile photo loaded successfully
+                  </div>
+                ) : (
+                  <div className="mt-2 text-xs text-gray-500 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                    No profile photo uploaded
+                  </div>
+                )}
+                
                 {isEditing && (
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Upload Photo
-                  </Button>
+                  <div className="mt-4 space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={triggerFileUpload}
+                      disabled={isUploading}
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      {isUploading ? 'Uploading...' : 'Upload Photo'}
+                    </Button>
+                    {user?.profile_photo && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-red-600 hover:text-red-700"
+                        onClick={handlePhotoRemove}
+                        disabled={isUploading}
+                      >
+                        Remove Photo
+                      </Button>
+                    )}
+                  </div>
                 )}
               </CardContent>
             </Card>
