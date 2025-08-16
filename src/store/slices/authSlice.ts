@@ -27,6 +27,14 @@ export const getProfile = createAsyncThunk(
   }
 );
 
+export const refreshUserData = createAsyncThunk(
+  'auth/refreshUserData',
+  async () => {
+    const response = await api.get<ProfileResponse>('/auth/profile');
+    return response;
+  }
+);
+
 export const restoreAuthState = createAsyncThunk(
   'auth/restoreAuthState',
   async () => {
@@ -206,6 +214,29 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error?.message || 'Failed to restore authentication';
         state.isAuthenticated = false;
+      })
+      // Refresh User Data
+      .addCase(refreshUserData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshUserData.fulfilled, (state, action) => {
+        state.loading = false;
+        const payload = action.payload;
+        
+        if (payload?.data) {
+          state.user = payload.data;
+          state.isAuthenticated = true;
+          console.log('User data refreshed successfully:', {
+            user: payload.data,
+            profilePhoto: payload.data.profile_photo,
+            verificationDocuments: payload.data.verification_documents
+          });
+        }
+      })
+      .addCase(refreshUserData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to refresh user data';
       });
   },
 });

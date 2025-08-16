@@ -126,21 +126,21 @@ const AdminProfile = () => {
     fileInputRef.current?.click();
   };
 
-  // Mock admin profile data
+  // Mock admin profile data - now using Redux user data as defaults
   const [adminData, setAdminData] = useState({
     personalInfo: {
-      firstName: 'John',
-      lastName: 'Admin',
-      email: 'john.admin@pickleball.com',
-      phone: '(555) 123-4567',
-      title: 'System Administrator',
-      department: 'IT & Operations',
-      bio: 'Experienced system administrator with 8+ years managing enterprise applications and user management systems.',
-      profilePhoto: null
+      firstName: user?.first_name || 'John',
+      lastName: user?.last_name || 'Admin',
+      email: user?.email || 'john.admin@pickleball.com',
+      phone: user?.phone || '(555) 123-4567',
+      title: user?.job_title || 'System Administrator',
+      department: user?.preferences?.department || 'IT & Operations',
+      bio: user?.bio || 'Experienced system administrator with 8+ years managing enterprise applications and user management systems.',
+      profilePhoto: user?.profile_photo || null
     },
     systemAccess: {
-      role: 'super_admin',
-      permissions: [
+      role: user?.user_type || 'super_admin',
+      permissions: user?.preferences?.permissions || [
         'User Management',
         'System Configuration',
         'Database Administration',
@@ -148,39 +148,99 @@ const AdminProfile = () => {
         'Analytics & Reporting',
         'Global Settings Management'
       ],
-      lastLogin: '2024-03-25 10:30 AM',
-      loginHistory: [
+      lastLogin: user?.last_login ? new Date(user.last_login).toLocaleString() : '2024-03-25 10:30 AM',
+      loginHistory: user?.preferences?.login_history || [
         { date: '2024-03-25 10:30 AM', ip: '192.168.1.100', location: 'Office' },
         { date: '2024-03-24 09:15 AM', ip: '192.168.1.100', location: 'Office' },
         { date: '2024-03-23 14:20 PM', ip: '10.0.0.50', location: 'Remote' }
       ]
     },
     security: {
-      twoFactorEnabled: true,
-      lastPasswordChange: '2024-02-15',
-      passwordExpiryDays: 45,
-      failedLoginAttempts: 0,
-      accountLocked: false,
-      securityQuestions: [
+      twoFactorEnabled: user?.preferences?.two_factor_enabled ?? true,
+      lastPasswordChange: user?.preferences?.last_password_change || '2024-02-15',
+      passwordExpiryDays: user?.preferences?.password_expiry_days || 45,
+      failedLoginAttempts: user?.preferences?.failed_login_attempts || 0,
+      accountLocked: user?.preferences?.account_locked ?? false,
+      securityQuestions: user?.preferences?.security_questions || [
         { question: 'What was your first pet\'s name?', answer: '***' },
         { question: 'In what city were you born?', answer: '***' }
       ]
     },
     preferences: {
-      language: 'English',
-      timezone: 'America/New_York',
-      dateFormat: 'MM/DD/YYYY',
-      timeFormat: '12-hour',
+      language: user?.preferences?.language || 'English',
+      timezone: user?.preferences?.timezone || 'America/New_York',
+      dateFormat: user?.preferences?.date_format || 'MM/DD/YYYY',
+      timeFormat: user?.preferences?.time_format || '12-hour',
       notifications: {
-        email: true,
-        sms: false,
-        push: true,
-        systemAlerts: true,
-        userReports: true,
-        securityEvents: true
+        email: user?.preferences?.notifications?.email ?? true,
+        sms: user?.preferences?.notifications?.sms ?? false,
+        push: user?.preferences?.notifications?.push ?? true,
+        systemAlerts: user?.preferences?.notifications?.system_alerts ?? true,
+        userReports: user?.preferences?.notifications?.user_reports ?? true,
+        securityEvents: user?.preferences?.notifications?.security_events ?? true
       }
     }
   });
+
+  // Update admin data when user data changes
+  React.useEffect(() => {
+    if (user) {
+      setAdminData({
+        personalInfo: {
+          firstName: user.first_name || 'John',
+          lastName: user.last_name || 'Admin',
+          email: user.email || 'john.admin@pickleball.com',
+          phone: user.phone || '(555) 123-4567',
+          title: user.job_title || 'System Administrator',
+          department: user.preferences?.department || 'IT & Operations',
+          bio: user.bio || 'Experienced system administrator with 8+ years managing enterprise applications and user management systems.',
+          profilePhoto: user.profile_photo || null
+        },
+        systemAccess: {
+          role: user.user_type || 'super_admin',
+          permissions: user.preferences?.permissions || [
+            'User Management',
+            'System Configuration',
+            'Database Administration',
+            'Security Settings',
+            'Analytics & Reporting',
+            'Global Settings Management'
+          ],
+          lastLogin: user.last_login ? new Date(user.last_login).toLocaleString() : '2024-03-25 10:30 AM',
+          loginHistory: user.preferences?.login_history || [
+            { date: '2024-03-25 10:30 AM', ip: '192.168.1.100', location: 'Office' },
+            { date: '2024-03-24 09:15 AM', ip: '192.168.1.100', location: 'Office' },
+            { date: '2024-03-23 14:20 PM', ip: '10.0.0.50', location: 'Remote' }
+          ]
+        },
+        security: {
+          twoFactorEnabled: user.preferences?.two_factor_enabled ?? true,
+          lastPasswordChange: user.preferences?.last_password_change || '2024-02-15',
+          passwordExpiryDays: user.preferences?.password_expiry_days || 45,
+          failedLoginAttempts: user.preferences?.failed_login_attempts || 0,
+          accountLocked: user.preferences?.account_locked ?? false,
+          securityQuestions: user.preferences?.security_questions || [
+            { question: 'What was your first pet\'s name?', answer: '***' },
+            { question: 'In what city were you born?', answer: '***' }
+          ]
+        },
+        preferences: {
+          language: user.preferences?.language || 'English',
+          timezone: user.preferences?.timezone || 'America/New_York',
+          dateFormat: user.preferences?.date_format || 'MM/DD/YYYY',
+          timeFormat: user.preferences?.time_format || '12-hour',
+          notifications: {
+            email: user.preferences?.notifications?.email ?? true,
+            sms: user.preferences?.notifications?.sms ?? false,
+            push: user.preferences?.notifications?.push ?? true,
+            systemAlerts: user.preferences?.notifications?.system_alerts ?? true,
+            userReports: user.preferences?.notifications?.user_reports ?? true,
+            securityEvents: user.preferences?.notifications?.security_events ?? true
+          }
+        }
+      });
+    }
+  }, [user]);
 
   const [editedData, setEditedData] = useState(adminData);
 
@@ -190,7 +250,63 @@ const AdminProfile = () => {
   };
 
   const handleCancel = () => {
-    setEditedData(adminData);
+    // Reset to current user data
+    if (user) {
+      setAdminData({
+        personalInfo: {
+          firstName: user.first_name || 'John',
+          lastName: user.last_name || 'Admin',
+          email: user.email || 'john.admin@pickleball.com',
+          phone: user.phone || '(555) 123-4567',
+          title: user.job_title || 'System Administrator',
+          department: user.preferences?.department || 'IT & Operations',
+          bio: user.bio || 'Experienced system administrator with 8+ years managing enterprise applications and user management systems.',
+          profilePhoto: user.profile_photo || null
+        },
+        systemAccess: {
+          role: user.user_type || 'super_admin',
+          permissions: user.preferences?.permissions || [
+            'User Management',
+            'System Configuration',
+            'Database Administration',
+            'Security Settings',
+            'Analytics & Reporting',
+            'Global Settings Management'
+          ],
+          lastLogin: user.last_login ? new Date(user.last_login).toLocaleString() : '2024-03-25 10:30 AM',
+          loginHistory: user.preferences?.login_history || [
+            { date: '2024-03-25 10:30 AM', ip: '192.168.1.100', location: 'Office' },
+            { date: '2024-03-24 09:15 AM', ip: '192.168.1.100', location: 'Office' },
+            { date: '2024-03-23 14:20 PM', ip: '10.0.0.50', location: 'Remote' }
+          ]
+        },
+        security: {
+          twoFactorEnabled: user.preferences?.two_factor_enabled ?? true,
+          lastPasswordChange: user.preferences?.last_password_change || '2024-02-15',
+          passwordExpiryDays: user.preferences?.password_expiry_days || 45,
+          failedLoginAttempts: user.preferences?.failed_login_attempts || 0,
+          accountLocked: user.preferences?.account_locked ?? false,
+          securityQuestions: user.preferences?.security_questions || [
+            { question: 'What was your first pet\'s name?', answer: '***' },
+            { question: 'In what city were you born?', answer: '***' }
+          ]
+        },
+        preferences: {
+          language: user.preferences?.language || 'English',
+          timezone: user.preferences?.timezone || 'America/New_York',
+          dateFormat: user.preferences?.date_format || 'MM/DD/YYYY',
+          timeFormat: user.preferences?.time_format || '12-hour',
+          notifications: {
+            email: user.preferences?.notifications?.email ?? true,
+            sms: user.preferences?.notifications?.sms ?? false,
+            push: user.preferences?.notifications?.push ?? true,
+            systemAlerts: user.preferences?.notifications?.system_alerts ?? true,
+            userReports: user.preferences?.notifications?.user_reports ?? true,
+            securityEvents: user.preferences?.notifications?.security_events ?? true
+          }
+        }
+      });
+    }
     setIsEditing(false);
   };
 

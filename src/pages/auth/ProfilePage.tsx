@@ -52,6 +52,20 @@ const ProfilePage = () => {
     skill_level: user?.skill_level || ''
   });
 
+  // Update edit form when user data changes
+  React.useEffect(() => {
+    if (user) {
+      setEditForm({
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        state: user.state || '',
+        city: user.city || '',
+        phone: user.phone || '',
+        skill_level: user.skill_level || ''
+      });
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user?.id) {
       dispatch(fetchUserRankings(user.id));
@@ -60,6 +74,7 @@ const ProfilePage = () => {
 
   const handleEditToggle = () => {
     if (isEditing) {
+      // Reset to current user data when canceling
       setEditForm({
         first_name: user?.first_name || '',
         last_name: user?.last_name || '',

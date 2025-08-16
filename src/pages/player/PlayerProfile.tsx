@@ -55,27 +55,43 @@ const PlayerProfile = () => {
     state: user?.state || '',
     dateOfBirth: user?.date_of_birth || '',
     skillLevel: user?.skill_level || 'beginner',
-    playingStyle: 'all-around', // Default value since not in User type
-    bio: 'Tell us about your pickleball journey...', // Default value since not in User type
+    playingStyle: user?.preferences?.playing_style || 'all-around',
+    bio: user?.bio || 'Tell us about your pickleball journey...',
     profilePhoto: user?.profile_photo || ''
   });
 
-  // Privacy settings state
+  // Privacy settings state - use real user data as defaults
   const [privacySettings, setPrivacySettings] = useState({
-    isVisibleInSearch: user?.can_be_found ?? true, // Use actual user data
-    showContactInfo: false,  // Default to hidden
-    showSkillLevel: true     // Default to visible
+    isVisibleInSearch: user?.can_be_found ?? true,
+    showContactInfo: user?.preferences?.show_contact_info ?? false,
+    showSkillLevel: user?.preferences?.show_skill_level ?? true
   });
 
-  // Update privacy settings when user data changes
+  // Update profile data when user data changes
   React.useEffect(() => {
-    if (user?.can_be_found !== undefined) {
-      setPrivacySettings(prev => ({
-        ...prev,
-        isVisibleInSearch: user.can_be_found
-      }));
+    if (user) {
+      setProfileData({
+        username: user.username || '',
+        email: user.email || '',
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        phone: user.phone || '',
+        city: user.city || '',
+        state: user.state || '',
+        dateOfBirth: user.date_of_birth || '',
+        skillLevel: user.skill_level || 'beginner',
+        playingStyle: user.preferences?.playing_style || 'all-around',
+        bio: user.bio || 'Tell us about your pickleball journey...',
+        profilePhoto: user.profile_photo || ''
+      });
+
+      setPrivacySettings({
+        isVisibleInSearch: user.can_be_found ?? true,
+        showContactInfo: user.preferences?.show_contact_info ?? false,
+        showSkillLevel: user.preferences?.show_skill_level ?? true
+      });
     }
-  }, [user?.can_be_found]);
+  }, [user]);
 
   // Mock player statistics
   const playerStats = {
@@ -133,26 +149,29 @@ const PlayerProfile = () => {
   };
 
   const handleCancel = () => {
-    // Reset to original values
-    setProfileData({
-      username: user?.username || '',
-      email: user?.email || '',
-      firstName: user?.first_name || '',
-      lastName: user?.last_name || '',
-      phone: user?.phone || '',
-      city: user?.city || '',
-      state: user?.state || '',
-      dateOfBirth: user?.date_of_birth || '',
-      skillLevel: user?.skill_level || 'beginner',
-      playingStyle: 'all-around', // Default value since not in User type
-      bio: 'Tell us about your pickleball journey...', // Default value since not in User type
-      profilePhoto: user?.profile_photo || ''
-    });
-    setPrivacySettings({
-      isVisibleInSearch: true,
-      showContactInfo: false,
-      showSkillLevel: true
-    });
+    // Reset to current user data
+    if (user) {
+      setProfileData({
+        username: user.username || '',
+        email: user.email || '',
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        phone: user.phone || '',
+        city: user.city || '',
+        state: user.state || '',
+        dateOfBirth: user.date_of_birth || '',
+        skillLevel: user.skill_level || 'beginner',
+        playingStyle: user.preferences?.playing_style || 'all-around',
+        bio: user.bio || 'Tell us about your pickleball journey...',
+        profilePhoto: user.profile_photo || ''
+      });
+
+      setPrivacySettings({
+        isVisibleInSearch: user.can_be_found ?? true,
+        showContactInfo: user.preferences?.show_contact_info ?? false,
+        showSkillLevel: user.preferences?.show_skill_level ?? true
+      });
+    }
     setIsEditing(false);
   };
 
@@ -495,13 +514,6 @@ const PlayerProfile = () => {
                   <div className="mt-2 text-xs text-gray-500 flex items-center justify-center">
                     <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
                     No profile photo uploaded
-                  </div>
-                )}
-                
-                {/* Debug info - remove in production */}
-                {user?.profile_photo && (
-                  <div className="mt-2 text-xs text-blue-500">
-                    Photo: {user.profile_photo}
                   </div>
                 )}
                 
