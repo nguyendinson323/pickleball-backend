@@ -20,6 +20,7 @@ const {
   requireEmailVerification 
 } = require('../middlewares/auth');
 const { asyncHandler } = require('../middlewares/errorHandler');
+const { registrationUpload, handleUploadError } = require('../middlewares/fileUpload');
 
 // Validation schemas
 const registerValidation = [
@@ -38,14 +39,10 @@ const registerValidation = [
     .isLength({ min: 8 })
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
     .withMessage('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character'),
-  body('first_name')
+  body('full_name')
     .optional()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('First name must be 2-100 characters'),
-  body('last_name')
-    .optional()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Last name must be 2-100 characters'),
+    .isLength({ min: 2, max: 200 })
+    .withMessage('Full name must be 2-200 characters'),
   body('date_of_birth')
     .optional()
     .isISO8601()
@@ -89,7 +86,16 @@ const registerValidation = [
   body('website')
     .optional()
     .isURL()
-    .withMessage('Valid website URL is required')
+    .withMessage('Valid website URL is required'),
+  body('privacy_policy_accepted')
+    .isBoolean()
+    .custom((value) => {
+      if (!value) {
+        throw new Error('You must accept the privacy policy to register');
+      }
+      return true;
+    })
+    .withMessage('You must accept the privacy policy to register')
 ];
 
 const passwordResetValidation = [
@@ -151,7 +157,12 @@ const updateProfileValidation = [
  * @desc    Register a new user
  * @access  Public
  */
-router.post('/register', registerValidation, asyncHandler(authController.register));
+router.post('/register', 
+  registrationUpload, 
+  handleUploadError,
+  registerValidation, 
+  asyncHandler(authController.register)
+);
 
 /**
  * @route   POST /auth/login

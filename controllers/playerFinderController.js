@@ -40,7 +40,8 @@ const searchPlayers = async (req, res) => {
     const whereClause = {
       user_type: 'player',
       is_active: true,
-      email_verified: true
+      email_verified: true,
+      can_be_found: true  // Only show players who have enabled visibility
     };
 
     // Apply filters

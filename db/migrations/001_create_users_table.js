@@ -58,7 +58,7 @@ module.exports = {
         allowNull: true
       },
       user_type: {
-        type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin', 'super_admin'),
+        type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin'),
         allowNull: false,
         defaultValue: 'player'
       },
@@ -189,6 +189,12 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true
       },
+      can_be_found: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        comment: 'Whether player can be found in player search (privacy setting)'
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -246,6 +252,10 @@ module.exports = {
 
     await queryInterface.addIndex('users', ['created_at'], {
       name: 'users_created_at_index'
+    });
+
+    await queryInterface.addIndex('users', ['can_be_found'], {
+      name: 'users_can_be_found_index'
     });
   },
 

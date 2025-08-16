@@ -63,7 +63,6 @@ const register = async (req, res) => {
       date_of_birth,
       gender,
       phone,
-      profile_photo,
       bio,
       skill_level,
       state,
@@ -77,8 +76,13 @@ const register = async (req, res) => {
       job_title,
       curp,
       rfc,
-      website
+      website,
+      privacy_policy_accepted
     } = req.body;
+
+    // Handle file uploads
+    const profile_photo = req.files?.profile_photo?.[0];
+    const verification_document = req.files?.verification_document?.[0];
 
     // Log received data for debugging
     // logger.info('Registration attempt:', {
@@ -104,9 +108,19 @@ const register = async (req, res) => {
     }
 
     // Validate user type specific required fields
-    if (['player', 'coach', 'admin', 'super_admin'].includes(user_type)) {
+    if (['player', 'coach', 'admin'].includes(user_type)) {
       if (!full_name) {
         throw createError.validation('full_name is required for this user type');
+      }
+      
+      // Require privacy policy acceptance for players and coaches
+      if (!privacy_policy_accepted) {
+        throw createError.validation('You must accept the privacy policy to register');
+      }
+      
+      // Require verification document for players and coaches
+      if (!verification_document) {
+        throw createError.validation('Verification document (INE or passport) is required for registration');
       }
     }
     
@@ -148,7 +162,7 @@ const register = async (req, res) => {
       date_of_birth,
       gender,
       phone,
-      profile_photo,
+      profile_photo: profile_photo ? `/uploads/profile-photos/${profile_photo.filename}` : null,
       bio,
       skill_level,
       state,
@@ -163,13 +177,23 @@ const register = async (req, res) => {
       curp,
       rfc,
       website,
+      verification_documents: verification_document ? {
+        id_document: {
+          filename: verification_document.filename,
+          originalName: verification_document.originalname,
+          mimetype: verification_document.mimetype,
+          path: `/uploads/verification-documents/${verification_document.filename}`,
+          uploadedAt: new Date()
+        }
+      } : null,
       email_verification_token,
       email_verification_expires_at,
       membership_status: 'free',
       email_verified: false,
       is_active: true,
       is_verified: false,
-      login_attempts: 0
+      login_attempts: 0,
+      can_be_found: true // Default to visible for new players
     };
 
     // Create user
@@ -236,13 +260,14 @@ const login = async (req, res) => {
     }
 
     // Find user by email
-    const user = await User.findOne({
-      where: { email: email.toLowerCase() }
-    });
-
-    if (!user) {
+          const user = await User.findOne({
+        where: { email: email.toLowerCase() }
+      });
+      
+      if (!user) {
       throw createError.unauthorized('Invalid credentials');
     }
+
 
     // Check if account is locked
     if (user.locked_until && new Date() < user.locked_until) {
@@ -597,7 +622,8 @@ const updateProfile = async (req, res) => {
       job_title,
       curp,
       rfc,
-      website
+      website,
+      can_be_found
     } = req.body;
 
     // Get current user
@@ -629,6 +655,7 @@ const updateProfile = async (req, res) => {
     if (curp !== undefined) updateData.curp = curp;
     if (rfc !== undefined) updateData.rfc = rfc;
     if (website !== undefined) updateData.website = website;
+    if (can_be_found !== undefined) updateData.can_be_found = can_be_found;
 
     // Update user
     await User.update(updateData, { where: { id: user.id } });

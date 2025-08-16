@@ -76,10 +76,10 @@ const User = sequelize.define('User', {
     comment: 'User biography'
   },
   user_type: {
-    type: DataTypes.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin', 'super_admin'),
+    type: DataTypes.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin'),
     allowNull: false,
     defaultValue: 'player',
-    comment: 'Type of user: player, coach, club, partner, state, admin, super_admin'
+    comment: 'Type of user: player, coach, club, partner, state, admin'
   },
   skill_level: {
     type: DataTypes.ENUM('2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5'),
@@ -242,6 +242,12 @@ const User = sequelize.define('User', {
     type: DataTypes.UUID,
     allowNull: true,
     comment: 'Reference to club if user belongs to one'
+  },
+  can_be_found: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    allowNull: false,
+    comment: 'Whether player can be found in player search (privacy setting)'
   }
 
 }, {
@@ -280,6 +286,9 @@ const User = sequelize.define('User', {
     },
     {
       fields: ['created_at']
+    },
+    {
+      fields: ['can_be_found']
     }
   ],
   hooks: {

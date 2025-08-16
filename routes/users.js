@@ -36,7 +36,7 @@ const userListValidation = [
  */
 router.get('/', 
   authenticateToken, 
-  requireRole(['admin', 'super_admin']), 
+  requireRole(['admin']), 
   userListValidation,
   asyncHandler(userController.getUsers)
 );
@@ -68,7 +68,7 @@ router.put('/:id',
  */
 router.delete('/:id', 
   authenticateToken, 
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(userController.deleteUser)
 );
 
@@ -126,6 +126,16 @@ router.get('/states',
 router.get('/:id/stats', 
   authenticateToken,
   asyncHandler(userController.getUserStats)
+);
+
+/**
+ * @route   PUT /users/:id/toggle-visibility
+ * @desc    Toggle player visibility in player finder
+ * @access  Private (Owner or Admin)
+ */
+router.put('/:id/toggle-visibility', 
+  authenticateToken,
+  asyncHandler(userController.togglePlayerVisibility)
 );
 
 module.exports = router; 

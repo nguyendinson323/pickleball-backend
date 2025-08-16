@@ -579,6 +579,51 @@ const getStates = async (req, res) => {
 };
 
 /**
+ * Toggle player visibility in player finder
+ * @route PUT /api/v1/users/:id/toggle-visibility
+ * @access Private (Owner or Admin)
+ */
+const togglePlayerVisibility = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    // Check if user exists and is a player
+    const targetUser = await User.findByPk(id);
+    if (!targetUser) {
+      throw createError.notFound('User not found');
+    }
+
+    if (targetUser.user_type !== 'player') {
+      throw createError.badRequest('Only players can toggle visibility');
+    }
+
+    // Check if user is updating their own profile or is admin
+    if (targetUser.id !== user.id && user.user_type !== 'admin') {
+      throw createError.forbidden('Not authorized to update this profile');
+    }
+
+    // Toggle the visibility
+    const newVisibility = !targetUser.can_be_found;
+    await targetUser.update({ can_be_found: newVisibility });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: `Player visibility ${newVisibility ? 'enabled' : 'disabled'}`,
+      data: { 
+        can_be_found: newVisibility,
+        message: newVisibility 
+          ? 'You are now visible to other players in the player finder'
+          : 'You are now hidden from other players in the player finder'
+      }
+    });
+  } catch (error) {
+    logger.error('Error in togglePlayerVisibility:', error);
+    throw error;
+  }
+};
+
+/**
  * Get user statistics
  * @route GET /api/v1/users/stats
  * @access Private (Admin)
@@ -646,5 +691,6 @@ module.exports = {
   getCoaches,
   getClubs,
   getStates,
-  getUserStats
+  getUserStats,
+  togglePlayerVisibility
 }; 

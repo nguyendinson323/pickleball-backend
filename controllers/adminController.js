@@ -24,7 +24,7 @@ const getDashboardStats = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -104,7 +104,7 @@ const getSystemUsers = async (req, res) => {
     } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -178,7 +178,7 @@ const updateUserMembership = async (req, res) => {
     const { membership_status, membership_expires_at } = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -223,7 +223,7 @@ const getSystemLogs = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -259,7 +259,7 @@ const getSystemHealth = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -302,7 +302,7 @@ const getSystemSettings = async (req, res) => {
     const { user } = req;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -338,7 +338,7 @@ const updateSystemSettings = async (req, res) => {
     const settings = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -367,7 +367,7 @@ const getAdminActivity = async (req, res) => {
     const { page = 1, limit = PAGINATION.DEFAULT_LIMIT } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -404,7 +404,7 @@ const exportSystemData = async (req, res) => {
     const { type } = req.query;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 
@@ -437,7 +437,7 @@ const performSystemMaintenance = async (req, res) => {
     const { action } = req.body;
 
     // Check if user is admin
-    if (!['admin', 'super_admin'].includes(user.user_type)) {
+    if (user.user_type !== 'admin') {
       throw createError.forbidden('Access denied');
     }
 

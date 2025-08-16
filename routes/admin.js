@@ -1,7 +1,7 @@
 /**
  * Admin Routes
  * 
- * This file defines all admin-related routes including
+ * This file contains all admin-related routes including
  * admin management, system administration, and admin-specific operations.
  * 
  * @author Pickleball Federation Team
@@ -9,26 +9,29 @@
  */
 
 const express = require('express');
+const { body, query } = require('express-validator');
 const router = express.Router();
-const { query, body } = require('express-validator');
 
-// Import controllers and middleware
-const adminController = require('../controllers/adminController');
-const { authenticateToken, requireRole } = require('../middlewares/auth');
+// Middleware
+const { authenticateToken } = require('../middlewares/auth');
+const { requireRole } = require('../middlewares/auth');
 const { asyncHandler } = require('../middlewares/errorHandler');
+
+// Controllers
+const adminController = require('../controllers/adminController');
 
 // Validation schemas
 const systemUsersValidation = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   query('user_type').optional().isIn(['player', 'coach', 'club', 'partner', 'state', 'federation']).withMessage('Invalid user type'),
-  query('role').optional().isIn(['user', 'moderator', 'admin', 'super_admin']).withMessage('Invalid role'),
+  query('role').optional().isIn(['user', 'moderator', 'admin']).withMessage('Invalid role'),
   query('membership_status').optional().isIn(['active', 'expired', 'suspended', 'cancelled', 'pending']).withMessage('Invalid membership status'),
   query('search').optional().isString().withMessage('Search must be a string')
 ];
 
 const updateUserRoleValidation = [
-  body('role').isIn(['user', 'moderator', 'admin', 'super_admin']).withMessage('Valid role is required')
+  body('role').isIn(['user', 'moderator', 'admin']).withMessage('Valid role is required')
 ];
 
 const updateUserMembershipValidation = [
@@ -55,7 +58,7 @@ const systemMaintenanceValidation = [
  */
 router.get('/dashboard', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.getDashboardStats)
 );
 
@@ -66,7 +69,7 @@ router.get('/dashboard',
  */
 router.get('/users', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   systemUsersValidation,
   asyncHandler(adminController.getSystemUsers)
 );
@@ -74,11 +77,11 @@ router.get('/users',
 /**
  * @route   PUT /admin/users/:id/role
  * @desc    Update user role
- * @access  Private (Super Admin)
+ * @access  Private (Admin)
  */
 router.put('/users/:id/role', 
   authenticateToken,
-  requireRole(['super_admin']),
+  requireRole(['admin']),
   updateUserRoleValidation,
   asyncHandler(adminController.updateUserRole)
 );
@@ -90,7 +93,7 @@ router.put('/users/:id/role',
  */
 router.put('/users/:id/membership', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   updateUserMembershipValidation,
   asyncHandler(adminController.updateUserMembership)
 );
@@ -102,7 +105,7 @@ router.put('/users/:id/membership',
  */
 router.get('/logs', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.getSystemLogs)
 );
 
@@ -113,7 +116,7 @@ router.get('/logs',
  */
 router.get('/health', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.getSystemHealth)
 );
 
@@ -124,18 +127,18 @@ router.get('/health',
  */
 router.get('/settings', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.getSystemSettings)
 );
 
 /**
  * @route   PUT /admin/settings
  * @desc    Update system settings
- * @access  Private (Super Admin)
+ * @access  Private (Admin)
  */
 router.put('/settings', 
   authenticateToken,
-  requireRole(['super_admin']),
+  requireRole(['admin']),
   systemSettingsValidation,
   asyncHandler(adminController.updateSystemSettings)
 );
@@ -147,7 +150,7 @@ router.put('/settings',
  */
 router.get('/activity', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.getAdminActivity)
 );
 
@@ -158,18 +161,18 @@ router.get('/activity',
  */
 router.get('/export', 
   authenticateToken,
-  requireRole(['admin', 'super_admin']),
+  requireRole(['admin']),
   asyncHandler(adminController.exportSystemData)
 );
 
 /**
  * @route   POST /admin/maintenance
  * @desc    Perform system maintenance
- * @access  Private (Super Admin)
+ * @access  Private (Admin)
  */
 router.post('/maintenance', 
   authenticateToken,
-  requireRole(['super_admin']),
+  requireRole(['admin']),
   systemMaintenanceValidation,
   asyncHandler(adminController.performSystemMaintenance)
 );
