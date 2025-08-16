@@ -20,7 +20,11 @@ const {
   requireEmailVerification 
 } = require('../middlewares/auth');
 const { asyncHandler } = require('../middlewares/errorHandler');
-const { registrationUpload, handleUploadError } = require('../middlewares/fileUpload');
+const { 
+  registrationUpload, 
+  profilePhotoUpload,
+  handleUploadError 
+} = require('../middlewares/fileUpload');
 
 // Validation schemas
 const registerValidation = [
@@ -95,7 +99,9 @@ const registerValidation = [
       }
       return true;
     })
-    .withMessage('You must accept the privacy policy to register')
+    .withMessage('You must accept the privacy policy to register'),
+  // Note: profile_photo and verification_document are handled by multer middleware
+  // and should not be validated here as they are files, not text fields
 ];
 
 const passwordResetValidation = [
@@ -218,6 +224,61 @@ router.get('/profile', authenticateToken, asyncHandler(authController.getProfile
  * @desc    Update current user profile
  * @access  Private
  */
-router.put('/profile', authenticateToken, updateProfileValidation, asyncHandler(authController.updateProfile));
+router.put('/profile', 
+  authenticateToken, 
+  updateProfileValidation, 
+  asyncHandler(authController.updateProfile)
+);
+
+/**
+ * @route   POST /auth/profile/photo
+ * @desc    Upload profile photo
+ * @access  Private
+ */
+router.post('/profile/photo', 
+  authenticateToken, 
+  profilePhotoUpload, 
+  handleUploadError,
+  asyncHandler(authController.uploadProfilePhoto)
+);
+
+/**
+ * @route   POST /auth/test-upload
+ * @desc    Test file upload functionality
+ * @access  Public
+ */
+router.post('/test-upload', 
+  profilePhotoUpload, 
+  handleUploadError,
+  (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No file uploaded'
+        });
+      }
+      
+      res.status(200).json({
+        success: true,
+        message: 'File uploaded successfully',
+        data: {
+          filename: file.filename,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+          path: file.path
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Upload test failed',
+        error: error.message
+      });
+    }
+  }
+);
 
 module.exports = router; 

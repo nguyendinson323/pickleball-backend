@@ -22,6 +22,8 @@ const {
 const { createError } = require('../middlewares/errorHandler');
 const { sendEmail } = require('../services/emailService');
 const logger = require('../config/logger');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Generate JWT tokens
@@ -80,21 +82,30 @@ const register = async (req, res) => {
       privacy_policy_accepted
     } = req.body;
 
-    // Handle file uploads
+    // Handle file uploads - ONLY use files processed by multer
     const profile_photo = req.files?.profile_photo?.[0];
     const verification_document = req.files?.verification_document?.[0];
 
     // Log received data for debugging
-    // logger.info('Registration attempt:', {
-    //   user_type,
-    //   username,
-    //   email,
-    //   hasPassword: !!password,
-    //   hasFullName: !!full_name,
-    //   hasDateOfBirth: !!date_of_birth,
-    //   hasBusinessName: !!business_name,
-    //   hasContactPerson: !!contact_person
-    // });
+    logger.info('Registration attempt:', {
+      user_type,
+      username,
+      email,
+      hasPassword: !!password,
+      hasFullName: !!full_name,
+      hasDateOfBirth: !!date_of_birth,
+      hasBusinessName: !!business_name,
+      hasContactPerson: !!contact_person,
+      privacy_policy_accepted,
+      privacy_policy_accepted_type: typeof privacy_policy_accepted,
+      req_body_keys: Object.keys(req.body),
+      req_files_keys: req.files ? Object.keys(req.files) : 'no files',
+      hasProfilePhoto: !!profile_photo,
+      hasVerificationDocument: !!verification_document,
+      profile_photo_filename: profile_photo?.filename,
+      verification_document_filename: verification_document?.filename,
+      contentType: req.headers['content-type']
+    });
 
     // Validate basic required fields
     const basicRequiredFields = [];
@@ -226,7 +237,9 @@ const register = async (req, res) => {
       user_type: user.user_type,
       email_verified: user.email_verified,
       is_active: user.is_active,
-      created_at: user.created_at
+      created_at: user.created_at,
+      profile_photo: user.profile_photo, // Include profile photo path
+      verification_documents: user.verification_documents // Include verification documents
     };
 
     res.status(HTTP_STATUS.CREATED).json({
@@ -253,36 +266,55 @@ const register = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
+    console.log('=== LOGIN DEBUG ===');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
+    
     const { email, password } = req.body;
+    
+    console.log('Email:', email);
+    console.log('Password provided:', !!password);
     
     if (!email || !password) {
       throw createError.validation('Email and password are required');
     }
 
+    console.log('✅ Basic validation passed');
+    
     // Find user by email
-          const user = await User.findOne({
-        where: { email: email.toLowerCase() }
-      });
-      
-      if (!user) {
+    const user = await User.findOne({
+      where: { email: email.toLowerCase() }
+    });
+    
+    console.log('User found:', !!user);
+    
+    if (!user) {
       throw createError.unauthorized('Invalid credentials');
     }
 
 
     // Check if account is locked
     if (user.locked_until && new Date() < user.locked_until) {
+      console.log('❌ Account is locked');
       throw createError.forbidden('Account is temporarily locked. Please try again later.');
     }
     
     // Check if account is active
     if (!user.is_active) {
+      console.log('❌ Account is deactivated');
       throw createError.forbidden('Account is deactivated');
     }
     
+    console.log('✅ Account status checks passed');
+    
     // Verify password
+    console.log('🔐 Verifying password...');
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     
+    console.log('Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ Invalid password');
       // Increment login attempts
       const newLoginAttempts = user.login_attempts + 1;
       const updateData = { login_attempts: newLoginAttempts };
@@ -296,6 +328,8 @@ const login = async (req, res) => {
       
       throw createError.unauthorized('Invalid credentials');
     }
+    
+    console.log('✅ Password verified successfully');
     
     // Reset login attempts on successful login
     if (user.login_attempts > 0) {
@@ -315,7 +349,9 @@ const login = async (req, res) => {
     }
 
     // Generate tokens
+    console.log('🎫 Generating tokens...');
     const { accessToken, refreshToken } = generateTokens(user);
+    console.log('✅ Tokens generated');
 
     // Remove sensitive data from response
     const userResponse = {
@@ -327,9 +363,14 @@ const login = async (req, res) => {
       email_verified: user.email_verified,
       is_active: user.is_active,
       membership_status: user.membership_status,
-      last_login: user.last_login
+      last_login: user.last_login,
+      profile_photo: user.profile_photo, // Include profile photo path
+      verification_documents: user.verification_documents // Include verification documents
     };
 
+    console.log('📤 Sending response...');
+    console.log('User response:', userResponse);
+    
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USER_LOGGED_IN,
@@ -341,7 +382,12 @@ const login = async (req, res) => {
         }
       }
     });
+    
+    console.log('✅ Login completed successfully');
+    console.log('=== END LOGIN DEBUG ===');
   } catch (error) {
+    console.log('❌ Login error:', error);
+    console.log('=== END LOGIN DEBUG ===');
     logger.error('Error in login:', error);
     throw error;
   }
@@ -676,6 +722,53 @@ const updateProfile = async (req, res) => {
   }
 };
 
+/**
+ * Upload profile photo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const uploadProfilePhoto = async (req, res) => {
+  try {
+    const { user } = req;
+    const profile_photo = req.file;
+
+    if (!profile_photo) {
+      throw createError.validation('Profile photo is required');
+    }
+
+    // Get current user
+    const currentUser = await User.findByPk(user.id);
+    
+    if (!currentUser) {
+      throw createError.notFound('User not found');
+    }
+
+    // Delete old profile photo if it exists
+    if (currentUser.profile_photo) {
+      const oldPhotoPath = path.join(__dirname, '..', currentUser.profile_photo);
+      if (fs.existsSync(oldPhotoPath)) {
+        fs.unlinkSync(oldPhotoPath);
+      }
+    }
+
+    // Update profile photo path
+    const photoPath = `/uploads/profile-photos/${profile_photo.filename}`;
+    await User.update({ profile_photo: photoPath }, { where: { id: user.id } });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Profile photo uploaded successfully',
+      data: { 
+        profile_photo: photoPath,
+        filename: profile_photo.filename
+      }
+    });
+  } catch (error) {
+    logger.error('Error in uploadProfilePhoto:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -685,5 +778,6 @@ module.exports = {
   requestPasswordReset,
   resetPassword,
   getProfile,
-  updateProfile
+  updateProfile,
+  uploadProfilePhoto
 }; 

@@ -16,6 +16,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 require('dotenv').config();
+const fs = require('fs'); // Added for file existence check
 
 // Import custom modules
 const { sequelize } = require('./config/database');
@@ -45,13 +46,33 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://pickleballfederation.com', 'https://www.pickleballfederation.com']
-    : [process.env.FRONTEND_URL, 'http://localhost:3000'],
+  origin: true, // Allow all origins for development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
+  exposedHeaders: ['Content-Length', 'Content-Type'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+// Additional CORS middleware specifically for uploads
+app.use('/uploads', (req, res, next) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Origin, Accept',
+    'Access-Control-Expose-Headers': 'Content-Length, Content-Type',
+    'Cross-Origin-Resource-Policy': 'cross-origin',
+    'Cross-Origin-Embedder-Policy': 'unsafe-none'
+  });
+  
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+  
+  next();
+});
 
 // Rate limiting
 const limiter = rateLimit({
@@ -80,12 +101,54 @@ if (process.env.NODE_ENV === 'development') {
   }));
 }
 
-// Body parsing middleware
+// Body parsing middleware - must come before API routes for JSON parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// File upload middleware
+// File upload middleware - must come before body parsing for file upload routes
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Dedicated image serving route with CORS
+app.get('/uploads/:folder/:filename', (req, res) => {
+  const { folder, filename } = req.params;
+  const filePath = path.join(__dirname, 'uploads', folder, filename);
+  
+  console.log('🖼️ Image requested:', { folder, filename, filePath });
+  
+  // Set comprehensive CORS headers
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Origin, Accept',
+    'Access-Control-Expose-Headers': 'Content-Length, Content-Type',
+    'Access-Control-Max-Age': '86400',
+    'Cross-Origin-Resource-Policy': 'cross-origin',
+    'Cross-Origin-Embedder-Policy': 'unsafe-none'
+  });
+  
+  // Check if file exists
+  if (fs.existsSync(filePath)) {
+    console.log('✅ Image found, serving:', filePath);
+    res.sendFile(filePath);
+  } else {
+    console.log('❌ Image not found:', filePath);
+    res.status(404).json({ error: 'File not found' });
+  }
+});
+
+// Preflight OPTIONS handler for image routes
+app.options('/uploads/:folder/:filename', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Origin, Accept',
+    'Access-Control-Expose-Headers': 'Content-Length, Content-Type',
+    'Access-Control-Max-Age': '86400',
+    'Cross-Origin-Resource-Policy': 'cross-origin',
+    'Cross-Origin-Embedder-Policy': 'unsafe-none'
+  });
+  res.status(204).end();
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -95,6 +158,34 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || '1.0.0',
     environment: process.env.NODE_ENV
+  });
+});
+
+// Test endpoint for debugging
+app.post('/test', (req, res) => {
+  console.log('=== TEST ENDPOINT DEBUG ===');
+  console.log('Request body:', req.body);
+  console.log('Request headers:', req.headers);
+  console.log('Content-Type:', req.headers['content-type']);
+  res.status(200).json({
+    success: true,
+    message: 'Test endpoint working',
+    body: req.body,
+    headers: req.headers
+  });
+});
+
+// Test image serving endpoint
+app.get('/test-image', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  
+  res.status(200).json({
+    success: true,
+    message: 'Image serving test endpoint',
+    cors: 'enabled',
+    timestamp: new Date().toISOString()
   });
 });
 
