@@ -17,6 +17,7 @@ const RequiredFieldsPage = () => {
     confirmPassword: '',
     full_name: '',
     business_name: '',
+    privacy_policy_accepted: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -36,9 +37,10 @@ const RequiredFieldsPage = () => {
   }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -69,6 +71,12 @@ const RequiredFieldsPage = () => {
         toast.error('Full name is required');
         return false;
       }
+      
+      // Require privacy policy acceptance for players and coaches
+      if (!formData.privacy_policy_accepted) {
+        toast.error('You must accept the privacy policy to continue');
+        return false;
+      }
     }
     return true;
   };
@@ -83,6 +91,7 @@ const RequiredFieldsPage = () => {
       password: formData.password,
       full_name: formData.full_name,
       business_name: formData.business_name,
+      privacy_policy_accepted: formData.privacy_policy_accepted,
     }));
 
     navigate('/register/optional-fields');
@@ -103,20 +112,28 @@ const RequiredFieldsPage = () => {
         password: formData.password,
         full_name: formData.full_name,
         business_name: formData.business_name,
+        privacy_policy_accepted: formData.privacy_policy_accepted,
       };
 
       const result = await dispatch(registerUser(registrationData));
       
-      // Clear localStorage
-      localStorage.removeItem('registration_user_type');
+      // Check if registration was successful
+      // The result is a Redux action object with { type, payload, meta }
+      const registrationResult = result as any;
+      console.log('Registration result:', registrationResult);
       
-      toast.success('Registration successful! Welcome to the pickleball community!');
+      // Extract the actual API response data from the payload
+      const apiResponse = registrationResult?.payload;
+      console.log('API response from payload:', apiResponse);
       
-      // Navigate to appropriate dashboard based on user type
-      const response = result as any;
-      if (response?.data?.user?.user_type) {
-        const resultUserType = response.data.user.user_type;
-        switch (resultUserType) {
+      if (apiResponse?.data?.user && apiResponse?.data?.tokens) {
+        // Registration successful - clear localStorage and navigate
+        localStorage.removeItem('registration_user_type');
+        toast.success('Registration successful! Welcome to the pickleball community!');
+        
+        // Navigate to appropriate dashboard based on user type
+        const userType = apiResponse.data.user.user_type;
+        switch (userType) {
           case 'player':
             navigate('/player/dashboard');
             break;
@@ -136,7 +153,9 @@ const RequiredFieldsPage = () => {
             navigate('/player/dashboard');
         }
       } else {
-        navigate('/player/dashboard');
+        // Registration failed - show error and stay on page
+        toast.error('Registration failed - Invalid response from server');
+        console.error('Registration failed - Invalid response structure:', apiResponse);
       }
     } catch (err) {
       toast.error(error || 'Registration failed');
@@ -195,7 +214,7 @@ const RequiredFieldsPage = () => {
                           : field.type
                       }
                       // placeholder={field.placeholder}
-                      value={formData[field.name as keyof typeof formData]}
+                      value={formData[field.name as keyof typeof formData] as string}
                       onChange={handleChange}
                       required
                       className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -224,6 +243,53 @@ const RequiredFieldsPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Privacy Policy Section */}
+        {(userType === 'player' || userType === 'coach') && (
+          <div className="mt-6">
+            <Card className="animate-on-scroll w-full">
+              <CardHeader>
+                <CardTitle className="animate-on-scroll text-xl">Privacy Policy</CardTitle>
+                <CardDescription className="animate-on-scroll">
+                  Please read and accept our privacy policy to continue
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <input
+                      id="privacy_policy_accepted"
+                      name="privacy_policy_accepted"
+                      type="checkbox"
+                      checked={formData.privacy_policy_accepted}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <div className="text-sm text-gray-700">
+                      <label htmlFor="privacy_policy_accepted" className="font-medium">
+                        I have read and accept the{' '}
+                        <a 
+                          href="/privacy-policy" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Privacy Policy
+                        </a>
+                        {' '}and agree to the collection and use of my personal information as described.
+                      </label>
+                      <p className="mt-1 text-gray-600">
+                        This includes consent to process your personal data, send you communications about your account, 
+                        and share information with other players when you use the player finder feature.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <Button

@@ -8,6 +8,7 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Switch } from '../../components/ui/switch';
 import { 
   User, 
   MapPin, 
@@ -16,8 +17,13 @@ import {
   Edit3,
   Save,
   X,
-  Calendar
+  Calendar,
+  Eye,
+  EyeOff,
+  Shield
 } from 'lucide-react';
+import { api } from '../../lib/api';
+import { toast } from 'sonner';
 
 const PlayerProfile = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -37,6 +43,23 @@ const PlayerProfile = () => {
     profilePhoto: user?.profile_photo || ''
   });
 
+  // Privacy settings state
+  const [privacySettings, setPrivacySettings] = useState({
+    isVisibleInSearch: user?.can_be_found ?? true, // Use actual user data
+    showContactInfo: false,  // Default to hidden
+    showSkillLevel: true     // Default to visible
+  });
+
+  // Update privacy settings when user data changes
+  React.useEffect(() => {
+    if (user?.can_be_found !== undefined) {
+      setPrivacySettings(prev => ({
+        ...prev,
+        isVisibleInSearch: user.can_be_found
+      }));
+    }
+  }, [user?.can_be_found]);
+
   // Mock player statistics
   const playerStats = {
     tournamentsPlayed: 12,
@@ -55,9 +78,40 @@ const PlayerProfile = () => {
     }));
   };
 
+  const handlePrivacyChange = async (setting: string, value: boolean) => {
+    if (setting === 'isVisibleInSearch') {
+      try {
+        // Call API to toggle visibility
+        const response = await api.put(`/users/${user?.id}/toggle-visibility`, {}) as any;
+        
+        if (response.success) {
+          setPrivacySettings(prev => ({
+            ...prev,
+            [setting]: value
+          }));
+          toast.success(response.message);
+        }
+      } catch (error) {
+        console.error('Error toggling visibility:', error);
+        toast.error('Failed to update visibility setting');
+        // Revert the change
+        setPrivacySettings(prev => ({
+          ...prev,
+          [setting]: !value
+        }));
+      }
+    } else {
+      setPrivacySettings(prev => ({
+        ...prev,
+        [setting]: value
+      }));
+    }
+  };
+
   const handleSave = () => {
     // Here you would typically save to API
     console.log('Saving profile:', profileData);
+    console.log('Saving privacy settings:', privacySettings);
     setIsEditing(false);
   };
 
@@ -76,6 +130,11 @@ const PlayerProfile = () => {
       playingStyle: 'all-around', // Default value since not in User type
       bio: 'Tell us about your pickleball journey...', // Default value since not in User type
       profilePhoto: user?.profile_photo || ''
+    });
+    setPrivacySettings({
+      isVisibleInSearch: true,
+      showContactInfo: false,
+      showSkillLevel: true
     });
     setIsEditing(false);
   };
@@ -274,9 +333,102 @@ const PlayerProfile = () => {
                     onChange={(e) => handleInputChange('bio', e.target.value)}
                     disabled={!isEditing}
                     placeholder="Tell us about your pickleball journey..."
-                    rows={4}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Privacy Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="h-5 w-5" />
+                  <span>Privacy Settings</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-medium">Can Be Found in Search</Label>
+                      <p className="text-sm text-gray-600">
+                        {privacySettings.isVisibleInSearch 
+                          ? "Other players can find you in the player search results"
+                          : "You will not appear in player search results"
+                        }
+                      </p>
+                    </div>
+                    <Switch
+                      checked={privacySettings.isVisibleInSearch}
+                      onCheckedChange={(checked) => handlePrivacyChange('isVisibleInSearch', checked)}
+                      disabled={false} // Always allow privacy changes
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-medium">Show Contact Information</Label>
+                      <p className="text-sm text-gray-600">
+                        {privacySettings.showContactInfo 
+                          ? "Your phone and email will be visible to other players"
+                          : "Your contact information will be hidden from other players"
+                        }
+                      </p>
+                    </div>
+                    <Switch
+                      checked={privacySettings.showContactInfo}
+                      onCheckedChange={(checked) => handlePrivacyChange('showContactInfo', checked)}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-base font-medium">Show Skill Level</Label>
+                      <p className="text-sm text-gray-600">
+                        {privacySettings.showSkillLevel 
+                          ? "Your skill level will be visible to other players"
+                          : "Your skill level will be hidden from other players"
+                        }
+                      </p>
+                    </div>
+                    <Switch
+                      checked={privacySettings.showSkillLevel}
+                      onCheckedChange={(checked) => handlePrivacyChange('showSkillLevel', checked)}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+                
+                {!privacySettings.isVisibleInSearch && (
+                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <EyeOff className="h-5 w-5 text-yellow-600 mt-0.5" />
+                      <div className="text-sm text-yellow-800">
+                        <p className="font-medium">You are currently hidden from search results</p>
+                        <p className="mt-1">
+                          Other players won't be able to find you in the player search. 
+                          Enable "Can Be Found in Search" to make your profile discoverable.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {privacySettings.isVisibleInSearch && (
+                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Eye className="h-5 w-5 text-green-600 mt-0.5" />
+                      <div className="text-sm text-green-800">
+                        <p className="font-medium">You are visible to other players</p>
+                        <p className="mt-1">
+                          Other players can find you in the player search results. 
+                          You can disable this at any time for privacy.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

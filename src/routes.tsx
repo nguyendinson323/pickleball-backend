@@ -4,14 +4,15 @@ import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
 import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import { Navigate } from "react-router-dom";
 
-// Super Admin pages
-import AdminPage from "./pages/superAdmin/AdminPage";
-import AdminProfile from "./pages/superAdmin/AdminProfile";
-import Analytics from "./pages/superAdmin/Analytics";
-import SystemManagement from "./pages/superAdmin/SystemManagement";
-import UserManagement from "./pages/superAdmin/UserManagement";
-import BannersPage from "./pages/superAdmin/BannersPage";
+  // Admin pages
+  import AdminPage from "./pages/superAdmin/AdminPage";
+  import AdminProfile from "./pages/superAdmin/AdminProfile";
+  import Analytics from "./pages/superAdmin/Analytics";
+  import SystemManagement from "./pages/superAdmin/SystemManagement";
+  import UserManagement from "./pages/superAdmin/UserManagement";
+  import BannersPage from "./pages/superAdmin/BannersPage";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -30,6 +31,7 @@ import Events from "./pages/home/Events";
 import News from "./pages/home/News";
 import Contact from "./pages/home/Contact";
 import Home from "./pages/home/Home";
+import PrivacyPolicy from "./pages/home/PrivacyPolicy";
 
 // Player pages
 import PlayerDashboard from "./pages/player/Dashboard";
@@ -96,6 +98,12 @@ const routes = [
     key: 'contact',
     path: '/contact',
     element: <Contact />,
+    public: true
+  },
+  {
+    key: 'privacy-policy',
+    path: '/privacy-policy',
+    element: <PrivacyPolicy />,
     public: true
   },
   {
@@ -345,45 +353,7 @@ const routes = [
     public: false
   },
 
-  // Super Admin-specific routes
-  {
-    key: 'super-admin-dashboard',
-    path: '/super-admin/dashboard',
-    element: <AdminPage />,
-    public: false
-  },
-  {
-    key: 'super-admin-profile',
-    path: '/super-admin/profile',
-    element: <AdminProfile />,
-    public: false
-  },
-  {
-    key: 'super-admin-users',
-    path: '/super-admin/users',
-    element: <UserManagement />,
-    public: false
-  },
-  {
-    key: 'super-admin-system',
-    path: '/super-admin/system',
-    element: <SystemManagement />,
-    public: false
-  },
-  {
-    key: 'super-admin-analytics',
-    path: '/super-admin/analytics',
-    element: <Analytics />,
-    public: false
-  },
-
-  // Admin routes
-  {
-    key: 'admin',
-    path: '/admin',
-    element: <AdminPage />,
-    public: false
-  },
+  // Admin-specific routes
   {
     key: 'admin-dashboard',
     path: '/admin/dashboard',
@@ -393,13 +363,33 @@ const routes = [
   {
     key: 'admin-profile',
     path: '/admin/profile',
-    element: <AdminPage />,
+    element: <AdminProfile />,
     public: false
   },
   {
     key: 'admin-users',
     path: '/admin/users',
-    element: <AdminPage />,
+    element: <UserManagement />,
+    public: false
+  },
+  {
+    key: 'admin-system',
+    path: '/admin/system',
+    element: <SystemManagement />,
+    public: false
+  },
+  {
+    key: 'admin-analytics',
+    path: '/admin/analytics',
+    element: <Analytics />,
+    public: false
+  },
+
+  // Admin routes
+  {
+    key: 'admin',
+    path: '/admin',
+    element: <Navigate to="/admin/dashboard" replace />,
     public: false
   },
   {
@@ -411,19 +401,19 @@ const routes = [
   {
     key: 'admin-settings',
     path: '/admin/settings',
-    element: <AdminPage />,
+    element: <Navigate to="/admin/system" replace />,
     public: false
   },
   {
     key: 'admin-payments',
     path: '/admin/payments',
-    element: <AdminPage />,
+    element: <Navigate to="/admin/analytics" replace />,
     public: false
   },
   {
     key: 'admin-content',
     path: '/admin/content',
-    element: <AdminPage />,
+    element: <Navigate to="/admin/system" replace />,
     public: false
   },
 

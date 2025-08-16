@@ -1,79 +1,62 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User, LoginRequest, RegisterRequest, LoginResponse, RegisterResponse, ProfileResponse } from '../../types/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../../lib/api';
-import { setPending, clearPending } from './pendingSlice';
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  refresh_token: string | null;
-  loading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-}
-
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  refresh_token: localStorage.getItem('refresh_token'),
-  loading: false,
-  error: null,
-  isAuthenticated: !!localStorage.getItem('token'),
-};
+import { LoginRequest, RegisterRequest, ProfileResponse, LoginResponse, RegisterResponse } from '../../types/api';
 
 // Action creators that manage pending state
-export const loginUser = (credentials: LoginRequest) => async (dispatch: any) => {
-  try {
-    dispatch(setPending());
-    dispatch({ type: 'auth/loginStart' });
-    
-    const result = await api.post<LoginResponse>('/auth/login', credentials);
-    
-    dispatch({ type: 'auth/loginSuccess', payload: result });
-    
-    return result;
-  } catch (error) {
-    dispatch({ type: 'auth/loginFailure', payload: error });
-    throw error;
-  } finally {
-    dispatch(clearPending());
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (credentials: LoginRequest) => {
+    const response = await api.post<LoginResponse>('/auth/login', credentials);
+    return response;
   }
-};
+);
 
-export const registerUser = (userData: RegisterRequest) => async (dispatch: any) => {
-  try {
-    dispatch(setPending());
-    dispatch({ type: 'auth/registerStart' });
-    
-    const result = await api.post<RegisterResponse>('/auth/register', userData);
-    
-    dispatch({ type: 'auth/registerSuccess', payload: result });
-    
-    return result;
-  } catch (error) {
-    dispatch({ type: 'auth/registerFailure', payload: error });
-    throw error;
-  } finally {
-    dispatch(clearPending());
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async (userData: RegisterRequest | FormData) => {
+    const response = await api.post<RegisterResponse>('/auth/register', userData);
+    return response;
   }
-};
+);
 
-export const getProfile = () => async (dispatch: any) => {
-  try {
-    dispatch(setPending());
-    dispatch({ type: 'auth/getProfileStart' });
-    
-    const result = await api.get<ProfileResponse>('/auth/profile');
-    
-    dispatch({ type: 'auth/getProfileSuccess', payload: result });
-    
-    return result;
-  } catch (error) {
-    dispatch({ type: 'auth/getProfileFailure', payload: error });
-    throw error;
-  } finally {
-    dispatch(clearPending());
+export const getProfile = createAsyncThunk(
+  'auth/getProfile',
+  async () => {
+    const response = await api.get<ProfileResponse>('/auth/profile');
+    return response;
   }
+);
+
+export const restoreAuthState = createAsyncThunk(
+  'auth/restoreAuthState',
+  async () => {
+    const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refresh_token');
+    
+    if (token && refreshToken) {
+      try {
+        const response = await api.get<ProfileResponse>('/auth/profile');
+        return response;
+      } catch (error) {
+        // Token is invalid, clear it
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        throw error;
+      }
+    } else {
+      throw new Error('No authentication tokens found');
+    }
+  }
+);
+
+// Initial state
+const initialState = {
+  user: null as any,
+  token: null as string | null,
+  refresh_token: null as string | null,
+  loading: false,
+  error: null as string | null,
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
@@ -103,65 +86,111 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Login
-      .addCase('auth/loginStart', (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase('auth/loginSuccess', (state, action: any) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload as LoginResponse;
-        if (payload?.data) {
+        const payload = action.payload;
+        
+        // Backend sends: { success: true, message: "...", data: { user: {...}, tokens: { accessToken, refreshToken } } }
+        if (payload?.data?.user && payload?.data?.tokens) {
           state.user = payload.data.user;
           state.token = payload.data.tokens.accessToken;
           state.refresh_token = payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
+          
+          // Store tokens in localStorage
           localStorage.setItem('token', payload.data.tokens.accessToken);
           localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
+          
+          console.log('Login successful - User and tokens stored in Redux:', {
+            user: payload.data.user,
+            hasToken: !!payload.data.tokens.accessToken,
+            hasRefreshToken: !!payload.data.tokens.refreshToken
+          });
+        } else {
+          console.error('Invalid login response structure:', payload);
+          state.error = 'Invalid response from server';
         }
       })
-      .addCase('auth/loginFailure', (state, action: any) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Login failed';
+        state.error = action.error?.message || 'Login failed';
         state.isAuthenticated = false;
       })
       // Register
-      .addCase('auth/registerStart', (state) => {
+      .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase('auth/registerSuccess', (state, action: any) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload as RegisterResponse;
-        if (payload?.data) {
+        const payload = action.payload;
+        
+        // Backend sends: { success: true, message: "...", data: { user: {...}, tokens: { accessToken, refreshToken } } }
+        if (payload?.data?.user && payload?.data?.tokens) {
           state.user = payload.data.user;
           state.token = payload.data.tokens.accessToken;
           state.refresh_token = payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
+          
+          // Store tokens in localStorage
           localStorage.setItem('token', payload.data.tokens.accessToken);
           localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
+          
+          console.log('Registration successful - User and tokens stored in Redux:', {
+            user: payload.data.user,
+            hasToken: !!payload.data.tokens.accessToken,
+            hasRefreshToken: !!payload.data.tokens.refreshToken
+          });
+        } else {
+          console.error('Invalid register response structure:', payload);
+          state.error = 'Invalid response from server';
         }
       })
-      .addCase('auth/registerFailure', (state, action: any) => {
+      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Registration failed';
+        state.error = action.error?.message || 'Registration failed';
         state.isAuthenticated = false;
       })
       // Get Profile
-      .addCase('auth/getProfileStart', (state) => {
+      .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase('auth/getProfileSuccess', (state, action: any) => {
+      .addCase(getProfile.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload as ProfileResponse;
+        const payload = action.payload;
         if (payload?.data) {
           state.user = payload.data;
           state.isAuthenticated = true;
         }
       })
-      .addCase('auth/getProfileFailure', (state, action: any) => {
+      .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Failed to get profile';
+        state.error = action.error?.message || 'Failed to get profile';
+        state.isAuthenticated = false;
+      })
+      // Restore Auth State
+      .addCase(restoreAuthState.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(restoreAuthState.fulfilled, (state, action) => {
+        state.loading = false;
+        const payload = action.payload;
+        
+        if (payload?.data) {
+          state.user = payload.data;
+          state.isAuthenticated = true;
+          console.log('Auth state restored successfully:', payload.data);
+        }
+      })
+      .addCase(restoreAuthState.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to restore authentication';
         state.isAuthenticated = false;
       });
   },

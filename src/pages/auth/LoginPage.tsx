@@ -16,52 +16,75 @@ const LoginPage = () => {
 
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { loading, error } = useSelector((state: RootState) => state.auth)
+  const { loading, error, user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const { pending } = useSelector((state: RootState) => state.pending)
+  
+  // Debug: Log current auth state
+  console.log('Current auth state:', { loading, error, user, isAuthenticated, pending })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
       const result = await dispatch(loginUser(formData))
-      toast.success('Login successful!')
       
-      // Navigate to appropriate dashboard based on user type
-      // Handle the API response structure properly using types
-      const response = result as any;
-      if (response?.data?.user?.user_type) {
-        const userType = response.data.user.user_type;
+      // Check if login was successful by examining the result
+      // The result is a Redux action object with { type, payload, meta }
+      const loginResult = result as any;
+      console.log('Login result:', loginResult);
+      
+      // Extract the actual API response data from the payload
+      const apiResponse = loginResult?.payload;
+      console.log('API response from payload:', apiResponse);
+      
+      // Check if the API response contains user and tokens data
+      if (apiResponse?.data?.user && apiResponse?.data?.tokens) {
+        // Login successful - show success message and navigate
+        toast.success('Login successful!')
+        console.log('Login successful, navigating to dashboard for user type:', apiResponse.data.user.user_type);
+        
+        // Navigate to appropriate dashboard based on user type
+        const userType = apiResponse.data.user.user_type;
+        console.log('Attempting to navigate to dashboard for user type:', userType);
+        
         switch (userType) {
           case 'player':
+            console.log('Navigating to player dashboard');
             navigate('/player/dashboard')
             break
           case 'coach':
+            console.log('Navigating to coach dashboard');
             navigate('/coach/dashboard')
             break
           case 'club':
+            console.log('Navigating to club dashboard');
             navigate('/club/dashboard')
             break
           case 'partner':
+            console.log('Navigating to partner dashboard');
             navigate('/partner/dashboard')
             break
           case 'state':
+            console.log('Navigating to state dashboard');
             navigate('/state/dashboard')
             break
           case 'admin':
+            console.log('Navigating to admin dashboard');
             navigate('/admin/dashboard')
             break
-          case 'super_admin':
-            navigate('/super-admin/dashboard')
-            break
           default:
+            console.log('Unknown user type, defaulting to player dashboard');
             navigate('/player/dashboard')
         }
-      } else {
-        // Fallback navigation
-        navigate('/player/dashboard')
-      }
+              } else {
+          // Login failed - show error and stay on login page
+          toast.error('Login failed - Invalid response from server')
+          console.error('Login failed - Invalid response structure:', apiResponse)
+        }
     } catch (err) {
+      // Login failed - show error and stay on login page
       toast.error(error || 'Login failed')
+      console.error('Login error:', err)
     }
   }
 

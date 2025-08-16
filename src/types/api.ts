@@ -25,7 +25,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // User Types - CORRECTED TO MATCH ACTUAL MODEL
 export interface User {
   id: string;
-  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'admin' | 'super_admin';
+  user_type: 'player' | 'coach' | 'club' | 'partner' | 'state' | 'admin';
   username: string;
   email: string;
   first_name?: string;
@@ -61,6 +61,7 @@ export interface User {
   is_verified: boolean;
   verification_documents?: object;
   notes?: string;
+  can_be_found?: boolean; // Privacy setting for player finder
   created_at: string;
   updated_at: string;
 }
@@ -400,8 +401,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  first_name?: string;
-  last_name?: string;
+  full_name?: string;
   date_of_birth?: string;
   gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   state?: string;
@@ -413,6 +413,9 @@ export interface RegisterRequest {
   contact_person?: string;
   rfc?: string;
   website?: string;
+  privacy_policy_accepted?: boolean;
+  profile_photo?: File;
+  verification_document?: File;
 }
 
 export interface LoginResponse extends ApiResponse<{

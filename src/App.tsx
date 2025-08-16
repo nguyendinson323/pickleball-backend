@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from './store'
-import { getProfile } from './store/slices/authSlice'
+import { restoreAuthState } from './store/slices/authSlice'
 import { Toaster } from './components/ui/sonner'
 // Components
 import Header from './components/Header'
@@ -17,7 +17,7 @@ function App() {
   useEffect(() => {
     // Check if user is authenticated on app load
     if (token && !isAuthenticated) {
-      dispatch(getProfile())
+      dispatch(restoreAuthState())
     }
   }, [dispatch, token, isAuthenticated])
 

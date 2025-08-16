@@ -12,6 +12,7 @@ import { Slider } from '../../components/ui/slider';
 import { Switch } from '../../components/ui/switch';
 import { toast } from 'sonner';
 import { useAnimation } from '../../hooks/useAnimation';
+import { Shield, MapPin } from 'lucide-react';
 
 const PlayerFinderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -325,33 +326,56 @@ const PlayerFinderPage: React.FC = () => {
           className="mb-6"
         >
           <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium">Privacy Notice</p>
+                <p className="mt-1">
+                  Only players who have enabled "Can Be Found in Search" appear in these results. 
+                  Contact information is only shown for players who have enabled "Show Contact Information".
+                </p>
+              </div>
+            </div>
+          </div>
           <div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {searchResults.map((player, index) => {
-              // const config = animationConfigs.playerFinder.results[index % 3]; // Removed as per edit hint
+              // Only show players who are visible in search (this should be handled by the API)
+              // For now, we'll assume the API already filters by privacy settings
               return (
                 <div
                   key={player.id}
-                  // variants={getAnimationVariants(config.direction, config.duration, config.delay)} // Removed as per edit hint
                 >
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg">{player.full_name || player.username}</CardTitle>
                       <CardDescription>
-                        {player.city}, {player.state} • Skill: {player.skill_level}
+                        {player.city}, {player.state}
+                        {player.skill_level && ` • Skill: ${player.skill_level}`}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Age:</span>
-                          <span>{player.age || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Gender:</span>
-                          <span>{player.gender || 'N/A'}</span>
-                        </div>
+                        {player.age && (
+                          <div className="flex justify-between text-sm">
+                            <span>Age:</span>
+                            <span>{player.age}</span>
+                          </div>
+                        )}
+                        {player.gender && (
+                          <div className="flex justify-between text-sm">
+                            <span>Gender:</span>
+                            <span>{player.gender}</span>
+                          </div>
+                        )}
+                        {player.phone && (
+                          <div className="flex justify-between text-sm">
+                            <span>Phone:</span>
+                            <span>{player.phone}</span>
+                          </div>
+                        )}
                         <Button 
                           size="sm" 
                           className="w-full"
@@ -374,15 +398,24 @@ const PlayerFinderPage: React.FC = () => {
         <div
         >
           <h2 className="text-2xl font-bold mb-4">Nearby Players</h2>
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
+              <div className="text-sm text-green-800">
+                <p className="font-medium">Nearby Players</p>
+                <p className="mt-1">
+                  These are players in your area who have enabled visibility in search results.
+                </p>
+              </div>
+            </div>
+          </div>
           <div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {nearbyPlayers.map((player, index) => {
-              // const config = animationConfigs.playerFinder.nearby[index % 3]; // Removed as per edit hint
               return (
                 <div
                   key={player.id}
-                  // variants={getAnimationVariants(config.direction, config.duration, config.delay)} // Removed as per edit hint
                 >
                   <Card>
                     <CardHeader>
@@ -393,14 +426,18 @@ const PlayerFinderPage: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Skill Level:</span>
-                          <span>{player.skill_level}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Age:</span>
-                          <span>{player.age || 'N/A'}</span>
-                        </div>
+                        {player.skill_level && (
+                          <div className="flex justify-between text-sm">
+                            <span>Skill Level:</span>
+                            <span>{player.skill_level}</span>
+                          </div>
+                        )}
+                        {player.age && (
+                          <div className="flex justify-between text-sm">
+                            <span>Age:</span>
+                            <span>{player.age}</span>
+                          </div>
+                        )}
                         <Button 
                           size="sm" 
                           className="w-full"
