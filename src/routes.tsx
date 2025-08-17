@@ -53,14 +53,14 @@ import ClubMemberManagement from "./pages/club/MemberManagement";
 import ClubMicrosite from "./pages/club/ClubMicrosite";
 
 // Partner pages
-import PartnerDashboard from "./pages/partner/Dashboard";
+import PartnerDashboard from "./pages/partner/dashboard";
 import BusinessProfile from "./pages/partner/BusinessProfile";
 import PartnerCourtManagement from "./pages/partner/CourtManagement";
 import BusinessMicrosite from "./pages/partner/BusinessMicrosite";
 import PartnerAnalytics from "./pages/partner/Analytics";
 
 // State pages
-import StateDashboard from "./pages/state/Dashboard";
+import StateDashboard from "./pages/state/dashboard";
 import StateProfile from "./pages/state/StateProfile";
 import StateMemberManagement from "./pages/state/MemberManagement";
 import StateCourtManagement from "./pages/state/CourtManagement";
