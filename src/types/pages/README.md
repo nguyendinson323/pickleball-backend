@@ -16,7 +16,7 @@ This directory contains TypeScript interfaces for all page components in the app
 - `club.ts` - Club management interfaces
 - `partner.ts` - Business partner interfaces
 - `state.ts` - State organization interfaces
-- `superAdmin.ts` - System administration interfaces
+- `admin.ts` - System administration interfaces
 - `common.ts` - Shared functionality interfaces (clubs, courts, tournaments, etc.)
 - `notFound.ts` - Error page interfaces
 

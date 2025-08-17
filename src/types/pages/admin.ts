@@ -1,12 +1,12 @@
-export interface SuperAdminDashboardProps {
-  admin: SuperAdmin;
+export interface AdminDashboardProps {
+  admin: Admin;
   systemStats: SystemStats;
   recentActivity: AdminActivity[];
   alerts: AdminAlert[];
   notifications: AdminNotification[];
 }
 
-export interface SuperAdmin {
+export interface Admin {
   id: string;
   profile: AdminProfile;
   permissions: AdminPermissions;
@@ -133,14 +133,14 @@ export interface AdminNotification {
 }
 
 export interface AdminPageProps {
-  admin: SuperAdmin;
+  admin: Admin;
   onProfileUpdate: (profile: Partial<AdminProfile>) => void;
   onPermissionsUpdate: (permissions: Partial<AdminPermissions>) => void;
   isLoading?: boolean;
 }
 
 export interface AdminProfilePageProps {
-  admin: SuperAdmin;
+  admin: Admin;
   onProfileUpdate: (profile: Partial<AdminProfile>) => void;
   onPermissionsUpdate: (permissions: Partial<AdminPermissions>) => void;
   isLoading?: boolean;

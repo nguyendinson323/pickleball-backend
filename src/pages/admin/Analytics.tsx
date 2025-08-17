@@ -30,7 +30,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-const SuperAdminAnalytics = () => {
+const AdminAnalytics = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [timeRange, setTimeRange] = useState('30');
   const [selectedMetric, setSelectedMetric] = useState('users');
@@ -477,4 +477,4 @@ const SuperAdminAnalytics = () => {
   );
 };
 
-export default SuperAdminAnalytics; 
+export default AdminAnalytics; 

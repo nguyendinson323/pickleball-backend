@@ -82,23 +82,15 @@ export const statePrivateTabs: NavigationItem[] = [
 
 // Admin navigation - only private tabs
 export const adminPrivateTabs: NavigationItem[] = [
-  { name: 'Admin Dashboard', href: '/admin/dashboard', public: false },
+  { name: 'Dashboard', href: '/admin/dashboard', public: false },
   { name: 'Admin Profile', href: '/admin/profile', public: false },
   { name: 'User Management', href: '/admin/users', public: false },
-  { name: 'Banner Management', href: '/admin/banners', public: false },
+  { name: 'System Management', href: '/admin/system', public: false },
+  { name: 'Analytics', href: '/admin/analytics', public: false },
 ]
 
-// Super Admin navigation - only private tabs
-export const superAdminPrivateTabs: NavigationItem[] = [
-  { name: 'Dashboard', href: '/super-admin/dashboard', public: false },
-  { name: 'Admin Profile', href: '/super-admin/profile', public: false },
-  { name: 'User Management', href: '/super-admin/users', public: false },
-  { name: 'System Management', href: '/super-admin/system', public: false },
-  { name: 'Analytics', href: '/super-admin/analytics', public: false },
-]
-
-// Super Admin additional admin tabs
-export const superAdminAdminTabs: NavigationItem[] = [
+// Admin additional admin tabs
+export const adminAdminTabs: NavigationItem[] = [
   { name: 'Admin Dashboard', href: '/admin', public: false },
   { name: 'Banner Management', href: '/admin/banners', public: false },
   { name: 'Global Settings', href: '/admin/settings', public: false },
@@ -120,7 +112,7 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   
   // Filter common tabs based on user type - admin users don't need membership tab
   let filteredCommonTabs = [...commonLoggedInTabs]
-  if (user.user_type === 'admin' || user.user_type === 'super_admin') {
+  if (user.user_type === 'admin') {
     filteredCommonTabs = filteredCommonTabs.filter(tab => tab.name !== 'Membership')
   }
   
@@ -129,24 +121,12 @@ export const getUserNavigation = (user: User | null): UserNavigation => {
   // Get private tabs based on user_type (this is the primary navigation)
   const privateTabs = getPrivateTabsByUserType(user.user_type)
   
-  // Super admin user_type gets additional admin tabs
-  if (user.user_type === 'super_admin') {
-    return {
-      main: mainNavigationWithCommon,
-      user: privateTabs,  // Use user_type-based tabs
-      admin: superAdminAdminTabs
-    }
-  }
-
-  // Admin user_type gets basic admin tabs
+  // Admin user_type gets admin tabs
   if (user.user_type === 'admin') {
     return {
       main: mainNavigationWithCommon,
       user: privateTabs,  // Use user_type-based tabs
-      admin: [
-        { name: 'Admin Dashboard', href: '/admin', public: false },
-        { name: 'Banner Management', href: '/admin/banners', public: false },
-      ]
+      admin: adminAdminTabs
     }
   }
 
@@ -182,8 +162,6 @@ const getPrivateTabsByUserType = (userType: string): NavigationItem[] => {
       ]
     case 'admin':
       return adminPrivateTabs
-    case 'super_admin':
-      return superAdminPrivateTabs
     default:
       return playerPrivateTabs
   }

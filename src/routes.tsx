@@ -7,12 +7,12 @@ import NotFoundPage from "./pages/NotFoundPage";
 import { Navigate } from "react-router-dom";
 
   // Admin pages
-  import AdminPage from "./pages/superAdmin/AdminPage";
-  import AdminProfile from "./pages/superAdmin/AdminProfile";
-  import Analytics from "./pages/superAdmin/Analytics";
-  import SystemManagement from "./pages/superAdmin/SystemManagement";
-  import UserManagement from "./pages/superAdmin/UserManagement";
-  import BannersPage from "./pages/superAdmin/BannersPage";
+  import AdminProfile from "./pages/admin/AdminProfile";
+  import Analytics from "./pages/admin/Analytics";
+  import SystemManagement from "./pages/admin/SystemManagement";
+  import UserManagement from "./pages/admin/UserManagement";
+  import BannersPage from "./pages/admin/BannersPage";
+  import AdminDashboard from "./pages/admin/dashboard";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -46,7 +46,7 @@ import Sessions from "./pages/coach/Sessions";
 import Certifications from "./pages/coach/Certifications";
 
 // Club pages
-import ClubDashboard from "./pages/club/Dashboard";
+import ClubDashboard from "./pages/club/dashboard";
 import ClubProfile from "./pages/club/ClubProfile";
 import ClubCourtManagement from "./pages/club/CourtManagement";
 import ClubMemberManagement from "./pages/club/MemberManagement";
@@ -357,7 +357,7 @@ const routes = [
   {
     key: 'admin-dashboard',
     path: '/admin/dashboard',
-    element: <AdminPage />,
+    element: <AdminDashboard />,
     public: false
   },
   {

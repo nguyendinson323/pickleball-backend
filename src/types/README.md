@@ -150,7 +150,7 @@ import { ButtonProps } from '../types/components';
 - `StateStatisticsProps` / `StateStatisticsState` - Statistics
 
 #### Super Admin Pages
-- `SuperAdminDashboardProps` / `SuperAdminDashboardState` - Super admin dashboard
+- `AdminDashboardProps` / `AdminDashboardState` - Admin dashboard
 - `AdminProfileProps` / `AdminProfileState` - Admin profile
 - `UserManagementProps` / `UserManagementState` - User management
 - `SystemManagementProps` / `SystemManagementState` - System management

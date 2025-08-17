@@ -1197,9 +1197,9 @@ export interface StateStatisticsState {
 // SUPER ADMIN PAGES
 // ============================================================================
 
-export interface SuperAdminDashboardProps extends PageProps {}
+export interface AdminDashboardProps extends PageProps {}
 
-export interface SuperAdminDashboardState {
+export interface AdminDashboardState {
   systemStats: {
     totalUsers: number;
     activeUsers: number;
