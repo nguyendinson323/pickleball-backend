@@ -334,7 +334,23 @@ const PlayerFinderPage: React.FC = () => {
                 <p className="mt-1">
                   Only players who have enabled "Can Be Found in Search" appear in these results. 
                   Contact information is only shown for players who have enabled "Show Contact Information".
+                  Skill levels are only visible when players have enabled "Show Skill Level".
                 </p>
+                <p className="mt-2 font-medium">How to respect privacy:</p>
+                <ul className="mt-1 list-disc list-inside space-y-1">
+                  <li>Only contact players who have enabled contact information sharing</li>
+                  <li>Use match requests for players who prefer platform-based communication</li>
+                  <li>Respect when players choose to remain private</li>
+                </ul>
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <p className="text-xs text-blue-700">
+                    <strong>Learn more:</strong> Read our{' '}
+                    <a href="/privacy-policy" className="underline hover:text-blue-900 font-medium">
+                      Privacy Policy
+                    </a>{' '}
+                    to understand how we protect your data and privacy.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -370,19 +386,41 @@ const PlayerFinderPage: React.FC = () => {
                             <span>{player.gender}</span>
                           </div>
                         )}
+                        {/* Privacy-aware contact information display */}
                         {player.phone && (
                           <div className="flex justify-between text-sm">
                             <span>Phone:</span>
-                            <span>{player.phone}</span>
+                            <span className="text-green-600 font-medium">✓ Available</span>
                           </div>
                         )}
-                        <Button 
-                          size="sm" 
-                          className="w-full"
-                          onClick={() => handleSendMatchRequest(player.id)}
-                        >
-                          Send Match Request
-                        </Button>
+                        {!player.phone && (
+                          <div className="flex justify-between text-sm">
+                            <span>Phone:</span>
+                            <span className="text-gray-500">Private</span>
+                          </div>
+                        )}
+                        {/* Privacy-aware skill level display */}
+                        {player.skill_level && (
+                          <div className="flex justify-between text-sm">
+                            <span>Skill Level:</span>
+                            <span className="text-blue-600 font-medium">{player.skill_level}</span>
+                          </div>
+                        )}
+                        {!player.skill_level && (
+                          <div className="flex justify-between text-sm">
+                            <span>Skill Level:</span>
+                            <span className="text-gray-500">Private</span>
+                          </div>
+                        )}
+                        <div className="pt-2">
+                          <Button 
+                            size="sm" 
+                            className="w-full"
+                            onClick={() => handleSendMatchRequest(player.id)}
+                          >
+                            Send Match Request
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

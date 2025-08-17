@@ -393,6 +393,13 @@ const PlayerProfile = () => {
                           : "You will not appear in player search results"
                         }
                       </p>
+                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-blue-800">
+                          <strong>What this means:</strong> When enabled, other players can find you in the player search 
+                          and send match requests. When disabled, you remain completely private and won't appear in any 
+                          search results. You can change this setting at any time.
+                        </p>
+                      </div>
                     </div>
                     <Switch
                       checked={privacySettings.isVisibleInSearch}
@@ -410,6 +417,13 @@ const PlayerProfile = () => {
                           : "Your contact information will be hidden from other players"
                         }
                       </p>
+                      <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-xs text-green-800">
+                          <strong>What this means:</strong> When enabled, other players can see your phone number and email 
+                          to contact you directly. When disabled, they can only send match requests through the platform. 
+                          This setting only applies when "Can Be Found in Search" is enabled.
+                        </p>
+                      </div>
                     </div>
                     <Switch
                       checked={privacySettings.showContactInfo}
@@ -427,6 +441,13 @@ const PlayerProfile = () => {
                           : "Your skill level will be hidden from other players"
                         }
                       </p>
+                      <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                        <p className="text-xs text-purple-800">
+                          <strong>What this means:</strong> When enabled, other players can see your skill level to find 
+                          suitable match partners. When disabled, your skill level remains private. This setting only applies 
+                          when "Can Be Found in Search" is enabled.
+                        </p>
+                      </div>
                     </div>
                     <Switch
                       checked={privacySettings.showSkillLevel}

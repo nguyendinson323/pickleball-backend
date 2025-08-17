@@ -418,13 +418,22 @@ const OptionalFieldsPage = () => {
                 <CardDescription className="animate-on-scroll">
                   Please upload your profile photo and verification document
                 </CardDescription>
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Why these are required:</strong> Profile photos help other players recognize you, 
+                    and verification documents ensure the safety and authenticity of our community. 
+                    These documents are securely stored and only used for verification purposes.
+                  </p>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-6">
                   {/* Profile Photo Upload */}
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor="profile_photo" className="animate-on-scroll">
-                      Profile Photo *
+                    <Label htmlFor="profile_photo" className="animate-on-scroll flex items-center gap-2">
+                      <span>Profile Photo</span>
+                      <span className="text-red-500 font-bold">*</span>
+                      <span className="text-xs text-gray-500">(Required)</span>
                     </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                       {files.profile_photo ? (
@@ -469,8 +478,10 @@ const OptionalFieldsPage = () => {
 
                   {/* Verification Document Upload */}
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor="verification_document" className="animate-on-scroll">
-                      Verification Document (INE/Passport) *
+                    <Label htmlFor="verification_document" className="animate-on-scroll flex items-center gap-2">
+                      <span>Verification Document (INE/Passport)</span>
+                      <span className="text-red-500 font-bold">*</span>
+                      <span className="text-xs text-gray-500">(Required)</span>
                     </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                       {files.verification_document ? (
