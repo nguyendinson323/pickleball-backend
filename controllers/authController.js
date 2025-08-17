@@ -74,6 +74,7 @@ const createUserResponse = (user) => {
     verification_documents: user.verification_documents,
     notes: user.notes,
     can_be_found: user.can_be_found,
+    club_id: user.club_id,
     created_at: user.created_at,
     updated_at: user.updated_at
   };
@@ -652,9 +653,17 @@ const getProfile = async (req, res) => {
   try {
     const { user } = req;
 
-    // Get fresh user data
+    // Get fresh user data with club information if available
     const userProfile = await User.findByPk(user.id, {
-      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] }
+      attributes: { exclude: ['password_hash', 'email_verification_token', 'password_reset_token'] },
+      include: [
+        {
+          model: require('../db/models').Club,
+          as: 'club',
+          attributes: ['id', 'name', 'city', 'state', 'club_type', 'description'],
+          required: false
+        }
+      ]
     });
 
     if (!userProfile) {
@@ -663,6 +672,11 @@ const getProfile = async (req, res) => {
 
     // Send complete user data (excluding sensitive fields)
     const userResponse = createUserResponse(userProfile);
+
+    // Add club information if available
+    if (userProfile.club) {
+      userResponse.club = userProfile.club;
+    }
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
