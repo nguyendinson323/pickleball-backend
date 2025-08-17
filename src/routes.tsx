@@ -34,7 +34,7 @@ import Home from "./pages/home/Home";
 import PrivacyPolicy from "./pages/home/PrivacyPolicy";
 
 // Player pages
-import PlayerDashboard from "./pages/player/Dashboard";
+import PlayerDashboard from "./pages/player/dashboard";
 import PlayerProfile from "./pages/player/PlayerProfile";
 
 // Coach pages
