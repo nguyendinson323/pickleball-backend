@@ -62,6 +62,8 @@ export interface User {
   verification_documents?: object;
   notes?: string;
   can_be_found?: boolean; // Privacy setting for player finder
+  club_id?: string; // Reference to club if user belongs to one
+  club?: Club; // Club information if user belongs to one
   created_at: string;
   updated_at: string;
 }
