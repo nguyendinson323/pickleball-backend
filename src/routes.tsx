@@ -38,7 +38,7 @@ import PlayerDashboard from "./pages/player/dashboard";
 import PlayerProfile from "./pages/player/PlayerProfile";
 
 // Coach pages
-import CoachDashboard from "./pages/coach/Dashboard";
+import CoachDashboard from "./pages/coach/dashboard";
 import CoachProfile from "./pages/coach/CoachProfile";
 import Credentials from "./pages/coach/Credentials";
 import Students from "./pages/coach/Students";
