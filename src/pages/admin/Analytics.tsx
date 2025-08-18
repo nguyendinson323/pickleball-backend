@@ -1,34 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { 
-  TrendingUp, 
-  Users, 
-  Building2, 
-  MapPin, 
-  Calendar, 
-  DollarSign, 
-  Activity, 
-  BarChart3, 
-  PieChart, 
-  LineChart,
-  Download,
-  Filter,
-  Eye,
-  Globe,
-  Target,
-  Award,
-  Clock,
-  Star,
-  Zap,
-  ArrowUp,
-  ArrowDown,
-  AlertTriangle
-} from 'lucide-react';
 
 const AdminAnalytics = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -101,377 +73,287 @@ const AdminAnalytics = () => {
     }
   };
 
-  const getTimeRangeLabel = (range: string) => {
-    switch (range) {
-      case '7': return 'Last 7 Days';
-      case '30': return 'Last 30 Days';
-      case '90': return 'Last 90 Days';
-      case '365': return 'Last Year';
-      default: return 'Last 30 Days';
-    }
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
   };
 
-  const getGrowthIndicator = (current: number, previous: number) => {
-    const growth = ((current - previous) / previous) * 100;
-    return {
-      value: Math.abs(growth).toFixed(1),
-      isPositive: growth >= 0,
-      color: growth >= 0 ? 'text-green-600' : 'text-red-600'
-    };
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
-  const getMetricIcon = (metric: string) => {
-    switch (metric) {
-      case 'users': return <Users className="h-5 w-5" />;
-      case 'clubs': return <Building2 className="h-5 w-5" />;
-      case 'courts': return <MapPin className="h-5 w-5" />;
-      case 'tournaments': return <Award className="h-5 w-5" />;
-      case 'revenue': return <DollarSign className="h-5 w-5" />;
-      case 'performance': return <Activity className="h-5 w-5" />;
-      default: return <BarChart3 className="h-5 w-5" />;
-    }
+  const getGrowthColor = (growth: number) => {
+    return growth >= 0 ? 'text-green-600' : 'text-red-600';
   };
 
-  const getMetricData = (metric: string) => {
-    switch (metric) {
-      case 'users':
-        return {
-          current: analyticsData.overview.totalUsers,
-          previous: analyticsData.overview.totalUsers - 500,
-          label: 'Total Users',
-          description: 'Registered users across all types'
-        };
-      case 'clubs':
-        return {
-          current: analyticsData.overview.totalClubs,
-          previous: analyticsData.overview.totalClubs - 25,
-          label: 'Total Clubs',
-          description: 'Affiliated pickleball clubs'
-        };
-      case 'courts':
-        return {
-          current: analyticsData.overview.totalCourts,
-          previous: analyticsData.overview.totalCourts - 120,
-          label: 'Total Courts',
-          description: 'Available pickleball courts'
-        };
-      case 'tournaments':
-        return {
-          current: analyticsData.overview.totalTournaments,
-          previous: analyticsData.overview.totalTournaments - 15,
-          label: 'Total Tournaments',
-          description: 'Tournaments this year'
-        };
-      case 'revenue':
-        return {
-          current: analyticsData.overview.monthlyRevenue,
-          previous: analyticsData.overview.monthlyRevenue - 15000,
-          label: 'Monthly Revenue',
-          description: 'Total monthly revenue'
-        };
-      case 'performance':
-        return {
-          current: analyticsData.overview.averageResponseTime,
-          previous: analyticsData.overview.averageResponseTime + 5,
-          label: 'Response Time',
-          description: 'Average system response time'
-        };
-      default:
-        return {
-          current: 0,
-          previous: 0,
-          label: 'Metric',
-          description: 'Description'
-        };
-    }
+  const getGrowthIcon = (growth: number) => {
+    return growth >= 0 ? (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    );
   };
-
-  const currentMetric = getMetricData(selectedMetric);
-  const growth = getGrowthIndicator(currentMetric.current, currentMetric.previous);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">System Analytics</h1>
-            <p className="text-gray-600">Comprehensive insights into system performance and user metrics</p>
-          </div>
-          <div className="flex space-x-3">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Last 7 Days</SelectItem>
-                <SelectItem value="30">Last 30 Days</SelectItem>
-                <SelectItem value="90">Last 90 Days</SelectItem>
-                <SelectItem value="365">Last Year</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Download className="h-4 w-4" />
-              <span>Export Data</span>
-            </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 animate-on-scroll">Analytics Dashboard</h1>
+          <p className="text-gray-600 mb-6 animate-on-scroll">
+            Comprehensive insights into platform performance, user behavior, and business metrics
+          </p>
+          
+          {/* Controls */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700 animate-on-scroll">Time Range:</label>
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+              >
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last year</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700 animate-on-scroll">Metric:</label>
+              <select
+                value={selectedMetric}
+                onChange={(e) => setSelectedMetric(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+              >
+                <option value="users">Users</option>
+                <option value="revenue">Revenue</option>
+                <option value="performance">Performance</option>
+                <option value="engagement">Engagement</option>
+              </select>
+            </div>
+            
+            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll">
+              <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </button>
+            
+            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll">
+              <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export
+            </button>
           </div>
         </div>
 
-        {/* Metric Selector */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-500" />
-              <span>Select Metric</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-              {['users', 'clubs', 'courts', 'tournaments', 'revenue', 'performance'].map((metric) => (
-                <Button
-                  key={metric}
-                  variant={selectedMetric === metric ? 'default' : 'outline'}
-                  className="flex flex-col items-center space-y-2 h-20"
-                  onClick={() => setSelectedMetric(metric)}
-                >
-                  {getMetricIcon(metric)}
-                  <span className="text-xs capitalize">{metric}</span>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Selected Metric Overview */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              {getMetricIcon(selectedMetric)}
-              <span>{currentMetric.label}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {typeof currentMetric.current === 'number' && currentMetric.current > 1000 
-                    ? currentMetric.current.toLocaleString() 
-                    : currentMetric.current}
-                </div>
-                <p className="text-sm text-gray-600">{currentMetric.description}</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 mb-2">
-                  {growth.isPositive ? '+' : '-'}{growth.value}%
-                </div>
-                <p className="text-sm text-gray-600">Growth</p>
-                <div className={`flex items-center justify-center mt-1 ${growth.color}`}>
-                  {growth.isPositive ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-                </div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 mb-2">
-                  {getTimeRangeLabel(timeRange)}
-                </div>
-                <p className="text-sm text-gray-600">Time Range</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Overview Stats */}
+        {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{analyticsData.overview.totalUsers.toLocaleString()}</div>
-              <p className="text-xs text-gray-600">registered users</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <Target className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{analyticsData.overview.activeUsers.toLocaleString()}</div>
-              <p className="text-xs text-gray-600">currently active</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Uptime</CardTitle>
-              <Zap className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{analyticsData.overview.systemUptime}%</div>
-              <p className="text-xs text-gray-600">reliability</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                ${analyticsData.overview.monthlyRevenue.toLocaleString()}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 animate-on-scroll">Total Users</p>
+                <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{formatNumber(analyticsData.overview.totalUsers)}</p>
+                <div className="flex items-center mt-1">
+                  <span className={`text-sm font-medium ${getGrowthColor(12.5)} animate-on-scroll`}>
+                    +12.5%
+                  </span>
+                  <span className="ml-1 text-gray-500 animate-on-scroll">vs last month</span>
+                </div>
               </div>
-              <p className="text-xs text-gray-600">total revenue</p>
-            </CardContent>
-          </Card>
+              <div className="p-2 rounded-full bg-blue-100 text-blue-600 animate-on-scroll">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 animate-on-scroll">Active Users</p>
+                <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{formatNumber(analyticsData.overview.activeUsers)}</p>
+                <div className="flex items-center mt-1">
+                  <span className={`text-sm font-medium ${getGrowthColor(8.2)} animate-on-scroll`}>
+                    +8.2%
+                  </span>
+                  <span className="ml-1 text-gray-500 animate-on-scroll">vs last month</span>
+                </div>
+              </div>
+              <div className="p-2 rounded-full bg-green-100 text-green-600 animate-on-scroll">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 animate-on-scroll">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{formatCurrency(analyticsData.overview.monthlyRevenue)}</p>
+                <div className="flex items-center mt-1">
+                  <span className={`text-sm font-medium ${getGrowthColor(analyticsData.revenue.growth)} animate-on-scroll`}>
+                    +{analyticsData.revenue.growth}%
+                  </span>
+                  <span className="ml-1 text-gray-500 animate-on-scroll">vs last month</span>
+                </div>
+              </div>
+              <div className="p-2 rounded-full bg-purple-100 text-purple-600 animate-on-scroll">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 animate-on-scroll">System Uptime</p>
+                <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{analyticsData.overview.systemUptime}%</p>
+                <div className="flex items-center mt-1">
+                  <span className="text-sm font-medium text-green-600 animate-on-scroll">
+                    +0.03%
+                  </span>
+                  <span className="ml-1 text-gray-500 animate-on-scroll">vs last month</span>
+                </div>
+              </div>
+              <div className="p-2 rounded-full bg-orange-100 text-orange-600 animate-on-scroll">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* Charts and Detailed Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* User Demographics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <PieChart className="h-5 w-5 text-blue-500" />
-                <span>User Demographics by Type</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {analyticsData.userDemographics.byType.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        index === 0 ? 'bg-blue-500' :
-                        index === 1 ? 'bg-green-500' :
-                        index === 2 ? 'bg-purple-500' :
-                        index === 3 ? 'bg-orange-500' : 'bg-red-500'
-                      }`}></div>
-                      <span className="text-sm font-medium">{item.type}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{item.count.toLocaleString()}</div>
-                      <div className="text-xs text-gray-600">{item.percentage}%</div>
-                    </div>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 animate-on-scroll">User Demographics</h3>
+            <div className="space-y-4">
+              {analyticsData.userDemographics.byType.map((item, index) => (
+                <div key={index} className="animate-on-scroll">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700 animate-on-scroll">{item.type}</span>
+                    <span className="text-sm text-gray-600 animate-on-scroll">{item.count.toLocaleString()}</span>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Revenue Sources */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-green-500" />
-                <span>Revenue Sources</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {analyticsData.revenue.bySource.map((source, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{source.source}</span>
-                    <div className="text-right">
-                      <div className="font-medium">${source.amount.toLocaleString()}</div>
-                      <div className="text-xs text-gray-600">{source.percentage}%</div>
-                    </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 animate-on-scroll">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${item.percentage}%` }}
+                    />
                   </div>
-                ))}
-                <div className="pt-4 border-t">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Total Revenue</span>
-                    <div className="text-right">
-                      <div className="font-medium">${analyticsData.overview.monthlyRevenue.toLocaleString()}</div>
-                      <div className="text-xs text-green-600">+{analyticsData.revenue.growth}% growth</div>
-                    </div>
+                  <div className="text-right mt-1">
+                    <span className="text-xs text-gray-500 animate-on-scroll">{item.percentage}%</span>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Revenue Sources */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 animate-on-scroll">Revenue Sources</h3>
+            <div className="space-y-4">
+              {analyticsData.revenue.bySource.map((item, index) => (
+                <div key={index} className="animate-on-scroll">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700 animate-on-scroll">{item.source}</span>
+                    <span className="text-sm text-gray-600 animate-on-scroll">{formatCurrency(item.amount)}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 animate-on-scroll">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                  <div className="text-right mt-1">
+                    <span className="text-xs text-gray-500 animate-on-scroll">{item.percentage}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Performance Metrics */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <LineChart className="h-5 w-5 text-purple-500" />
-              <span>Performance Metrics</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                             <div className="text-center p-4 bg-gray-50 rounded-lg">
-                 <div className="text-2xl font-bold text-blue-600">{analyticsData.performance.responseTime[0]}ms</div>
-                 <p className="text-sm text-gray-600">Avg Response Time</p>
-                 <Activity className="h-8 w-8 text-blue-500 mx-auto mt-2" />
-               </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{analyticsData.performance.uptime[0]}%</div>
-                <p className="text-sm text-gray-600">System Uptime</p>
-                <Zap className="h-8 w-8 text-green-500 mx-auto mt-2" />
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-8 animate-on-scroll">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 animate-on-scroll">Performance Metrics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center animate-on-scroll">
+              <div className="text-3xl font-bold text-blue-600 mb-2 animate-on-scroll">
+                {analyticsData.overview.averageResponseTime}ms
               </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600">{analyticsData.performance.errorRate[0]}%</div>
-                <p className="text-sm text-gray-600">Error Rate</p>
-                <AlertTriangle className="h-8 w-8 text-yellow-500 mx-auto mt-2" />
-              </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{analyticsData.performance.activeUsers[0].toLocaleString()}</div>
-                <p className="text-sm text-gray-600">Active Users</p>
-                <Users className="h-8 w-8 text-purple-500 mx-auto mt-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Engagement Metrics */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Globe className="h-5 w-5 text-orange-500" />
-              <span>User Engagement</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {analyticsData.engagement.dailyActiveUsers.toLocaleString()}
-                </div>
-                <p className="text-gray-600">Daily Active Users</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">
-                  {analyticsData.engagement.averageSessionDuration} min
-                </div>
-                <p className="text-gray-600">Avg Session Duration</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">
-                  {analyticsData.engagement.pagesPerSession}
-                </div>
-                <p className="text-gray-600">Pages per Session</p>
+              <p className="text-sm text-gray-600 animate-on-scroll">Average Response Time</p>
+              <div className="flex items-center justify-center mt-2">
+                <span className="text-sm font-medium text-green-600 animate-on-scroll">-3ms</span>
+                <svg className="w-4 h-4 ml-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
               </div>
             </div>
             
-            <div className="mt-6 text-center">
-              <p className="text-gray-600">
-                Bounce Rate: {analyticsData.engagement.bounceRate}% | 
-                Weekly Active Users: {analyticsData.engagement.weeklyActiveUsers.toLocaleString()}
-              </p>
+            <div className="text-center animate-on-scroll">
+              <div className="text-3xl font-bold text-green-600 mb-2 animate-on-scroll">
+                {analyticsData.engagement.averageSessionDuration}m
+              </div>
+              <p className="text-sm text-gray-600 animate-on-scroll">Avg Session Duration</p>
+              <div className="flex items-center justify-center mt-2">
+                <span className="text-sm font-medium text-green-600 animate-on-scroll">+2m</span>
+                <svg className="w-4 h-4 ml-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="text-center animate-on-scroll">
+              <div className="text-3xl font-bold text-purple-600 mb-2 animate-on-scroll">
+                {analyticsData.engagement.pagesPerSession}
+              </div>
+              <p className="text-sm text-gray-600 animate-on-scroll">Pages per Session</p>
+              <div className="flex items-center justify-center mt-2">
+                <span className="text-sm font-medium text-green-600 animate-on-scroll">+0.5</span>
+                <svg className="w-4 h-4 ml-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Regional Distribution */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 animate-on-scroll">Regional Distribution</h3>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {analyticsData.userDemographics.byRegion.map((region, index) => (
+              <div key={index} className="text-center animate-on-scroll">
+                <div className="text-2xl font-bold text-gray-900 mb-2 animate-on-scroll">
+                  {formatNumber(region.count)}
+                </div>
+                <p className="text-sm text-gray-600 mb-2 animate-on-scroll">{region.region}</p>
+                <div className="text-xs text-gray-500 animate-on-scroll">{region.percentage}%</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

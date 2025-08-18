@@ -2,19 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchClubs } from '../../store/slices/clubsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Badge } from '../../components/ui/badge';
-import { MapPin, Users, Calendar, Star, Phone, Mail, Globe, Clock } from 'lucide-react';
 import { Club } from '../../types/api';
-import { useAnimation } from '../../hooks/useAnimation';
 
 const ClubsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { clubs, loading, error, pagination } = useSelector((state: RootState) => state.clubs);
-  const { elementRef: headerRef } = useAnimation();
   
   const [filters, setFilters] = useState<{
     page: number;
@@ -102,10 +94,10 @@ const ClubsPage = () => {
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="animate-on-scroll text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg animate-on-scroll">
               Find Your Perfect Pickleball Club
             </h1>
-            <p className="animate-on-scroll text-xl md:text-2xl mb-8 max-w-3xl mx-auto drop-shadow-md">
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto drop-shadow-md animate-on-scroll">
               Discover clubs near you, join communities, and take your game to the next level
             </p>
           </div>
@@ -117,52 +109,49 @@ const ClubsPage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <Input
+              <input
                 placeholder="Search clubs..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="animate-on-scroll w-full"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
               />
             </div>
             <div>
-              <Select value={filters.state} onValueChange={(value) => handleFilterChange('state', value)}>
-                <SelectTrigger className="animate-on-scroll">
-                  <SelectValue placeholder="Select State" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All States</SelectItem>
-                  <SelectItem value="Jalisco">Jalisco</SelectItem>
-                  <SelectItem value="Nuevo León">Nuevo León</SelectItem>
-                  <SelectItem value="CDMX">CDMX</SelectItem>
-                  <SelectItem value="Baja California">Baja California</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={filters.state} 
+                onChange={(e) => handleFilterChange('state', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+              >
+                <option value="all">All States</option>
+                <option value="Jalisco">Jalisco</option>
+                <option value="Nuevo León">Nuevo León</option>
+                <option value="CDMX">CDMX</option>
+                <option value="Baja California">Baja California</option>
+              </select>
             </div>
             <div>
-              <Select value={filters.club_type} onValueChange={(value) => handleFilterChange('club_type', value)}>
-                <SelectTrigger className="animate-on-scroll">
-                  <SelectValue placeholder="Club Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="recreational">Recreational</SelectItem>
-                  <SelectItem value="competitive">Competitive</SelectItem>
-                  <SelectItem value="training">Training</SelectItem>
-                  <SelectItem value="mixed">Mixed</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={filters.club_type} 
+                onChange={(e) => handleFilterChange('club_type', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+              >
+                <option value="all">All Types</option>
+                <option value="recreational">Recreational</option>
+                <option value="competitive">Competitive</option>
+                <option value="training">Training</option>
+                <option value="mixed">Mixed</option>
+              </select>
             </div>
             <div>
-              <Select value={filters.has_courts} onValueChange={(value) => handleFilterChange('has_courts', value)}>
-                <SelectTrigger className="animate-on-scroll">
-                  <SelectValue placeholder="Courts Available" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Clubs</SelectItem>
-                  <SelectItem value="true">With Courts</SelectItem>
-                  <SelectItem value="false">Without Courts</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={filters.has_courts} 
+                onChange={(e) => handleFilterChange('has_courts', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+              >
+                <option value="all">All Clubs</option>
+                <option value="true">With Courts</option>
+                <option value="false">Without Courts</option>
+              </select>
             </div>
           </div>
         </div>
@@ -173,21 +162,27 @@ const ClubsPage = () => {
         <div className="container mx-auto px-4">
           {error && (
             <div className="text-center py-8">
-              <p className="animate-on-scroll text-red-600 text-lg">{error}</p>
+              <p className="text-red-600 text-lg animate-on-scroll">{error}</p>
             </div>
           )}
 
           {clubs.length === 0 && !loading ? (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <MapPin className="animate-on-scroll w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="animate-on-scroll text-xl font-semibold text-gray-900 mb-2">No clubs found</h3>
-                <p className="animate-on-scroll text-gray-600 mb-6">
+                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 animate-on-scroll">No clubs found</h3>
+                <p className="text-gray-600 mb-6 animate-on-scroll">
                   Try adjusting your search criteria or check back later for new clubs in your area.
                 </p>
-                <Button onClick={() => setFilters({ page: 1, limit: 12, state: 'all', city: 'all', club_type: 'all', has_courts: 'all', subscription_plan: 'all', search: '' })}>
+                <button 
+                  onClick={() => setFilters({ page: 1, limit: 12, state: 'all', city: 'all', club_type: 'all', has_courts: 'all', subscription_plan: 'all', search: '' })}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+                >
                   Clear Filters
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
@@ -195,37 +190,44 @@ const ClubsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {clubs.map((club: Club, index: number) => (
                   <div key={club.id}>
-                    <Card className="animate-on-scroll card h-full hover:shadow-lg transition-shadow duration-300">
-                      <CardHeader>
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-sm h-full hover:shadow-lg transition-shadow duration-300 animate-on-scroll">
+                      <div className="p-6">
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="animate-on-scroll text-xl font-bold text-gray-900 line-clamp-2">
+                          <h3 className="text-xl font-bold text-gray-900 line-clamp-2 animate-on-scroll">
                             {club.name}
-                          </CardTitle>
-                          <Badge className={`animate-on-scroll ${getClubTypeColor(club.club_type)}`}>
+                          </h3>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getClubTypeColor(club.club_type)} animate-on-scroll`}>
                             {club.club_type}
-                          </Badge>
+                          </span>
                         </div>
-                        <CardDescription className="animate-on-scroll flex items-center text-gray-600">
-                          <MapPin className="w-4 h-4 mr-1" />
+                        <p className="flex items-center text-gray-600 animate-on-scroll">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
                           {club.city}, {club.state}
-                        </CardDescription>
-                      </CardHeader>
+                        </p>
+                      </div>
                       
-                      <CardContent className="space-y-4">
+                      <div className="px-6 pb-6 space-y-4">
                         {club.description && (
-                          <p className="animate-on-scroll text-gray-700 line-clamp-3">
+                          <p className="text-gray-700 line-clamp-3 animate-on-scroll">
                             {club.description}
                           </p>
                         )}
                         
                         <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="animate-on-scroll flex items-center text-gray-600">
-                            <Users className="w-4 h-4 mr-2" />
+                          <div className="flex items-center text-gray-600 animate-on-scroll">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
                             {club.member_count} members
                           </div>
                           {club.has_courts && (
-                            <div className="animate-on-scroll flex items-center text-gray-600">
-                              <Star className="w-4 h-4 mr-2" />
+                            <div className="flex items-center text-gray-600 animate-on-scroll">
+                              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                              </svg>
                               {club.court_count} courts
                             </div>
                           )}
@@ -233,19 +235,21 @@ const ClubsPage = () => {
 
                         <div className="flex flex-wrap gap-2">
                           {club.offers_training && (
-                            <Badge variant="secondary" className="animate-on-scroll text-xs">Training</Badge>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300 animate-on-scroll">Training</span>
                           )}
                           {club.offers_tournaments && (
-                            <Badge variant="secondary" className="animate-on-scroll text-xs">Tournaments</Badge>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300 animate-on-scroll">Tournaments</span>
                           )}
                           {club.offers_equipment && (
-                            <Badge variant="secondary" className="animate-on-scroll text-xs">Equipment</Badge>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300 animate-on-scroll">Equipment</span>
                           )}
                         </div>
 
                         {club.founded_date && (
-                          <div className="animate-on-scroll flex items-center text-sm text-gray-500">
-                            <Calendar className="w-4 h-4 mr-2" />
+                          <div className="flex items-center text-sm text-gray-500 animate-on-scroll">
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             Founded {formatDate(club.founded_date)}
                           </div>
                         )}
@@ -253,30 +257,36 @@ const ClubsPage = () => {
                         <div className="flex items-center justify-between pt-4 border-t">
                           <div className="flex items-center space-x-4 text-sm">
                             {club.contact_phone && (
-                              <a href={`tel:${club.contact_phone}`} className="animate-on-scroll flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300">
-                                <Phone className="w-4 h-4 mr-1" />
+                              <a href={`tel:${club.contact_phone}`} className="flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300 animate-on-scroll">
+                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
                                 Contact
                               </a>
                             )}
                             {club.contact_email && (
-                              <a href={`mailto:${club.contact_email}`} className="animate-on-scroll flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300">
-                                <Mail className="w-4 h-4 mr-1" />
+                              <a href={`mailto:${club.contact_email}`} className="flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300 animate-on-scroll">
+                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
                                 Email
                               </a>
                             )}
                             {club.website && (
-                              <a href={club.website} target="_blank" rel="noopener noreferrer" className="animate-on-scroll flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300">
-                                <Globe className="w-4 h-4 mr-1" />
+                              <a href={club.website} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:text-blue-800 hover:scale-105 transition-transform duration-300 animate-on-scroll">
+                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
                                 Website
                               </a>
                             )}
                           </div>
-                          <Button size="sm" variant="outline" className="animate-on-scroll hover:scale-105 transition-transform duration-300">
+                          <button className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:scale-105 transition-transform duration-300 animate-on-scroll">
                             View Details
-                          </Button>
+                          </button>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -285,40 +295,38 @@ const ClubsPage = () => {
               {pagination && pagination.pages > 1 && (
                 <div className="flex justify-center mt-12">
                   <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page <= 1}
-                      className="animate-on-scroll hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300 animate-on-scroll"
                     >
                       Previous
-                    </Button>
+                    </button>
                     
                     {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
                       const page = i + 1;
                       return (
-                        <Button
+                        <button
                           key={page}
-                          variant={pagination.page === page ? "default" : "outline"}
-                          size="sm"
                           onClick={() => handlePageChange(page)}
-                          className="animate-on-scroll hover:scale-105 transition-transform duration-300"
+                          className={`px-3 py-2 text-sm font-medium rounded-md hover:scale-105 transition-transform duration-300 animate-on-scroll ${
+                            pagination.page === page 
+                              ? 'bg-blue-600 text-white' 
+                              : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                          } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                         >
                           {page}
-                        </Button>
+                        </button>
                       );
                     })}
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page >= pagination.pages}
-                      className="animate-on-scroll hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300 animate-on-scroll"
                     >
                       Next
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}

@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { 
   MapPin, 
   Calendar, 
@@ -189,336 +183,329 @@ const CourtManagement = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Court Management</h1>
             <p className="text-gray-600">Manage your courts, schedules, and maintenance</p>
           </div>
-          <Button onClick={() => setIsAddingCourt(true)} className="flex items-center space-x-2">
+          <button onClick={() => setIsAddingCourt(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2">
             <Plus className="h-4 w-4" />
             <span>Add New Court</span>
-          </Button>
+          </button>
         </div>
 
-        {/* Court Overview Stats */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Courts</CardTitle>
-              <MapPin className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{courtStats.total}</div>
-              <p className="text-xs text-gray-600">courts available</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Available</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{courtStats.available}</div>
-              <p className="text-xs text-gray-600">ready for use</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Occupied</CardTitle>
-              <Users className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{courtStats.occupied}</div>
-              <p className="text-xs text-gray-600">currently in use</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Under Maintenance</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{courtStats.maintenance}</div>
-              <p className="text-xs text-gray-600">currently unavailable</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
-                ${courtStats.monthlyRevenue.toLocaleString()}
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Courts</p>
+                <p className="text-2xl font-bold text-gray-900">{courtStats.total}</p>
               </div>
-              <p className="text-xs text-gray-600">estimated monthly</p>
-            </CardContent>
-          </Card>
+              <MapPin className="h-8 w-8 text-blue-500" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Available</p>
+                <p className="text-2xl font-bold text-green-600">{courtStats.available}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-500" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Occupied</p>
+                <p className="text-2xl font-bold text-yellow-600">{courtStats.occupied}</p>
+              </div>
+              <Users className="h-8 w-8 text-yellow-500" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Maintenance</p>
+                <p className="text-2xl font-bold text-red-600">{courtStats.maintenance}</p>
+              </div>
+              <AlertTriangle className="h-8 w-8 text-red-500" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-green-600">${courtStats.monthlyRevenue.toLocaleString()}</p>
+              </div>
+              <DollarSign className="h-8 w-8 text-green-500" />
+            </div>
+          </div>
         </div>
 
         {/* Add New Court Form */}
         {isAddingCourt && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Court</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow-md mb-8 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Add New Court</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="courtName">Court Name</Label>
-                  <Input
-                    id="courtName"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Court Name</label>
+                  <input
+                    type="text"
                     value={newCourt.name}
                     onChange={(e) => setNewCourt({...newCourt, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="e.g., Court 5"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="courtType">Type</Label>
-                  <Select value={newCourt.type} onValueChange={(value) => setNewCourt({...newCourt, type: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Indoor">Indoor</SelectItem>
-                      <SelectItem value="Outdoor">Outdoor</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                  <select
+                    value={newCourt.type}
+                    onChange={(e) => setNewCourt({...newCourt, type: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Indoor">Indoor</option>
+                    <option value="Outdoor">Outdoor</option>
+                  </select>
                 </div>
                 <div>
-                  <Label htmlFor="courtSurface">Surface</Label>
-                  <Select value={newCourt.surface} onValueChange={(value) => setNewCourt({...newCourt, surface: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Professional">Professional</SelectItem>
-                      <SelectItem value="Concrete">Concrete</SelectItem>
-                      <SelectItem value="Asphalt">Asphalt</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Surface</label>
+                  <select
+                    value={newCourt.surface}
+                    onChange={(e) => setNewCourt({...newCourt, surface: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Professional">Professional</option>
+                    <option value="Concrete">Concrete</option>
+                    <option value="Asphalt">Asphalt</option>
+                  </select>
                 </div>
                 <div>
-                  <Label htmlFor="courtLighting">Lighting</Label>
-                  <Select value={newCourt.lighting} onValueChange={(value) => setNewCourt({...newCourt, lighting: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LED">LED</SelectItem>
-                      <SelectItem value="Natural">Natural</SelectItem>
-                      <SelectItem value="Fluorescent">Fluorescent</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Lighting</label>
+                  <select
+                    value={newCourt.lighting}
+                    onChange={(e) => setNewCourt({...newCourt, lighting: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="LED">LED</option>
+                    <option value="Natural">Natural</option>
+                    <option value="Fluorescent">Fluorescent</option>
+                  </select>
                 </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
-                  <Input
-                    id="hourlyRate"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Hourly Rate ($)</label>
+                  <input
                     type="number"
                     value={newCourt.hourlyRate}
                     onChange={(e) => setNewCourt({...newCourt, hourlyRate: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    min="0"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="maxCapacity">Max Capacity</Label>
-                  <Input
-                    id="maxCapacity"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Capacity</label>
+                  <input
                     type="number"
                     value={newCourt.maxCapacity}
                     onChange={(e) => setNewCourt({...newCourt, maxCapacity: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    min="1"
+                    max="8"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
                     value={newCourt.description}
                     onChange={(e) => setNewCourt({...newCourt, description: e.target.value})}
-                    placeholder="Brief description of the court"
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Describe the court features..."
                   />
                 </div>
-              </div>
-              <div className="mt-4">
-                <Label>Amenities</Label>
-                <div className="space-y-2">
-                  {newCourt.amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        value={amenity}
-                        onChange={(e) => updateAmenity(index, e.target.value)}
-                        placeholder="e.g., Net, Scoreboard, Seating"
-                      />
-                      {newCourt.amenities.length > 1 && (
-                        <Button
-                          variant="outline"
-                          size="sm"
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
+                  <div className="space-y-2">
+                    {newCourt.amenities.map((amenity, index) => (
+                      <div key={index} className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={amenity}
+                          onChange={(e) => updateAmenity(index, e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="e.g., Net, Scoreboard"
+                        />
+                        <button
                           onClick={() => removeAmenity(index)}
+                          className="px-3 py-2 text-red-600 hover:text-red-800"
                         >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={addAmenity}
-                  >
-                    Add Amenity
-                  </Button>
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={addAmenity}
+                      className="px-3 py-2 text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      + Add Amenity
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="flex space-x-3 mt-4">
-                <Button onClick={handleAddCourt}>Add Court</Button>
-                <Button variant="outline" onClick={() => setIsAddingCourt(false)}>Cancel</Button>
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={handleAddCourt}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg"
+                >
+                  Add Court
+                </button>
+                <button
+                  onClick={() => setIsAddingCourt(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Courts List */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {courts.map((court) => (
-            <Card key={court.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
+            <div key={court.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <MapPin className="h-5 w-5 text-blue-500" />
-                      <span>{court.name}</span>
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {court.type} • {court.surface} • {court.lighting}
-                    </p>
+                    <h3 className="text-lg font-semibold text-gray-900">{court.name}</h3>
+                    <p className="text-sm text-gray-600">{court.type} • {court.surface} • {court.lighting}</p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => setEditingCourt(editingCourt === court.id ? null : court.id)}
+                      className="p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200"
                     >
                       <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() => handleDeleteCourt(court.id)}
+                      className="p-2 text-gray-600 hover:text-red-600 transition-colors duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Status</Label>
-                    <Badge className={`mt-1 ${getStatusColor(court.status)}`}>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Status:</span>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(court.status)}`}>
                       {court.status}
-                    </Badge>
+                    </span>
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Maintenance</Label>
-                    <Badge className={`mt-1 ${getMaintenanceColor(court.maintenance)}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Maintenance:</span>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getMaintenanceColor(court.maintenance)}`}>
                       {court.maintenance}
-                    </Badge>
+                    </span>
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Hourly Rate</Label>
-                    <p className="text-lg font-semibold text-green-600">${court.hourlyRate}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Hourly Rate:</span>
+                    <span className="font-medium text-green-600">${court.hourlyRate}</span>
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Max Capacity</Label>
-                    <p className="text-lg font-semibold text-blue-600">{court.maxCapacity}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Capacity:</span>
+                    <span className="font-medium">{court.maxCapacity} players</span>
                   </div>
                 </div>
 
-                {/* Description */}
-                {court.description && (
-                  <div className="mt-4">
-                    <Label className="text-sm font-medium text-gray-500">Description</Label>
-                    <p className="text-gray-700 mt-1">{court.description}</p>
-                  </div>
-                )}
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700">{court.description}</p>
+                </div>
 
-                {/* Amenities */}
-                <div className="mt-4">
-                  <Label className="text-sm font-medium text-gray-500">Amenities</Label>
-                  <div className="flex flex-wrap gap-2 mt-1">
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Amenities:</h4>
+                  <div className="flex flex-wrap gap-2">
                     {court.amenities.map((amenity, index) => (
-                      <Badge key={index} variant="outline" className="bg-gray-50 text-gray-700">
+                      <span key={index} className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
                         {amenity}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 </div>
 
-                {/* Maintenance Schedule */}
-                <div className="mt-4 pt-4 border-t">
-                  <h4 className="font-medium text-gray-900 mb-2">Maintenance Schedule</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="border-t pt-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">Last Maintenance:</span>
+                      <span className="text-gray-600">Last Maintenance:</span>
                       <p className="font-medium">{court.lastMaintenance}</p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Next Maintenance:</span>
+                      <span className="text-gray-600">Next Maintenance:</span>
                       <p className="font-medium">{court.nextMaintenance}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Edit Mode */}
+                {/* Edit Form */}
                 {editingCourt === court.id && (
-                  <div className="mt-4 pt-4 border-t">
+                  <div className="mt-4 p-4 bg-gray-50 rounded-md">
                     <h4 className="font-medium text-gray-900 mb-3">Edit Court</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label>Status</Label>
-                        <Select value={court.status} onValueChange={(value) => handleUpdateCourt(court.id, 'status', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Available">Available</SelectItem>
-                            <SelectItem value="Occupied">Occupied</SelectItem>
-                            <SelectItem value="Maintenance">Maintenance</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                        <select
+                          value={court.status}
+                          onChange={(e) => handleUpdateCourt(court.id, 'status', e.target.value)}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="Available">Available</option>
+                          <option value="Occupied">Occupied</option>
+                          <option value="Maintenance">Maintenance</option>
+                        </select>
                       </div>
                       <div>
-                        <Label>Maintenance</Label>
-                        <Select value={court.maintenance} onValueChange={(value) => handleUpdateCourt(court.id, 'maintenance', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="None">None</SelectItem>
-                            <SelectItem value="Scheduled">Scheduled</SelectItem>
-                            <SelectItem value="Surface Repair">Surface Repair</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Maintenance</label>
+                        <select
+                          value={court.maintenance}
+                          onChange={(e) => handleUpdateCourt(court.id, 'maintenance', e.target.value)}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="None">None</option>
+                          <option value="Scheduled">Scheduled</option>
+                          <option value="Surface Repair">Surface Repair</option>
+                        </select>
                       </div>
                       <div>
-                        <Label>Hourly Rate ($)</Label>
-                        <Input
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Hourly Rate</label>
+                        <input
                           type="number"
                           value={court.hourlyRate}
                           onChange={(e) => handleUpdateCourt(court.id, 'hourlyRate', parseInt(e.target.value))}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Max Capacity</label>
+                        <input
+                          type="number"
+                          value={court.maxCapacity}
+                          onChange={(e) => handleUpdateCourt(court.id, 'maxCapacity', parseInt(e.target.value))}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          min="1"
+                          max="8"
                         />
                       </div>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

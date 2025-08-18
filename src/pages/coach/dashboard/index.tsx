@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import Overview from './Overview';
 import Sessions from './Sessions';
 import Students from './Students';
@@ -233,7 +232,7 @@ const CoachDashboard = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 animate-on-scroll">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, Coach {user?.username || 'Coach'}!
           </h1>
@@ -243,49 +242,120 @@ const CoachDashboard = () => {
         </div>
 
         {/* Main Content Tabs */}
-        <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="sessions">Sessions</TabsTrigger>
-              <TabsTrigger value="students">Students</TabsTrigger>
-              <TabsTrigger value="training">Training Plans</TabsTrigger>
-              <TabsTrigger value="credentials">Credentials</TabsTrigger>
-              <TabsTrigger value="revenue">Revenue</TabsTrigger>
-            </TabsList>
+        <div className="mb-8 animate-on-scroll">
+          {/* Custom Tabs Implementation */}
+          <div className="w-full">
+            {/* Tab Navigation */}
+            <div className="grid w-full grid-cols-6 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'overview'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('sessions')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'sessions'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Sessions
+              </button>
+              <button
+                onClick={() => setActiveTab('students')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'students'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Students
+              </button>
+              <button
+                onClick={() => setActiveTab('training')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'training'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Training Plans
+              </button>
+              <button
+                onClick={() => setActiveTab('credentials')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'credentials'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Credentials
+              </button>
+              <button
+                onClick={() => setActiveTab('revenue')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'revenue'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Revenue
+              </button>
+            </div>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
-              <Overview 
-                coachStats={coachStats}
-              />
-            </TabsContent>
+            {/* Tab Content */}
+            <div className="mt-6">
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="animate-on-scroll">
+                  <Overview 
+                    coachStats={coachStats}
+                  />
+                </div>
+              )}
 
-            {/* Sessions Tab */}
-            <TabsContent value="sessions" className="mt-6">
-              <Sessions allSessions={allSessions} />
-            </TabsContent>
+              {/* Sessions Tab */}
+              {activeTab === 'sessions' && (
+                <div className="animate-on-scroll">
+                  <Sessions allSessions={allSessions} />
+                </div>
+              )}
 
-            {/* Students Tab */}
-            <TabsContent value="students" className="mt-6">
-              <Students studentProgress={studentProgress} />
-            </TabsContent>
+              {/* Students Tab */}
+              {activeTab === 'students' && (
+                <div className="animate-on-scroll">
+                  <Students studentProgress={studentProgress} />
+                </div>
+              )}
 
-            {/* Training Plans Tab */}
-            <TabsContent value="training" className="mt-6">
-              <TrainingPlans trainingPlans={trainingPlans} />
-            </TabsContent>
+              {/* Training Plans Tab */}
+              {activeTab === 'training' && (
+                <div className="animate-on-scroll">
+                  <TrainingPlans trainingPlans={trainingPlans} />
+                </div>
+              )}
 
-            {/* Credentials Tab */}
-            <TabsContent value="credentials" className="mt-6">
-              <Credentials credentials={credentials} />
-            </TabsContent>
+              {/* Credentials Tab */}
+              {activeTab === 'credentials' && (
+                <div className="animate-on-scroll">
+                  <Credentials credentials={credentials} />
+                </div>
+              )}
 
-            {/* Revenue Tab */}
-            <TabsContent value="revenue" className="mt-6">
-              <Revenue revenueData={revenueData} coachStats={coachStats} />
-            </TabsContent>
-          </Tabs>
+              {/* Revenue Tab */}
+              {activeTab === 'revenue' && (
+                <div className="animate-on-scroll">
+                  <Revenue revenueData={revenueData} coachStats={coachStats} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

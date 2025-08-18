@@ -3,9 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
 import { AppDispatch, RootState } from '../../store'
 import { loginUser } from '../../store/slices/authSlice'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
-import { Button } from '../../components/ui/button'
-import { Label } from '../../components/ui/label'
 import { toast } from 'sonner'
 
 const LoginPage = () => {
@@ -98,26 +95,26 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div>
-        <Card className="animate-on-scroll w-full max-w-md">
-          <CardHeader className="space-y-1">
+        <div className="animate-on-scroll w-full max-w-md bg-white rounded-lg shadow-lg border border-gray-200">
+          <div className="p-6 space-y-1">
             <div>
-              <CardTitle className="animate-on-scroll text-2xl font-bold text-center">
+              <h1 className="animate-on-scroll text-2xl font-bold text-center text-gray-900">
                 Sign in to your account
-              </CardTitle>
+              </h1>
             </div>
             <div>
-              <CardDescription className="animate-on-scroll text-center">
+              <p className="animate-on-scroll text-center text-gray-600">
                 Enter your credentials to access your account
-              </CardDescription>
+              </p>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="p-6">
             <form 
               onSubmit={handleSubmit} 
               className="space-y-4"
             >
               <div className="space-y-2">
-                <Label htmlFor="email" className="animate-on-scroll">Email</Label>
+                <label htmlFor="email" className="animate-on-scroll block text-sm font-medium text-gray-700">Email</label>
                 <input
                   id="email"
                   name="email"
@@ -126,12 +123,12 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
                   disabled={isAnyActionPending}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="animate-on-scroll">Password</Label>
+                <label htmlFor="password" className="animate-on-scroll block text-sm font-medium text-gray-700">Password</label>
                 <input
                   id="password"
                   name="password"
@@ -140,18 +137,18 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
                   disabled={isAnyActionPending}
                 />
               </div>
               <div>
-                <Button 
+                <button 
                   type="submit" 
-                  className="animate-on-scroll w-full hover:scale-105 transition-transform duration-300" 
+                  className="animate-on-scroll w-full h-10 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed" 
                   disabled={loading || isAnyActionPending}
                 >
                   {loading || isAnyActionPending ? 'Signing in...' : 'Sign in'}
-                </Button>
+                </button>
               </div>
             </form>
             <div className="mt-4 text-center">
@@ -159,15 +156,15 @@ const LoginPage = () => {
                 Don't have an account?{' '}
                 <Link 
                   to="/register/select-type" 
-                  className="text-blue-600 hover:text-blue-500 hover:scale-105 transition-transform duration-300"
+                  className="text-blue-600 hover:text-blue-500 hover:scale-105 transition-transform duration-300 animate-on-scroll"
                   style={{ pointerEvents: isAnyActionPending ? 'none' : 'auto' }}
                 >
                   Sign up
                 </Link>
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

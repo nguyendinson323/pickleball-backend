@@ -215,10 +215,10 @@ const MessagePage = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Messages</h1>
-              <p className="text-gray-600">Stay connected with your pickleball community</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 animate-on-scroll">Messages</h1>
+              <p className="text-gray-600 animate-on-scroll">Stay connected with your pickleball community</p>
             </div>
-            <button onClick={() => setShowCompose(true)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            <button onClick={() => setShowCompose(true)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
@@ -233,7 +233,7 @@ const MessagePage = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Navigation Tabs */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
               <div className="p-0">
                 <div className="flex flex-col">
                   <button
@@ -301,7 +301,7 @@ const MessagePage = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
               </div>
@@ -327,7 +327,7 @@ const MessagePage = () => {
 
           {/* Message List */}
           <div className="lg:col-span-3">
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900">Messages</h3>

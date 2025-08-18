@@ -234,10 +234,10 @@ const Membership = () => {
       <div className="container mx-auto px-4">
         {/* Hero/Header Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6 animate-on-scroll">
             {getUserTypeDisplayName(userType)} Membership Plans
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-on-scroll">
             Choose the perfect membership plan for your {getUserTypeDisplayName(userType).toLowerCase()} needs and unlock exclusive benefits, tournaments, and community features.
           </p>
         </div>
@@ -251,7 +251,7 @@ const Membership = () => {
           {currentPlans.map((plan, index) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ring-2  ${
+              className={`relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ring-2 animate-on-scroll ${
                 plan.popular ? 'ring-purple-500' : ''
               }`}
             >
@@ -262,7 +262,7 @@ const Membership = () => {
               )}
               <div className={`p-6 ${plan.popular ? 'pt-12' : ''}`}>
                 <div className="text-center mb-6">
-                  <h3 className={`text-2xl font-bold mb-2 ${
+                  <h3 className={`text-2xl font-bold mb-2 animate-on-scroll ${
                     plan.color === 'purple' ? 'text-purple-600' :
                     plan.color === 'blue' ? 'text-blue-600' :
                     plan.color === 'green' ? 'text-green-600' :
@@ -271,14 +271,14 @@ const Membership = () => {
                     {plan.name}
                   </h3>
                   <div className="mb-2">
-                    <span className="text-4xl font-bold text-gray-900">
+                    <span className="text-4xl font-bold text-gray-900 animate-on-scroll">
                       {plan.price}
                     </span>
-                    <span className="text-gray-500 ml-1">
+                    <span className="text-gray-500 ml-1 animate-on-scroll">
                       /{plan.period}
                     </span>
                   </div>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-sm animate-on-scroll">
                     {plan.description}
                   </p>
                 </div>
@@ -289,20 +289,20 @@ const Membership = () => {
                       className="flex items-center text-sm text-gray-600"
                     >
                       <svg 
-                        className="w-4 h-4 mr-3 text-green-500 flex-shrink-0"
+                        className="w-4 h-4 mr-3 text-green-500 flex-shrink-0 animate-on-scroll"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>
+                      <span className="animate-on-scroll">
                         {feature}
                       </span>
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors hover:scale-105 transform ${
+                <button className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors hover:scale-105 transform animate-on-scroll ${
                   plan.popular 
                     ? 'bg-purple-600 text-white hover:bg-purple-700' 
                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
@@ -316,14 +316,14 @@ const Membership = () => {
 
         {/* Call to Action Section */}
         <div className="text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white animate-on-scroll">
+            <h3 className="text-2xl font-bold mb-4 animate-on-scroll">
               Ready to Upgrade Your Membership?
             </h3>
-            <p className="text-lg mb-6 opacity-90">
+            <p className="text-lg mb-6 opacity-90 animate-on-scroll">
               Take your {getUserTypeDisplayName(userType).toLowerCase()} experience to the next level with the Pickleball Federation.
             </p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 hover:scale-105 transform">
+            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 hover:scale-105 transform animate-on-scroll">
               Get Started Now
             </button>
           </div>

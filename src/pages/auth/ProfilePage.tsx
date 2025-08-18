@@ -3,32 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { updateUser } from '../../store/slices/usersSlice';
 import { fetchUserRankings } from '../../store/slices/rankingsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Badge } from '../../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { Separator } from '../../components/ui/separator';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Trophy, 
-  Star, 
-  Edit, 
-  Save, 
-  X, 
-  Camera,
-  Award,
-  Target,
-  Users,
-  Activity
-} from 'lucide-react';
 import { toast } from 'sonner';
 
 const ProfilePage = () => {
@@ -178,59 +152,72 @@ const ProfilePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Card */}
           <div className="lg:col-span-1">
-            <Card className="animate-on-scroll sticky top-8">
-              <CardHeader className="text-center">
+            <div className="animate-on-scroll sticky top-8 bg-white rounded-lg shadow-lg border border-gray-200">
+              <div className="px-6 py-4 text-center border-b border-gray-200">
                 <div className="relative mx-auto mb-4">
-                  <Avatar className="animate-on-scroll w-24 h-24 mx-auto">
-                    <AvatarImage src={user.profile_photo} alt={user.full_name || user.username} />
-                    <AvatarFallback className="text-2xl">
-                      {getInitials(user.first_name, user.last_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 hover:scale-110 transition-transform duration-300"
+                  <div className="animate-on-scroll w-24 h-24 mx-auto rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                    {user.profile_photo ? (
+                      <img src={user.profile_photo} alt={user.full_name || user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-bold text-gray-600">
+                        {getInitials(user.first_name, user.last_name)}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 hover:scale-110 transition-transform duration-300 border border-gray-300 bg-white hover:bg-gray-50"
                   >
-                    <Camera className="w-4 h-4" />
-                  </Button>
+                    <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
                 </div>
-                <CardTitle className="animate-on-scroll text-2xl font-bold">
+                <h2 className="animate-on-scroll text-2xl font-bold text-gray-900">
                   {user.full_name || user.username}
-                </CardTitle>
-                <CardDescription className="animate-on-scroll text-lg">
+                </h2>
+                <p className="animate-on-scroll text-lg text-gray-600">
                   @{user.username}
-                </CardDescription>
+                </p>
                 <div className="flex justify-center mt-4">
-                  <Badge className={`animate-on-scroll ${getSkillLevelColor(user.skill_level || '')}`}>
+                  <span className={`animate-on-scroll px-3 py-1 rounded-full text-sm font-medium ${getSkillLevelColor(user.skill_level || '')}`}>
                     Level {user.skill_level || 'N/A'}
-                  </Badge>
+                  </span>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              </div>
+              <div className="px-6 py-4 space-y-4">
                 <div className="animate-on-scroll flex items-center text-sm">
-                  <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                  <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
                   <span>{user.email}</span>
                 </div>
                 {user.phone && (
                   <div className="animate-on-scroll flex items-center text-sm">
-                    <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                    <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
                     <span>{user.phone}</span>
                   </div>
                 )}
                 {user.city && user.state && (
                   <div className="animate-on-scroll flex items-center text-sm">
-                    <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+                    <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                     <span>{user.city}, {user.state}</span>
                   </div>
                 )}
                 {user.date_of_birth && (
                   <div className="animate-on-scroll flex items-center text-sm">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                    <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <span>Born {formatDate(user.date_of_birth)}</span>
                   </div>
                 )}
-                <Separator />
+                <hr className="border-gray-200" />
                 <div className="space-y-2">
                   <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Member Since:</span>
@@ -238,165 +225,196 @@ const ProfilePage = () => {
                   </div>
                   <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Status:</span>
-                    <Badge className={getMembershipStatusColor(user.membership_status)}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMembershipStatusColor(user.membership_status)}`}>
                       {user.membership_status}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="animate-on-scroll flex justify-between text-sm">
                     <span className="text-gray-600">Plan:</span>
                     <span className="capitalize">{user.subscription_plan}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="animate-on-scroll grid w-full grid-cols-3">
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="rankings">Rankings</TabsTrigger>
-                <TabsTrigger value="stats">Statistics</TabsTrigger>
-              </TabsList>
+            <div className="space-y-6">
+              <div className="animate-on-scroll grid w-full grid-cols-3 bg-gray-100 rounded-lg p-1">
+                <button className="px-3 py-2 text-sm font-medium text-gray-700 bg-white rounded-md shadow-sm">
+                  Profile
+                </button>
+                <button className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                  Rankings
+                </button>
+                <button className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                  Statistics
+                </button>
+              </div>
 
-              <TabsContent value="profile" className="space-y-6">
-                <Card className="animate-on-scroll">
-                  <CardHeader>
+              {/* Profile Tab Content */}
+              <div className="space-y-6">
+                <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+                  <div className="px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="animate-on-scroll">Personal Information</CardTitle>
-                        <CardDescription className="animate-on-scroll">
+                        <h3 className="animate-on-scroll text-lg font-semibold text-gray-900">Personal Information</h3>
+                        <p className="animate-on-scroll text-gray-600">
                           Update your profile information and preferences
-                        </CardDescription>
+                        </p>
                       </div>
-                      <Button
-                        variant={isEditing ? "outline" : "default"}
-                        size="sm"
+                      <button
+                        className={`px-3 py-2 text-sm font-medium rounded-md hover:scale-105 transition-transform duration-300 ${
+                          isEditing 
+                            ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50' 
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
                         onClick={handleEditToggle}
-                        className="hover:scale-105 transition-transform duration-300"
                       >
-                        {isEditing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
-                        {isEditing ? 'Cancel' : 'Edit'}
-                      </Button>
+                        {isEditing ? (
+                          <>
+                            <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancel
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                          </>
+                        )}
+                      </button>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+                  </div>
+                  <div className="px-6 py-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first_name" className="animate-on-scroll">First Name</Label>
-                        <Input
+                        <label htmlFor="first_name" className="animate-on-scroll block text-sm font-medium text-gray-700">First Name</label>
+                        <input
                           id="first_name"
+                          type="text"
                           value={isEditing ? editForm.first_name : user.first_name || ''}
                           onChange={(e) => handleInputChange('first_name', e.target.value)}
                           disabled={!isEditing}
-                          className="animate-on-scroll"
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last_name" className="animate-on-scroll">Last Name</Label>
-                        <Input
+                        <label htmlFor="last_name" className="animate-on-scroll block text-sm font-medium text-gray-700">Last Name</label>
+                        <input
                           id="last_name"
+                          type="text"
                           value={isEditing ? editForm.last_name : user.last_name || ''}
                           onChange={(e) => handleInputChange('last_name', e.target.value)}
                           disabled={!isEditing}
-                          className="animate-on-scroll"
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="state" className="animate-on-scroll">State</Label>
-                        <Select
+                        <label htmlFor="state" className="animate-on-scroll block text-sm font-medium text-gray-700">State</label>
+                        <select
                           value={isEditing ? editForm.state : user.state || ''}
-                          onValueChange={(value) => handleInputChange('state', value)}
+                          onChange={(e) => handleInputChange('state', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         >
-                          <SelectTrigger className="animate-on-scroll">
-                            <SelectValue placeholder="Select State" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Jalisco">Jalisco</SelectItem>
-                            <SelectItem value="Nuevo León">Nuevo León</SelectItem>
-                            <SelectItem value="CDMX">CDMX</SelectItem>
-                            <SelectItem value="Baja California">Baja California</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          <option value="">Select State</option>
+                          <option value="Jalisco">Jalisco</option>
+                          <option value="Nuevo León">Nuevo León</option>
+                          <option value="CDMX">CDMX</option>
+                          <option value="Baja California">Baja California</option>
+                        </select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="city" className="animate-on-scroll">City</Label>
-                        <Input
+                        <label htmlFor="city" className="animate-on-scroll block text-sm font-medium text-gray-700">City</label>
+                        <input
                           id="city"
+                          type="text"
                           value={isEditing ? editForm.city : user.city || ''}
                           onChange={(e) => handleInputChange('city', e.target.value)}
                           disabled={!isEditing}
-                          className="animate-on-scroll"
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="phone" className="animate-on-scroll">Phone</Label>
-                        <Input
+                        <label htmlFor="phone" className="animate-on-scroll block text-sm font-medium text-gray-700">Phone</label>
+                        <input
                           id="phone"
+                          type="tel"
                           value={isEditing ? editForm.phone : user.phone || ''}
                           onChange={(e) => handleInputChange('phone', e.target.value)}
                           disabled={!isEditing}
-                          className="animate-on-scroll"
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="skill_level" className="animate-on-scroll">Skill Level</Label>
-                        <Select
+                        <label htmlFor="skill_level" className="animate-on-scroll block text-sm font-medium text-gray-700">Skill Level</label>
+                        <select
                           value={isEditing ? editForm.skill_level : user.skill_level || ''}
-                          onValueChange={(value) => handleInputChange('skill_level', value)}
+                          onChange={(e) => handleInputChange('skill_level', e.target.value)}
                           disabled={!isEditing}
+                          className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                         >
-                          <SelectTrigger className="animate-on-scroll">
-                            <SelectValue placeholder="Select Skill Level" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="2.5">2.5 - Beginner</SelectItem>
-                            <SelectItem value="3.0">3.0 - Novice</SelectItem>
-                            <SelectItem value="3.5">3.5 - Intermediate</SelectItem>
-                            <SelectItem value="4.0">4.0 - Advanced</SelectItem>
-                            <SelectItem value="4.5">4.5 - Expert</SelectItem>
-                            <SelectItem value="5.0">5.0 - Professional</SelectItem>
-                            <SelectItem value="5.5">5.5 - Elite</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          <option value="">Select Skill Level</option>
+                          <option value="2.5">2.5 - Beginner</option>
+                          <option value="3.0">3.0 - Novice</option>
+                          <option value="3.5">3.5 - Intermediate</option>
+                          <option value="4.0">4.0 - Advanced</option>
+                          <option value="4.5">4.5 - Expert</option>
+                          <option value="5.0">5.0 - Professional</option>
+                          <option value="5.5">5.5 - Elite</option>
+                        </select>
                       </div>
                     </div>
 
                     {isEditing && (
                       <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={handleEditToggle} className="hover:scale-105 transition-transform duration-300">
+                        <button 
+                          className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors hover:scale-105 transition-transform duration-300"
+                          onClick={handleEditToggle}
+                        >
                           Cancel
-                        </Button>
-                        <Button onClick={handleSave} className="hover:scale-105 transition-transform duration-300">
-                          <Save className="w-4 h-4 mr-2" />
+                        </button>
+                        <button 
+                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors hover:scale-105 transition-transform duration-300"
+                          onClick={handleSave}
+                        >
+                          <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4-4l-4 4m0 0l4 4m-4-4v12" />
+                          </svg>
                           Save Changes
-                        </Button>
+                        </button>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </div>
+                </div>
+              </div>
 
-              <TabsContent value="rankings" className="space-y-6">
-                <Card className="animate-on-scroll">
-                  <CardHeader>
-                    <CardTitle className="animate-on-scroll flex items-center">
-                      <Trophy className="w-5 h-5 mr-2" />
+              {/* Rankings Tab Content */}
+              <div className="space-y-6">
+                <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+                  <div className="px-6 py-4 border-b border-gray-200">
+                    <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 flex items-center">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
                       My Rankings
-                    </CardTitle>
-                    <CardDescription className="animate-on-scroll">
+                    </h3>
+                    <p className="animate-on-scroll text-gray-600">
                       Your current rankings across different categories
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                    </p>
+                  </div>
+                  <div className="px-6 py-4">
                     {userRankings.length > 0 ? (
                       <div className="space-y-4">
                         {userRankings.map((ranking) => (
@@ -425,27 +443,32 @@ const ProfilePage = () => {
                       </div>
                     ) : (
                       <div className="text-center py-8">
-                        <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
                         <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 mb-2">No rankings yet</h3>
                         <p className="animate-on-scroll text-gray-600">
                           Participate in tournaments to earn rankings and track your progress.
                         </p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </div>
+                </div>
+              </div>
 
-              <TabsContent value="stats" className="space-y-6">
+              {/* Statistics Tab Content */}
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="animate-on-scroll">
-                    <CardHeader>
-                      <CardTitle className="animate-on-scroll flex items-center">
-                        <Activity className="w-5 h-5 mr-2" />
+                  <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+                    <div className="px-6 py-4 border-b border-gray-200">
+                      <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 flex items-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                         Activity Stats
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                      </h3>
+                    </div>
+                    <div className="px-6 py-4 space-y-4">
                       <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Last Login</span>
                         <span className="font-semibold">
@@ -454,36 +477,38 @@ const ProfilePage = () => {
                       </div>
                       <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Email Verified</span>
-                        <Badge variant={user.email_verified ? "default" : "secondary"}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.email_verified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                           {user.email_verified ? 'Yes' : 'No'}
-                        </Badge>
+                        </span>
                       </div>
                       <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Account Status</span>
-                        <Badge variant={user.is_active ? "default" : "destructive"}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {user.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        </span>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
 
-                  <Card className="animate-on-scroll">
-                    <CardHeader>
-                      <CardTitle className="animate-on-scroll flex items-center">
-                        <Target className="w-5 h-5 mr-2" />
+                  <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+                    <div className="px-6 py-4 border-b border-gray-200">
+                      <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 flex items-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
                         Membership Info
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                      </h3>
+                    </div>
+                    <div className="px-6 py-4 space-y-4">
                       <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Plan</span>
                         <span className="font-semibold capitalize">{user.subscription_plan}</span>
                       </div>
                       <div className="animate-on-scroll flex justify-between items-center">
                         <span className="text-gray-600">Status</span>
-                        <Badge className={getMembershipStatusColor(user.membership_status)}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMembershipStatusColor(user.membership_status)}`}>
                           {user.membership_status}
-                        </Badge>
+                        </span>
                       </div>
                       {user.membership_expires_at && (
                         <div className="animate-on-scroll flex justify-between items-center">
@@ -491,11 +516,11 @@ const ProfilePage = () => {
                           <span className="font-semibold">{formatDate(user.membership_expires_at)}</span>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            </div>
           </div>
         </div>
       </div>

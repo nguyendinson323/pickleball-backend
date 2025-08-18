@@ -1,30 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Switch } from '../../components/ui/switch';
-import { 
-  Globe, 
-  Settings,
-  Save,
-  Eye,
-  Image as ImageIcon,
-  Palette,
-  Layout,
-  Users,
-  Calendar,
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Star
-} from 'lucide-react';
 
 const ClubMicrosite = () => {
   const { user } = useSelector((state: RootState) => state.auth);

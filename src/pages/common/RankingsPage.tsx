@@ -122,10 +122,10 @@ const RankingsPage = () => {
       <section className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 animate-on-scroll">
               Player Rankings
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto animate-on-scroll">
               Discover the top pickleball players and track your ranking progress
             </p>
           </div>
@@ -140,7 +140,7 @@ const RankingsPage = () => {
               <select 
                 value={filters.category} 
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
               >
                 <option value="singles">Singles</option>
                 <option value="doubles">Doubles</option>
@@ -151,7 +151,7 @@ const RankingsPage = () => {
               <select 
                 value={filters.skill_level} 
                 onChange={(e) => handleFilterChange('skill_level', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
               >
                 <option value="">All Levels</option>
                 <option value="2.5">2.5</option>
@@ -169,7 +169,7 @@ const RankingsPage = () => {
                 placeholder="Search players..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 animate-on-scroll"
               />
             </div>
             <div>
@@ -178,7 +178,7 @@ const RankingsPage = () => {
                 placeholder="State"
                 value={filters.state}
                 onChange={(e) => handleFilterChange('state', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 animate-on-scroll"
               />
             </div>
           </div>
@@ -189,10 +189,10 @@ const RankingsPage = () => {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4 animate-on-scroll">
               Top 10 Players
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 animate-on-scroll">
               The highest-ranked players in {filters.category.replace('_', ' ')} category
             </p>
           </div>
@@ -200,7 +200,7 @@ const RankingsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {topPlayers.map((player, index) => (
               <div key={player.id}>
-                <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300">
+                <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 animate-on-scroll">
                   <div className="p-6 text-center">
                     <div className="flex justify-center mb-4">
                       {getPositionIcon(index + 1)}
@@ -253,16 +253,16 @@ const RankingsPage = () => {
           {rankings.length === 0 && !loading ? (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No rankings found</h3>
-                <p className="text-gray-600 mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 animate-on-scroll">No rankings found</h3>
+                <p className="text-gray-600 mb-6 animate-on-scroll">
                   Try adjusting your search criteria or check back later for new rankings.
                 </p>
                 <button 
                   onClick={() => setFilters({ page: 1, limit: 20, category: 'singles', skill_level: '', state: '', search: '' })}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
                 >
                   Clear Filters
                 </button>
@@ -270,7 +270,7 @@ const RankingsPage = () => {
             </div>
           ) : (
             <>
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="bg-white rounded-lg shadow overflow-hidden animate-on-scroll">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -357,7 +357,7 @@ const RankingsPage = () => {
                     <button
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page <= 1}
-                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300 animate-on-scroll"
                     >
                       Previous
                     </button>
@@ -368,7 +368,7 @@ const RankingsPage = () => {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`px-3 py-2 text-sm font-medium rounded-md hover:scale-105 transition-transform duration-300 ${
+                          className={`px-3 py-2 text-sm font-medium rounded-md hover:scale-105 transition-transform duration-300 animate-on-scroll ${
                             pagination.page === page 
                               ? 'bg-blue-600 text-white' 
                               : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
@@ -382,7 +382,7 @@ const RankingsPage = () => {
                     <button
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page >= pagination.pages}
-                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300 animate-on-scroll"
                     >
                       Next
                     </button>

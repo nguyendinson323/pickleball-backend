@@ -1,27 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { 
-  Calendar, 
-  Clock,
-  Plus,
-  Edit3,
-  Trash2,
-  Users,
-  MapPin,
-  BookOpen,
-  Target,
-  CheckCircle,
-  AlertTriangle,
-  Star
-} from 'lucide-react';
 
 const Sessions = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -198,21 +177,9 @@ const Sessions = () => {
       case 'Beginner': return 'bg-blue-100 text-blue-800';
       case 'Intermediate': return 'bg-green-100 text-green-800';
       case 'Advanced': return 'bg-purple-100 text-purple-800';
-      case 'Elite': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
-
-  const sessionStats = {
-    total: sessions.length,
-    scheduled: sessions.filter(s => s.status === 'Scheduled').length,
-    completed: sessions.filter(s => s.status === 'Completed').length,
-    totalStudents: sessions.reduce((sum, s) => sum + s.enrolledStudents, 0)
-  };
-
-  const upcomingSessions = sessions.filter(s => s.status === 'Scheduled').sort((a, b) => 
-    new Date(a.date + ' ' + a.time).getTime() - new Date(b.date + ' ' + b.time).getTime()
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -220,399 +187,313 @@ const Sessions = () => {
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Training Sessions</h1>
-            <p className="text-gray-600">Manage your training sessions and schedules</p>
+            <h1 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-2">Coaching Sessions</h1>
+            <p className="animate-on-scroll text-gray-600">Manage your coaching sessions and schedules</p>
           </div>
-          <Button onClick={() => setIsAddingSession(true)} className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Add Session</span>
-          </Button>
+          <button
+            onClick={() => setIsAddingSession(true)}
+            className="animate-on-scroll inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Session
+          </button>
         </div>
 
-        {/* Session Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
-              <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{sessionStats.total}</div>
-              <p className="text-xs text-gray-600">sessions created</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
-              <Clock className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{sessionStats.scheduled}</div>
-              <p className="text-xs text-gray-600">upcoming sessions</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed</CardTitle>
-              <CheckCircle className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{sessionStats.completed}</div>
-              <p className="text-xs text-gray-600">finished sessions</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-              <Users className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{sessionStats.totalStudents}</div>
-              <p className="text-xs text-gray-600">enrolled students</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Add New Session Form */}
+        {/* Add Session Form */}
         {isAddingSession && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Training Session</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="animate-on-scroll mb-8 bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="animate-on-scroll text-lg font-semibold text-gray-900">Add New Session</h3>
+            </div>
+            <div className="px-6 py-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="sessionTitle">Session Title</Label>
-                  <Input
-                    id="sessionTitle"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Session Title</label>
+                  <input
+                    type="text"
                     value={newSession.title}
-                    onChange={(e) => setNewSession({...newSession, title: e.target.value})}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, title: e.target.value }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="e.g., Advanced Doubles Strategy"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sessionDate">Date</Label>
-                  <Input
-                    id="sessionDate"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <input
                     type="date"
                     value={newSession.date}
-                    onChange={(e) => setNewSession({...newSession, date: e.target.value})}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, date: e.target.value }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="sessionTime">Time</Label>
-                  <Input
-                    id="sessionTime"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Time</label>
+                  <input
                     type="time"
                     value={newSession.time}
-                    onChange={(e) => setNewSession({...newSession, time: e.target.value})}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, time: e.target.value }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sessionDuration">Duration (minutes)</Label>
-                  <Input
-                    id="sessionDuration"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                  <input
                     type="number"
                     value={newSession.duration}
-                    onChange={(e) => setNewSession({...newSession, duration: parseInt(e.target.value)})}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    min="30"
+                    step="15"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sessionType">Session Type</Label>
-                  <Select value={newSession.type} onValueChange={(value) => setNewSession({...newSession, type: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Group">Group</SelectItem>
-                      <SelectItem value="Private">Private</SelectItem>
-                      <SelectItem value="Semi-Private">Semi-Private</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    value={newSession.type}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, type: e.target.value }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    <option value="Group">Group</option>
+                    <option value="Private">Private</option>
+                    <option value="Semi-Private">Semi-Private</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Skill Level</label>
+                  <select
+                    value={newSession.skillLevel}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, skillLevel: e.target.value }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
                 </div>
                 <div>
-                  <Label htmlFor="sessionLevel">Skill Level</Label>
-                  <Select value={newSession.skillLevel} onValueChange={(value) => setNewSession({...newSession, skillLevel: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                      <SelectItem value="Elite">Elite</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="maxStudents">Max Students</Label>
-                  <Input
-                    id="maxStudents"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Max Students</label>
+                  <input
                     type="number"
                     value={newSession.maxStudents}
-                    onChange={(e) => setNewSession({...newSession, maxStudents: parseInt(e.target.value)})}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, maxStudents: parseInt(e.target.value) }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    min="1"
+                    max="20"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sessionPrice">Price ($)</Label>
-                  <Input
-                    id="sessionPrice"
+                  <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                  <input
                     type="number"
                     value={newSession.price}
-                    onChange={(e) => setNewSession({...newSession, price: parseInt(e.target.value)})}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="sessionLocation">Location</Label>
-                  <Input
-                    id="sessionLocation"
-                    value={newSession.location}
-                    onChange={(e) => setNewSession({...newSession, location: e.target.value})}
-                    placeholder="e.g., Court 1 & 2"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="sessionDescription">Description</Label>
-                  <Textarea
-                    id="sessionDescription"
-                    value={newSession.description}
-                    onChange={(e) => setNewSession({...newSession, description: e.target.value})}
-                    placeholder="Describe what this session will cover..."
-                    rows={3}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label>Focus Areas</Label>
-                  <div className="space-y-2">
-                    {newSession.focusAreas.map((area, index) => (
-                      <div key={index} className="flex space-x-2">
-                        <Input
-                          value={area}
-                          onChange={(e) => updateFocusArea(index, e.target.value)}
-                          placeholder="e.g., Positioning, Communication"
-                        />
-                        {newSession.focusAreas.length > 1 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeFocusArea(index)}
-                          >
-                            Remove
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={addFocusArea}
-                    >
-                      Add Focus Area
-                    </Button>
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="sessionNotes">Notes</Label>
-                  <Textarea
-                    id="sessionNotes"
-                    value={newSession.notes}
-                    onChange={(e) => setNewSession({...newSession, notes: e.target.value})}
-                    placeholder="Any additional notes for students..."
-                    rows={2}
+                    onChange={(e) => setNewSession(prev => ({ ...prev, price: parseInt(e.target.value) }))}
+                    className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    min="0"
+                    step="5"
                   />
                 </div>
               </div>
-              <div className="flex space-x-3 mt-4">
-                <Button onClick={handleAddSession}>Add Session</Button>
-                <Button variant="outline" onClick={() => setIsAddingSession(false)}>Cancel</Button>
+              <div>
+                <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={newSession.location}
+                  onChange={(e) => setNewSession(prev => ({ ...prev, location: e.target.value }))}
+                  className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="e.g., Court 1 & 2"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  rows={3}
+                  value={newSession.description}
+                  onChange={(e) => setNewSession(prev => ({ ...prev, description: e.target.value }))}
+                  className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Describe what students will learn in this session..."
+                />
+              </div>
+              <div>
+                <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Focus Areas</label>
+                <div className="space-y-2">
+                  {newSession.focusAreas.map((area, index) => (
+                    <div key={index} className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={area}
+                        onChange={(e) => updateFocusArea(index, e.target.value)}
+                        className="animate-on-scroll flex-1 px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="e.g., Positioning, Communication"
+                      />
+                      {newSession.focusAreas.length > 1 && (
+                        <button
+                          onClick={() => removeFocusArea(index)}
+                          className="animate-on-scroll inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    onClick={addFocusArea}
+                    className="animate-on-scroll inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Focus Area
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="animate-on-scroll block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea
+                  rows={2}
+                  value={newSession.notes}
+                  onChange={(e) => setNewSession(prev => ({ ...prev, notes: e.target.value }))}
+                  className="animate-on-scroll block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Additional notes for students..."
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setIsAddingSession(false);
+                    setNewSession({
+                      title: '',
+                      date: '',
+                      time: '',
+                      duration: 60,
+                      type: 'Group',
+                      skillLevel: 'Beginner',
+                      maxStudents: 6,
+                      location: '',
+                      description: '',
+                      focusAreas: [''],
+                      price: 35,
+                      notes: ''
+                    });
+                  }}
+                  className="animate-on-scroll inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddSession}
+                  className="animate-on-scroll inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Add Session
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* Upcoming Sessions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              <span>Upcoming Sessions</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {upcomingSessions.slice(0, 3).map((session) => (
-                <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500">{new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                      <div className="text-lg font-semibold">{session.time}</div>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">{session.title}</h4>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge className={getTypeColor(session.type)}>{session.type}</Badge>
-                        <Badge className={getLevelColor(session.skillLevel)}>{session.skillLevel}</Badge>
-                        <Badge className="bg-gray-100 text-gray-800">
-                          {session.duration}min
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">
-                      {session.enrolledStudents}/{session.maxStudents} students
-                    </div>
-                    <div className="text-lg font-semibold text-green-600">${session.price}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* All Sessions List */}
+        {/* Sessions List */}
         <div className="space-y-6">
           {sessions.map((session) => (
-            <Card key={session.id}>
-              <CardHeader>
+            <div key={session.id} className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BookOpen className="h-5 w-5 text-blue-500" />
-                      <span>{session.title}</span>
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {session.date} at {session.time} • {session.duration} minutes
-                    </p>
+                  <div className="flex-1">
+                    <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 mb-2">{session.title}</h3>
+                    <div className="flex flex-wrap items-center space-x-4 text-sm text-gray-600">
+                      <span className="animate-on-scroll flex items-center">
+                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {session.date}
+                      </span>
+                      <span className="animate-on-scroll flex items-center">
+                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {session.time} ({session.duration} min)
+                      </span>
+                      <span className="animate-on-scroll flex items-center">
+                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {session.location}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingSession(editingSession === session.id ? null : session.id)}
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteSession(session.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Status</Label>
-                    <Badge className={`mt-1 ${getStatusColor(session.status)}`}>
+                  <div className="flex items-center space-x-2">
+                    <span className={`animate-on-scroll inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(session.status)}`}>
                       {session.status}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Type</Label>
-                    <Badge className={`mt-1 ${getTypeColor(session.type)}`}>
+                    </span>
+                    <span className={`animate-on-scroll inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(session.type)}`}>
                       {session.type}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Skill Level</Label>
-                    <Badge className={`mt-1 ${getLevelColor(session.skillLevel)}`}>
+                    </span>
+                    <span className={`animate-on-scroll inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getLevelColor(session.skillLevel)}`}>
                       {session.skillLevel}
-                    </Badge>
+                    </span>
                   </div>
+                </div>
+              </div>
+              <div className="px-6 py-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Price</Label>
-                    <p className="text-lg font-semibold text-green-600">${session.price}</p>
-                  </div>
-                </div>
-
-                {/* Description and Focus Areas */}
-                <div className="mb-4">
-                  <Label className="text-sm font-medium text-gray-500">Description</Label>
-                  <p className="text-gray-700 mt-1">{session.description}</p>
-                </div>
-
-                <div className="mb-4">
-                  <Label className="text-sm font-medium text-gray-500">Focus Areas</Label>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {session.focusAreas.map((area, index) => (
-                      <Badge key={index} variant="outline" className="bg-blue-50 text-blue-700">
-                        {area}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Session Details */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm">{session.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm">{session.enrolledStudents}/{session.maxStudents} students</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm">{session.duration} minutes</span>
-                  </div>
-                </div>
-
-                {/* Notes */}
-                {session.notes && (
-                  <div className="mb-4 pt-4 border-t">
-                    <Label className="text-sm font-medium text-gray-500">Notes</Label>
-                    <p className="text-gray-700 mt-1">{session.notes}</p>
-                  </div>
-                )}
-
-                {/* Edit Mode */}
-                {editingSession === session.id && (
-                  <div className="mt-4 pt-4 border-t">
-                    <h4 className="font-medium text-gray-900 mb-3">Edit Session</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label>Status</Label>
-                        <Select value={session.status} onValueChange={(value) => handleUpdateSession(session.id, 'status', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Scheduled">Scheduled</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="Cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    <h4 className="animate-on-scroll font-medium text-gray-900 mb-3">Session Details</h4>
+                    <p className="animate-on-scroll text-sm text-gray-600 mb-4">{session.description}</p>
+                    <div className="space-y-2 text-sm">
+                      <div className="animate-on-scroll flex justify-between">
+                        <span className="text-gray-500">Price:</span>
+                        <span className="font-medium">${session.price}</span>
                       </div>
-                      <div>
-                        <Label>Enrolled Students</Label>
-                        <Input
-                          type="number"
-                          value={session.enrolledStudents}
-                          onChange={(e) => handleUpdateSession(session.id, 'enrolledStudents', parseInt(e.target.value))}
-                        />
+                      <div className="animate-on-scroll flex justify-between">
+                        <span className="text-gray-500">Students:</span>
+                        <span className="font-medium">{session.enrolledStudents}/{session.maxStudents}</span>
                       </div>
-                      <div>
-                        <Label>Price ($)</Label>
-                        <Input
-                          type="number"
-                          value={session.price}
-                          onChange={(e) => handleUpdateSession(session.id, 'price', parseInt(e.target.value))}
-                        />
+                      <div className="animate-on-scroll flex justify-between">
+                        <span className="text-gray-500">Duration:</span>
+                        <span className="font-medium">{session.duration} minutes</span>
                       </div>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div>
+                    <h4 className="animate-on-scroll font-medium text-gray-900 mb-3">Focus Areas</h4>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {session.focusAreas.map((area, index) => (
+                        <span key={index} className="animate-on-scroll inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                    {session.notes && (
+                      <div>
+                        <h5 className="animate-on-scroll font-medium text-gray-900 mb-2">Notes</h5>
+                        <p className="animate-on-scroll text-sm text-gray-600">{session.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-end space-x-2">
+                  <button
+                    onClick={() => handleDeleteSession(session.id)}
+                    className="animate-on-scroll inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,6 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
 import { 
   Users, 
   BookOpen, 
@@ -32,63 +30,63 @@ const Overview: React.FC<OverviewProps> = ({ coachStats }) => {
     <div className="space-y-8">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Students</h3>
             <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="pt-2">
             <div className="text-2xl font-bold text-blue-600">{coachStats.totalStudents}</div>
             <p className="text-xs text-gray-600">{coachStats.activeStudents} active</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Training Sessions</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Training Sessions</h3>
             <BookOpen className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="pt-2">
             <div className="text-2xl font-bold text-green-600">{coachStats.trainingSessions}</div>
             <p className="text-xs text-gray-600">{coachStats.sessionsThisMonth} this month</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Average Rating</h3>
             <Star className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="pt-2">
             <div className="text-2xl font-bold text-yellow-600">{coachStats.averageRating}</div>
             <p className="text-xs text-gray-600">{coachStats.totalReviews} reviews</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Certifications</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Certifications</h3>
             <Award className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="pt-2">
             <div className="text-2xl font-bold text-purple-600">{coachStats.certifications}</div>
             <p className="text-xs text-gray-600">active certifications</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Next Session and Achievements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Next Session */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold flex items-center space-x-2">
                 <Calendar className="h-5 w-5 text-blue-500" />
                 <span>Next Training Session</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="p-6">
               <div className="text-center py-8">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {coachStats.nextSession}
@@ -107,21 +105,23 @@ const Overview: React.FC<OverviewProps> = ({ coachStats }) => {
                     <div className="text-sm text-gray-600">Upcoming Sessions</div>
                   </div>
                 </div>
-                <Button className="w-full">View Session Details</Button>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg">
+                  View Session Details
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Recent Achievements */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
               <Award className="h-5 w-5 text-yellow-500" />
               <span>Recent Achievements</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div className="p-6">
             <div className="space-y-4">
               {coachStats.recentAchievements.map((achievement, index) => (
                 <div key={index} className="flex items-start space-x-3">
@@ -130,48 +130,44 @@ const Overview: React.FC<OverviewProps> = ({ coachStats }) => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold">Quick Actions</h3>
+        </div>
+        <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-md"
             >
-              <Users className="h-6 w-6" />
+              <Users className="h-6 w-6 mx-auto" />
               <span>Manage Students</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            </button>
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-md"
             >
-              <Calendar className="h-6 w-6" />
+              <Calendar className="h-6 w-6 mx-auto" />
               <span>Schedule Session</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            </button>
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-md"
             >
-              <BookOpen className="h-6 w-6" />
+              <BookOpen className="h-6 w-6 mx-auto" />
               <span>Training Plans</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            </button>
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-md"
             >
-              <Award className="h-6 w-6" />
+              <Award className="h-6 w-6 mx-auto" />
               <span>My Credentials</span>
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

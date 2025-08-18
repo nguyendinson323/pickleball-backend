@@ -1,36 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Switch } from '../../components/ui/switch';
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  Shield, 
-  UserCheck, 
-  UserX, 
-  Mail,
-  Phone,
-  Calendar,
-  MapPin,
-  MoreHorizontal,
-  Eye,
-  Lock,
-  Unlock,
-  AlertTriangle,
-  CheckCircle,
-  Clock
-} from 'lucide-react';
 
 const UserManagement = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -98,15 +68,15 @@ const UserManagement = () => {
       email: 'sarah@courtsplus.com',
       firstName: 'Sarah',
       lastName: 'Wilson',
-      role: 'admin',
+      role: 'partner',
       userType: 'partner',
-      status: 'pending',
-      lastLogin: '2024-03-20 16:45 PM',
-      joinDate: '2024-02-28',
+      status: 'active',
+      lastLogin: '2024-03-23 16:45 PM',
+      joinDate: '2023-09-05',
       location: 'Miami, FL',
       phone: '(555) 789-0123',
       profilePhoto: null,
-      verified: false,
+      verified: true,
       twoFactorEnabled: false
     },
     {
@@ -114,83 +84,33 @@ const UserManagement = () => {
       username: 'admin.state',
       email: 'admin@californiapb.com',
       firstName: 'Robert',
-      lastName: 'Brown',
-      role: 'admin',
+      lastName: 'Chen',
+      role: 'state_admin',
       userType: 'state',
       status: 'active',
-      lastLogin: '2024-03-25 08:30 AM',
+      lastLogin: '2024-03-25 08:00 AM',
       joinDate: '2023-06-15',
       location: 'Sacramento, CA',
-      phone: '(555) 321-6540',
+      phone: '(555) 321-0987',
       profilePhoto: null,
       verified: true,
       twoFactorEnabled: true
-    },
-    {
-      id: 6,
-      username: 'user.suspended',
-      email: 'user@example.com',
-      firstName: 'Alex',
-      lastName: 'Davis',
-      role: 'player',
-      userType: 'player',
-      status: 'suspended',
-      lastLogin: '2024-03-10 11:20 AM',
-      joinDate: '2024-01-20',
-      location: 'Seattle, WA',
-      phone: '(555) 654-3210',
-      profilePhoto: null,
-      verified: true,
-      twoFactorEnabled: false
     }
   ]);
 
-  const [editingUser, setEditingUser] = useState<number | null>(null);
-  const [showAddUser, setShowAddUser] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
-  // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
     const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
     const matchesUserType = selectedUserType === 'all' || user.userType === selectedUserType;
-
+    
     return matchesSearch && matchesRole && matchesStatus && matchesUserType;
   });
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'suspended': return 'bg-red-100 text-red-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-              case 'super_admin': return 'bg-red-100 text-red-800';
-      case 'player': return 'bg-blue-100 text-blue-800';
-      case 'coach': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getUserTypeColor = (userType: string) => {
-    switch (userType) {
-      case 'player': return 'bg-blue-100 text-blue-800';
-      case 'coach': return 'bg-green-100 text-green-800';
-      case 'club': return 'bg-purple-100 text-purple-800';
-      case 'partner': return 'bg-orange-100 text-orange-800';
-      case 'state': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   const handleStatusChange = (userId: number, newStatus: string) => {
     setUsers(prev => prev.map(user => 
@@ -198,286 +118,273 @@ const UserManagement = () => {
     ));
   };
 
-  const handleRoleChange = (userId: number, newRole: string) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, role: newRole } : user
-    ));
-  };
-
   const handleDeleteUser = (userId: number) => {
-    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    if (window.confirm('Are you sure you want to delete this user?')) {
       setUsers(prev => prev.filter(user => user.id !== userId));
     }
   };
 
-  const getStatusOptions = () => [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'active', label: 'Active' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'suspended', label: 'Suspended' },
-    { value: 'inactive', label: 'Inactive' }
-  ];
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'admin': return 'bg-red-100 text-red-800';
+      case 'state_admin': return 'bg-purple-100 text-purple-800';
+      case 'coach': return 'bg-blue-100 text-blue-800';
+      case 'club': return 'bg-green-100 text-green-800';
+      case 'partner': return 'bg-orange-100 text-orange-800';
+      case 'player': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  const getRoleOptions = () => [
-    { value: 'all', label: 'All Roles' },
-    { value: 'super_admin', label: 'Super Admin' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'player', label: 'Player' },
-    { value: 'coach', label: 'Coach' }
-  ];
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'suspended': return 'bg-yellow-100 text-yellow-800';
+      case 'pending': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  const getUserTypeOptions = () => [
-    { value: 'all', label: 'All User Types' },
-    { value: 'player', label: 'Player' },
-    { value: 'coach', label: 'Coach' },
-    { value: 'club', label: 'Club' },
-    { value: 'partner', label: 'Partner' },
-    { value: 'state', label: 'State Federation' }
-  ];
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'admin': return 'Administrator';
+      case 'state_admin': return 'State Admin';
+      case 'coach': return 'Coach';
+      case 'club': return 'Club Admin';
+      case 'partner': return 'Partner';
+      case 'player': return 'Player';
+      default: return role;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-            <p className="text-gray-600">Manage all users, roles, and permissions across the system</p>
-          </div>
-          <Button onClick={() => setShowAddUser(true)} className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Add User</span>
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 animate-on-scroll">User Management</h1>
+          <p className="text-gray-600 mb-6 animate-on-scroll">
+            Manage user accounts, roles, and permissions across the platform
+          </p>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+          >
+            <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add New User
+          </button>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{users.length}</div>
-              <p className="text-xs text-gray-600">registered users</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <UserCheck className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {users.filter(u => u.status === 'active').length}
-              </div>
-              <p className="text-xs text-gray-600">currently active</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">
-                {users.filter(u => u.status === 'pending').length}
-              </div>
-              <p className="text-xs text-gray-600">awaiting review</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Suspended</CardTitle>
-              <UserX className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {users.filter(u => u.status === 'suspended').length}
-              </div>
-              <p className="text-xs text-gray-600">account suspended</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filters and Search */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-500" />
-              <span>Filters & Search</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Filters */}
+        <div className="mb-8">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="search">Search Users</Label>
+                <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">Search</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="search"
-                    placeholder="Search by name, email, username..."
+                  <input
+                    type="text"
+                    placeholder="Search users..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
                   />
+                  <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
               </div>
               
               <div>
-                <Label htmlFor="role">Role</Label>
-                <Select value={selectedRole} onValueChange={setSelectedRole}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getRoleOptions().map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">Role</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="admin">Administrator</option>
+                  <option value="state_admin">State Admin</option>
+                  <option value="coach">Coach</option>
+                  <option value="club">Club Admin</option>
+                  <option value="partner">Partner</option>
+                  <option value="player">Player</option>
+                </select>
               </div>
-
+              
               <div>
-                <Label htmlFor="status">Status</Label>
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getStatusOptions().map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">Status</label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="pending">Pending</option>
+                </select>
               </div>
-
+              
               <div>
-                <Label htmlFor="userType">User Type</Label>
-                <Select value={selectedUserType} onValueChange={setSelectedUserType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUserTypeOptions().map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">User Type</label>
+                <select
+                  value={selectedUserType}
+                  onChange={(e) => setSelectedUserType(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+                >
+                  <option value="all">All Types</option>
+                  <option value="player">Player</option>
+                  <option value="coach">Coach</option>
+                  <option value="club">Club</option>
+                  <option value="partner">Partner</option>
+                  <option value="state">State</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Users Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Users ({filteredUsers.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.profilePhoto} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {user.firstName[0]}{user.lastName[0]}
-                      </AvatarFallback>
-                    </Avatar>
+        {/* Users List */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-on-scroll">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 animate-on-scroll">
+              Users ({filteredUsers.length})
+            </h2>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider animate-on-scroll">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider animate-on-scroll">
+                    Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider animate-on-scroll">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider animate-on-scroll">
+                    Last Login
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider animate-on-scroll">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50 transition-colors animate-on-scroll">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold flex items-center justify-center animate-on-scroll">
+                            {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 animate-on-scroll">
+                            {user.firstName} {user.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500 animate-on-scroll">
+                            {user.email}
+                          </div>
+                          <div className="text-xs text-gray-400 animate-on-scroll">
+                            @{user.username}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-medium text-gray-900">
-                          {user.firstName} {user.lastName}
-                        </h4>
-                        {user.verified && (
-                          <Badge className="bg-blue-100 text-blue-800 text-xs">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Verified
-                          </Badge>
-                        )}
-                        {user.twoFactorEnabled && (
-                          <Badge className="bg-green-100 text-green-800 text-xs">
-                            <Shield className="h-3 w-3 mr-1" />
-                            2FA
-                          </Badge>
-                        )}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)} animate-on-scroll`}>
+                        {getRoleDisplayName(user.role)}
+                      </span>
+                    </td>
+                    
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)} animate-on-scroll`}>
+                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                      </span>
+                    </td>
+                    
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 animate-on-scroll">
+                      {user.lastLogin}
+                    </td>
+                    
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors animate-on-scroll"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        
+                        <button
+                          onClick={() => handleStatusChange(user.id, user.status === 'active' ? 'suspended' : 'active')}
+                          className={`transition-colors animate-on-scroll ${
+                            user.status === 'active' 
+                              ? 'text-yellow-600 hover:text-yellow-900' 
+                              : 'text-green-600 hover:text-green-900'
+                          }`}
+                        >
+                          {user.status === 'active' ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                        
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="text-red-600 hover:text-red-900 transition-colors animate-on-scroll"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
                       </div>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge className={getRoleColor(user.role)}>
-                          {user.role.replace('_', ' ').toUpperCase()}
-                        </Badge>
-                        <Badge className={getUserTypeColor(user.userType)}>
-                          {user.userType.charAt(0).toUpperCase() + user.userType.slice(1)}
-                        </Badge>
-                        <Badge className={getStatusColor(user.status)}>
-                          {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right text-sm text-gray-600">
-                      <div>Last login: {user.lastLogin}</div>
-                      <div>Joined: {user.joinDate}</div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingUser(user.id)}
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                      
-                      {user.status === 'suspended' ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleStatusChange(user.id, 'active')}
-                          className="text-green-600 border-green-600 hover:bg-green-50"
-                        >
-                          <Unlock className="h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleStatusChange(user.id, 'suspended')}
-                          className="text-red-600 border-red-600 hover:bg-red-50"
-                        >
-                          <Lock className="h-4 w-4" />
-                        </Button>
-                      )}
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 border-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {filteredUsers.length === 0 && (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <svg className="w-16 h-16 text-gray-400 mx-auto mb-4 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2 animate-on-scroll">No users found</h3>
+              <p className="text-gray-600 mb-6 animate-on-scroll">
+                Try adjusting your search criteria or create a new user.
+              </p>
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+              >
+                Create User
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
     </div>
   );

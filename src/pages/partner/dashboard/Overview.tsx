@@ -1,7 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
 import { 
   Building2, 
   MapPin, 
@@ -92,204 +89,173 @@ const Overview: React.FC<OverviewProps> = ({ partnerStats, allCourts, allBooking
     <div className="space-y-8">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Courts</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Courts</h3>
             <MapPin className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="pt-2">
             <div className="text-2xl font-bold text-blue-600">{partnerStats.totalCourts}</div>
             <p className="text-xs text-gray-600">courts available</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Active Courts</h3>
+            <Building2 className="h-4 w-4 text-green-500" />
+          </div>
+          <div className="pt-2">
+            <div className="text-2xl font-bold text-green-600">{partnerStats.activeCourts}</div>
+            <p className="text-xs text-gray-600">ready for use</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Bookings</h3>
+            <Calendar className="h-4 w-4 text-purple-500" />
+          </div>
+          <div className="pt-2">
+            <div className="text-2xl font-bold text-purple-600">{partnerStats.totalBookings}</div>
+            <p className="text-xs text-gray-600">this month</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Monthly Revenue</h3>
             <DollarSign className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              ${partnerStats.monthlyRevenue.toLocaleString()}
-            </div>
-            <p className="text-xs text-gray-600">+12% from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-            <Users className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{partnerStats.totalCustomers}</div>
-            <p className="text-xs text-gray-600">registered customers</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
-            <Star className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{partnerStats.averageRating}</div>
-            <p className="text-xs text-gray-600">out of 5 stars</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="pt-2">
+            <div className="text-2xl font-bold text-green-600">${partnerStats.monthlyRevenue.toLocaleString()}</div>
+            <p className="text-xs text-gray-600">this month</p>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {quickActions.map((action) => (
-              <Button
-                key={action.name}
-                variant="outline"
-                className="h-20 flex flex-col items-center justify-center space-y-2"
-                onClick={() => {
-                  // Handle navigation or actions
-                  console.log(`Action: ${action.name}`);
-                }}
-              >
-                <div className={`p-2 rounded-full ${action.color} text-white`}>
-                  <action.icon className="h-5 w-5" />
-                </div>
-                <span className="text-sm font-medium">{action.name}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Court Status Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MapPin className="h-5 w-5 text-blue-500" />
-            <span>Court Status Overview</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold">Quick Actions</h3>
+        </div>
+        <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {courtStatus.map((court) => (
-              <div key={court.name} className="p-4 border rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900">{court.name}</h4>
-                  <Badge className={getCourtStatusColor(court.status)}>
-                    {court.status}
-                  </Badge>
+            {quickActions.map((action) => (
+              <button
+                key={action.name}
+                className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-md transition-all duration-200 text-left group"
+              >
+                <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200`}>
+                  <action.icon className="h-6 w-6 text-white" />
                 </div>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <div>Last Maintenance: {court.lastMaintenance}</div>
-                  <div>Next Maintenance: {court.nextMaintenance}</div>
-                </div>
-              </div>
+                <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                  {action.name}
+                </h4>
+              </button>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Recent Bookings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-green-500" />
-            <span>Recent Bookings</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentBookings.map((booking) => (
-              <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="text-center">
-                    <div className="text-sm text-gray-500">{booking.date}</div>
-                    <div className="text-lg font-semibold">{booking.time}</div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">{booking.customerName}</h4>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-600">{booking.courtName}</span>
-                      <span className="text-sm text-gray-600">•</span>
-                      <span className="text-sm text-gray-600">{booking.duration}h</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Bookings */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">Recent Bookings</h3>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {recentBookings.map((booking) => (
+                <div key={booking.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <div>
+                        <p className="font-medium text-gray-900">{booking.customerName}</p>
+                        <p className="text-sm text-gray-600">{booking.courtName} • {booking.date} at {booking.time}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <Badge className={getBookingStatusColor(booking.status)}>
-                    {booking.status}
-                  </Badge>
-                  <div className="text-lg font-semibold text-green-600 mt-1">
-                    ${booking.amount}
+                  <div className="text-right">
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getBookingStatusColor(booking.status)}`}>
+                      {booking.status}
+                    </span>
+                    <p className="text-sm font-medium text-green-600 mt-1">${booking.amount}</p>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 text-center">
-            <Button variant="outline">View All Bookings</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Business Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Revenue Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-green-500" />
-              <span>Revenue Trend</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">This Month</span>
-                <span className="font-semibold text-green-600">${partnerStats.monthlyRevenue.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Last Month</span>
-                <span className="font-semibold text-gray-900">$11,200</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Growth</span>
-                <span className="font-semibold text-green-600">+12%</span>
-              </div>
+              ))}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Customer Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Users className="h-5 w-5 text-blue-500" />
-              <span>Customer Activity</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">New This Month</span>
-                <span className="font-semibold text-blue-600">12</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Returning Customers</span>
-                <span className="font-semibold text-gray-900">77</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Total Bookings</span>
-                <span className="font-semibold text-purple-600">{partnerStats.totalBookings}</span>
-              </div>
+            <div className="mt-4">
+              <button className="w-full px-4 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200">
+                View All Bookings
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Court Status */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">Court Status</h3>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {courtStatus.map((court) => (
+                <div key={court.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div>
+                        <p className="font-medium text-gray-900">{court.name}</p>
+                        <p className="text-sm text-gray-600">{court.type} • ${court.hourlyRate}/hr</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getCourtStatusColor(court.status)}`}>
+                      {court.status}
+                    </span>
+                    <p className="text-xs text-gray-500 mt-1">Next maintenance: {court.nextMaintenance}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4">
+              <button className="w-full px-4 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200">
+                Manage Courts
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Financial Summary */}
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold">Financial Summary</h3>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-600">This Month</p>
+              <p className="text-2xl font-bold text-green-600">${financialData.thisMonth.toLocaleString()}</p>
+              <p className="text-xs text-gray-500">Revenue</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-600">This Year</p>
+              <p className="text-2xl font-bold text-blue-600">${financialData.thisYear.toLocaleString()}</p>
+              <p className="text-xs text-gray-500">Total Revenue</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-600">Growth</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {((financialData.thisMonth - financialData.lastMonth) / financialData.lastMonth * 100).toFixed(1)}%
+              </p>
+              <p className="text-xs text-gray-500">vs Last Month</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

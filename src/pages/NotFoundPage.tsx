@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Button } from '../components/ui/button'
 import { useAnimation } from '../hooks/useAnimation'
 
 const NotFoundPage = () => {
@@ -22,7 +21,9 @@ const NotFoundPage = () => {
         </p>
         <div ref={buttonRef} className="animate-on-scroll">
           <Link to="/">
-            <Button className="hover:scale-105 transition-transform duration-300">Go Home</Button>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-all duration-300 hover:scale-105 hover:shadow-lg font-medium">
+              Go Home
+            </button>
           </Link>
         </div>
       </div>

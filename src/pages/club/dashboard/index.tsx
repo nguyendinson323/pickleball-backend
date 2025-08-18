@@ -1,24 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
-import { 
-  Users, 
-  Calendar, 
-  MapPin, 
-  Building2, 
-  Award,
-  TrendingUp,
-  Star,
-  Settings,
-  Activity,
-  DollarSign,
-  Plus
-} from 'lucide-react';
 
 // Import dashboard components
 import Overview from './Overview';
@@ -298,114 +280,199 @@ const ClubDashboard = () => {
     {
       id: 2,
       title: 'Beginner Clinic',
-      date: '2024-04-22',
-      time: '2:00 PM',
+      date: '2024-03-30',
+      time: '10:00 AM',
       participants: 12,
       type: 'Training',
-      status: 'Full'
+      status: 'Registration Open'
     },
     {
       id: 3,
-      title: 'Club Social Night',
-      date: '2024-04-25',
-      time: '6:00 PM',
-      participants: 35,
-      type: 'Social',
-      status: 'Open'
+      title: 'Advanced Strategy Workshop',
+      date: '2024-04-05',
+      time: '2:00 PM',
+      participants: 8,
+      type: 'Training',
+      status: 'Full'
     }
   ];
 
   const courtStatus = [
-    { id: 1, name: 'Court 1', status: 'Available', currentTime: '2:00 PM - 3:00 PM', nextBooking: '3:00 PM' },
-    { id: 2, name: 'Court 2', status: 'Occupied', currentTime: '1:30 PM - 2:30 PM', nextBooking: '2:30 PM' },
-    { id: 3, name: 'Court 3', status: 'Available', currentTime: '2:00 PM - 3:00 PM', nextBooking: '3:00 PM' },
-    { id: 4, name: 'Court 4', status: 'Maintenance', currentTime: 'Under Repair', nextBooking: 'Tomorrow' },
-    { id: 5, name: 'Court 5', status: 'Available', currentTime: '2:00 PM - 3:00 PM', nextBooking: '3:00 PM' },
-    { id: 6, name: 'Court 6', status: 'Occupied', currentTime: '1:00 PM - 2:00 PM', nextBooking: '2:00 PM' },
-    { id: 7, name: 'Court 7', status: 'Available', currentTime: '2:00 PM - 3:00 PM', nextBooking: '3:00 PM' },
-    { id: 8, name: 'Court 8', status: 'Available', currentTime: '2:00 PM - 3:00 PM', nextBooking: '3:00 PM' }
+    {
+      id: 1,
+      name: 'Court 1',
+      status: 'Available',
+      currentTime: '2:30 PM',
+      nextBooking: '3:00 PM'
+    },
+    {
+      id: 2,
+      name: 'Court 2',
+      status: 'Occupied',
+      currentTime: '2:30 PM',
+      nextBooking: '3:00 PM'
+    },
+    {
+      id: 3,
+      name: 'Court 3',
+      status: 'Maintenance',
+      currentTime: '2:30 PM',
+      nextBooking: '4:00 PM'
+    },
+    {
+      id: 4,
+      name: 'Court 4',
+      status: 'Available',
+      currentTime: '2:30 PM',
+      nextBooking: '3:30 PM'
+    }
   ];
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Registration Open': return 'bg-green-100 text-green-800';
+      case 'Full': return 'bg-blue-100 text-blue-800';
+      case 'Planning': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getMemberStatusColor = (status: string) => {
+    switch (status) {
+      case 'Active': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.username || 'Club Manager'}!
-          </h1>
-          <p className="text-gray-600">
-            Here's your club overview and current status.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="animate-on-scroll text-3xl font-bold text-gray-900">Club Dashboard</h1>
+              <p className="animate-on-scroll text-gray-600">Welcome back, {user?.name || 'Club Manager'}</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="animate-on-scroll text-sm text-gray-600">Elite Pickleball Club</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{clubStats.totalMembers}</div>
-              <p className="text-xs text-gray-600">{clubStats.activeMembers} active</p>
-            </CardContent>
-          </Card>
+        {/* Main Dashboard Content */}
+        <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center space-x-8">
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'overview'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('overview')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Overview
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'courts'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('courts')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Courts
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'tournaments'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('tournaments')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                Tournaments
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'invoices'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('invoices')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Invoices
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'microsite'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('microsite')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9" />
+                </svg>
+                Microsite
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'reports'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('reports')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Reports
+              </button>
+              <button
+                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === 'members'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('members')}
+              >
+                <svg className="h-4 w-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                Members
+              </button>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Available Courts</CardTitle>
-              <MapPin className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{clubStats.availableCourts}</div>
-              <p className="text-xs text-gray-600">out of {clubStats.totalCourts} total</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <TrendingUp className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">${clubStats.monthlyRevenue.toLocaleString()}</div>
-              <p className="text-xs text-gray-600">this month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Club Rating</CardTitle>
-              <Star className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{clubStats.averageRating}</div>
-              <p className="text-xs text-gray-600">{clubStats.totalReviews} reviews</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Tabs */}
-        <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="courts">Court Rental</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
-              <TabsTrigger value="invoices">Invoices</TabsTrigger>
-              <TabsTrigger value="microsite">Microsite</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="members">Members</TabsTrigger>
-            </TabsList>
-
+          <div className="px-6 py-4">
             {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
+            {activeTab === 'overview' && (
               <Overview clubStats={clubStats} courtStatus={courtStatus} />
-            </TabsContent>
+            )}
 
             {/* Court Rental Tab */}
-            <TabsContent value="courts" className="mt-6">
+            {activeTab === 'courts' && (
               <CourtRental
                 selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
@@ -414,150 +481,173 @@ const ClubDashboard = () => {
                 timeSlots={timeSlots}
                 courtBookings={courtBookings}
               />
-            </TabsContent>
+            )}
 
             {/* Tournaments Tab */}
-            <TabsContent value="tournaments" className="mt-6">
+            {activeTab === 'tournaments' && (
               <Tournaments tournaments={tournaments} />
-            </TabsContent>
+            )}
 
             {/* Invoices Tab */}
-            <TabsContent value="invoices" className="mt-6">
+            {activeTab === 'invoices' && (
               <Invoices invoices={invoices} />
-            </TabsContent>
+            )}
 
             {/* Microsite Tab */}
-            <TabsContent value="microsite" className="mt-6">
+            {activeTab === 'microsite' && (
               <Microsite micrositeConfig={micrositeConfig} />
-            </TabsContent>
+            )}
 
             {/* Reports Tab */}
-            <TabsContent value="reports" className="mt-6">
+            {activeTab === 'reports' && (
               <Reports />
-            </TabsContent>
+            )}
 
             {/* Members Tab */}
-            <TabsContent value="members" className="mt-6">
+            {activeTab === 'members' && (
               <Members members={recentMembers} />
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
 
         {/* Upcoming Events & Recent Members */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           {/* Upcoming Events */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
+          <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
                 <span>Upcoming Events</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="px-6 py-4">
               <div className="space-y-4">
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={event.id} className="animate-on-scroll flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      <div className={`animate-on-scroll w-10 h-10 rounded-full flex items-center justify-center ${
                         event.type === 'Tournament' ? 'bg-blue-100 text-blue-600' :
                         event.type === 'Training' ? 'bg-green-100 text-green-600' :
                         'bg-purple-100 text-purple-600'
                       }`}>
-                        {event.type === 'Tournament' ? <Award className="h-5 w-5" /> :
-                         event.type === 'Training' ? <Users className="h-5 w-5" /> :
-                         <Calendar className="h-5 w-5" />}
+                        {event.type === 'Tournament' ? 
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg> :
+                         event.type === 'Training' ? 
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                          </svg> :
+                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                         </svg>}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900">{event.title}</h4>
-                        <p className="text-sm text-gray-600">{event.date} at {event.time}</p>
+                        <h4 className="animate-on-scroll font-medium text-gray-900">{event.title}</h4>
+                        <p className="animate-on-scroll text-sm text-gray-600">{event.date} at {event.time}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge variant={
-                        event.status === 'Registration Open' ? 'default' :
-                        event.status === 'Full' ? 'secondary' : 'outline'
-                      }>
+                      <span className={`animate-on-scroll inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(event.status)}`}>
                         {event.status}
-                      </Badge>
-                      <p className="text-sm text-gray-600 mt-1">{event.participants} participants</p>
+                      </span>
+                      <p className="animate-on-scroll text-sm text-gray-600 mt-1">{event.participants} participants</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Recent Members */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
+          <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="animate-on-scroll text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
                 <span>Recent Members</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="px-6 py-4">
               <div className="space-y-4">
                 {recentMembers.slice(0, 3).map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={member.id} className="animate-on-scroll flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={member.photo} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="flex-shrink-0 h-10 w-10">
+                        {member.photo ? (
+                          <img className="h-10 w-10 rounded-full" src={member.photo} alt={member.name} />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                        )}
+                      </div>
                       <div>
-                        <h4 className="font-medium text-gray-900">{member.name}</h4>
-                        <p className="text-sm text-gray-600">{member.type} • Joined: {member.joinDate}</p>
+                        <h4 className="animate-on-scroll font-medium text-gray-900">{member.name}</h4>
+                        <p className="animate-on-scroll text-sm text-gray-600">{member.type} • Joined: {member.joinDate}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
+                      <span className={`animate-on-scroll inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMemberStatusColor(member.status)}`}>
                         {member.status}
-                      </Badge>
+                      </span>
                     </div>
                   </div>
                 ))}
-                <Button 
-                  variant="outline" 
-                  className="w-full"
+                <button 
+                  className="animate-on-scroll inline-flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   onClick={() => setActiveTab('members')}
                 >
-                  <Users className="h-4 w-4 mr-2" />
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
                   View All Members
-                </Button>
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="animate-on-scroll text-lg font-semibold text-gray-900">Quick Actions</h3>
+            </div>
+            <div className="px-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex-col space-y-2">
-                  <Users className="h-6 w-6" />
+                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
                   <span>Manage Members</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col space-y-2">
-                  <MapPin className="h-6 w-6" />
+                </button>
+                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   <span>Court Management</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col space-y-2">
-                  <Calendar className="h-6 w-6" />
+                </button>
+                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                   <span>Schedule Events</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col space-y-2">
-                  <Settings className="h-6 w-6" />
+                </button>
+                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   <span>Club Settings</span>
-                </Button>
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

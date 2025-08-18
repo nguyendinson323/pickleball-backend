@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Switch } from '../../../components/ui/switch';
 import { 
   Shield, 
   FileText, 
@@ -54,14 +51,14 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
   return (
     <div className="space-y-6">
       {/* Privacy Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <Shield className="h-5 w-5 text-blue-500" />
             <span>Privacy Settings</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -78,11 +75,15 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
                   }
                 </p>
               </div>
-              <Switch
-                checked={canBeFound}
-                onCheckedChange={handlePrivacyChange}
-                className="ml-4"
-              />
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canBeFound}
+                  onChange={(e) => handlePrivacyChange(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <div className="flex items-start space-x-2">
@@ -97,18 +98,18 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Profile Completion Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             <span>Profile Completion</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700">Profile Completion</span>
@@ -175,66 +176,61 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
               </div>
             </div>
             {profileCompletion.completed < profileCompletion.total && (
-              <Button 
-                variant="outline" 
-                className="w-full"
+              <button 
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg"
                 onClick={() => navigate('/player/profile')}
               >
                 Complete Profile
-              </Button>
+              </button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Account Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <SettingsIcon className="h-5 w-5 text-gray-500" />
             <span>Account Settings</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
+            <button 
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center justify-start"
               onClick={() => navigate('/player/profile')}
             >
               <SettingsIcon className="h-4 w-4 mr-2" />
               Edit Profile
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
+            </button>
+            <button 
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center justify-start"
               onClick={() => navigate('/auth/change-password')}
             >
               <Shield className="h-4 w-4 mr-2" />
               Change Password
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
+            </button>
+            <button 
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center justify-start"
               onClick={() => navigate('/notifications')}
             >
               <FileText className="h-4 w-4 mr-2" />
               Notification Preferences
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Data Export */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Data & Privacy</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">Data & Privacy</h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
+            <button 
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center justify-start"
               onClick={() => {
                 // In a real app, this would export user data
                 console.log('Export user data');
@@ -242,10 +238,9 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
             >
               <FileText className="h-4 w-4 mr-2" />
               Export My Data
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
+            </button>
+            <button 
+              className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center justify-start"
               onClick={() => {
                 // In a real app, this would delete user account
                 console.log('Delete account');
@@ -253,10 +248,10 @@ const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion 
             >
               <Shield className="h-4 w-4 mr-2" />
               Delete Account
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

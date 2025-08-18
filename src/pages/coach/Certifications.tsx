@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { 
   Award, 
   Plus,
@@ -254,271 +247,297 @@ const Certifications = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Certifications</h1>
             <p className="text-gray-600">Manage your professional certifications and continuing education</p>
           </div>
-          <Button onClick={() => setIsAddingCertification(true)} className="flex items-center space-x-2">
+          <button 
+            onClick={() => setIsAddingCertification(true)} 
+            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 hover:shadow-lg"
+          >
             <Plus className="h-4 w-4" />
             <span>Add Certification</span>
-          </Button>
+          </button>
         </div>
 
         {/* Certification Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Certifications</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Certifications</h3>
               <Award className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-blue-600">{certificationStats.total}</div>
               <p className="text-xs text-gray-600">certifications</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Active</h3>
               <CheckCircle className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-green-600">{certificationStats.active}</div>
               <p className="text-xs text-gray-600">currently valid</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Verified</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Verified</h3>
               <Star className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-purple-600">{certificationStats.verified}</div>
               <p className="text-xs text-gray-600">officially verified</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Expiring Soon</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Expiring Soon</h3>
               <AlertTriangle className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-orange-600">{certificationStats.expiringSoon}</div>
               <p className="text-xs text-gray-600">within 30 days</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Add New Certification Form */}
         {isAddingCertification && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Certification</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-lg shadow-md mb-8 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Add New Certification</h3>
+            </div>
+            <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="certName">Certification Name</Label>
-                  <Input
+                  <label htmlFor="certName" className="block text-sm font-medium text-gray-700 mb-2">Certification Name</label>
+                  <input
                     id="certName"
+                    type="text"
                     value={newCertification.name}
                     onChange={(e) => setNewCertification({...newCertification, name: e.target.value})}
                     placeholder="e.g., USAPA Level 2 Coach"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="issuingOrg">Issuing Organization</Label>
-                  <Input
+                  <label htmlFor="issuingOrg" className="block text-sm font-medium text-gray-700 mb-2">Issuing Organization</label>
+                  <input
                     id="issuingOrg"
+                    type="text"
                     value={newCertification.issuingOrganization}
                     onChange={(e) => setNewCertification({...newCertification, issuingOrganization: e.target.value})}
                     placeholder="e.g., USA Pickleball Association"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="issueDate">Issue Date</Label>
-                  <Input
+                  <label htmlFor="issueDate" className="block text-sm font-medium text-gray-700 mb-2">Issue Date</label>
+                  <input
                     id="issueDate"
                     type="date"
                     value={newCertification.issueDate}
                     onChange={(e) => setNewCertification({...newCertification, issueDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <Input
+                  <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                  <input
                     id="expiryDate"
                     type="date"
                     value={newCertification.expiryDate}
                     onChange={(e) => setNewCertification({...newCertification, expiryDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="credentialNumber">Credential Number</Label>
-                  <Input
+                  <label htmlFor="credentialNumber" className="block text-sm font-medium text-gray-700 mb-2">Credential Number</label>
+                  <input
                     id="credentialNumber"
+                    type="text"
                     value={newCertification.credentialNumber}
                     onChange={(e) => setNewCertification({...newCertification, credentialNumber: e.target.value})}
                     placeholder="e.g., USAPA-L2-2022-001234"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={newCertification.category} onValueChange={(value) => setNewCertification({...newCertification, category: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Coaching">Coaching</SelectItem>
-                      <SelectItem value="Psychology">Psychology</SelectItem>
-                      <SelectItem value="Safety">Safety</SelectItem>
-                      <SelectItem value="Skills">Skills</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <select 
+                    value={newCertification.category} 
+                    onChange={(e) => setNewCertification({...newCertification, category: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Coaching">Coaching</option>
+                    <option value="Psychology">Psychology</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Skills">Skills</option>
+                  </select>
                 </div>
                 <div>
-                  <Label htmlFor="hoursRequired">Hours Required</Label>
-                  <Input
+                  <label htmlFor="hoursRequired" className="block text-sm font-medium text-gray-700 mb-2">Hours Required</label>
+                  <input
                     id="hoursRequired"
                     type="number"
                     value={newCertification.hoursRequired}
                     onChange={(e) => setNewCertification({...newCertification, hoursRequired: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="hoursCompleted">Hours Completed</Label>
-                  <Input
+                  <label htmlFor="hoursCompleted" className="block text-sm font-medium text-gray-700 mb-2">Hours Completed</label>
+                  <input
                     id="hoursCompleted"
                     type="number"
                     value={newCertification.hoursCompleted}
                     onChange={(e) => setNewCertification({...newCertification, hoursCompleted: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="continuingEducation">Continuing Education Required</Label>
-                  <Input
+                  <label htmlFor="continuingEducation" className="block text-sm font-medium text-gray-700 mb-2">Continuing Education Required</label>
+                  <input
                     id="continuingEducation"
                     type="number"
                     value={newCertification.continuingEducationRequired}
                     onChange={(e) => setNewCertification({...newCertification, continuingEducationRequired: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="verificationUrl">Verification URL</Label>
-                  <Input
+                  <label htmlFor="verificationUrl" className="block text-sm font-medium text-gray-700 mb-2">Verification URL</label>
+                  <input
                     id="verificationUrl"
+                    type="url"
                     value={newCertification.verificationUrl}
                     onChange={(e) => setNewCertification({...newCertification, verificationUrl: e.target.value})}
                     placeholder="https://..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
                     id="description"
                     value={newCertification.description}
                     onChange={(e) => setNewCertification({...newCertification, description: e.target.value})}
                     placeholder="Describe what this certification covers..."
                     rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label>Requirements</Label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
                   <div className="space-y-2">
                     {newCertification.requirements.map((req, index) => (
                       <div key={index} className="flex space-x-2">
-                        <Input
+                        <input
+                          type="text"
                           value={req}
                           onChange={(e) => updateRequirement(index, e.target.value)}
                           placeholder="e.g., Complete training hours, Pass examination"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         {newCertification.requirements.length > 1 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
+                          <button
+                            type="button"
                             onClick={() => removeRequirement(index)}
+                            className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 transition-colors duration-200"
                           >
                             Remove
-                          </Button>
+                          </button>
                         )}
                       </div>
                     ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={addRequirement}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 transition-colors duration-200"
                     >
                       Add Requirement
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
               <div className="flex space-x-3 mt-4">
-                <Button onClick={handleAddCertification}>Add Certification</Button>
-                <Button variant="outline" onClick={() => setIsAddingCertification(false)}>Cancel</Button>
+                <button 
+                  onClick={handleAddCertification}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg"
+                >
+                  Add Certification
+                </button>
+                <button 
+                  onClick={() => setIsAddingCertification(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Certifications List */}
         <div className="space-y-6">
           {certifications.map((certification) => (
-            <Card key={certification.id}>
-              <CardHeader>
+            <div key={certification.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="flex items-center space-x-2">
+                    <h3 className="text-lg font-semibold flex items-center space-x-2">
                       <Award className="h-5 w-5 text-blue-500" />
                       <span>{certification.name}</span>
-                    </CardTitle>
+                    </h3>
                     <p className="text-sm text-gray-600 mt-1">
                       {certification.issuingOrganization} • {certification.credentialNumber}
                     </p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => setEditingCertification(editingCertification === certification.id ? null : certification.id)}
+                      className="p-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() => handleDeleteCertification(certification.id)}
+                      className="p-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Status</Label>
-                    <Badge className={`mt-1 ${getStatusColor(certification.status)}`}>
+                    <label className="text-sm font-medium text-gray-500">Status</label>
+                    <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(certification.status)}`}>
                       {certification.status}
-                    </Badge>
+                    </span>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Category</Label>
-                    <Badge className={`mt-1 ${getCategoryColor(certification.category)}`}>
+                    <label className="text-sm font-medium text-gray-500">Category</label>
+                    <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(certification.category)}`}>
                       {certification.category}
-                    </Badge>
+                    </span>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Verification</Label>
-                    <Badge className={`mt-1 ${getVerificationColor(certification.isVerified)}`}>
+                    <label className="text-sm font-medium text-gray-500">Verification</label>
+                    <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full ${getVerificationColor(certification.isVerified)}`}>
                       {certification.isVerified ? 'Verified' : 'Pending'}
-                    </Badge>
+                    </span>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Hours</Label>
+                    <label className="text-sm font-medium text-gray-500">Hours</label>
                     <p className="text-lg font-semibold text-blue-600">
                       {certification.hoursCompleted}/{certification.hoursRequired}
                     </p>
@@ -528,14 +547,14 @@ const Certifications = () => {
                 {/* Description */}
                 {certification.description && (
                   <div className="mb-4">
-                    <Label className="text-sm font-medium text-gray-500">Description</Label>
+                    <label className="text-sm font-medium text-gray-500">Description</label>
                     <p className="text-gray-700 mt-1">{certification.description}</p>
                   </div>
                 )}
 
                 {/* Requirements */}
                 <div className="mb-4">
-                  <Label className="text-sm font-medium text-gray-500">Requirements</Label>
+                  <label className="text-sm font-medium text-gray-500">Requirements</label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
                     {certification.requirements.map((req, index) => (
                       <div key={index} className="flex items-center space-x-2 text-sm">
@@ -549,11 +568,11 @@ const Certifications = () => {
                 {/* Dates and Details */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Issue Date</Label>
+                    <label className="text-sm font-medium text-gray-500">Issue Date</label>
                     <p className="font-medium">{certification.issueDate}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Expiry Date</Label>
+                    <label className="text-sm font-medium text-gray-500">Expiry Date</label>
                     <div className="flex items-center space-x-2">
                       <p className={`font-medium ${isExpired(certification.expiryDate) ? 'text-red-600' : isExpiringSoon(certification.expiryDate) ? 'text-yellow-600' : 'text-gray-900'}`}>
                         {certification.expiryDate}
@@ -563,7 +582,7 @@ const Certifications = () => {
                     </div>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Continuing Education</Label>
+                    <label className="text-sm font-medium text-gray-500">Continuing Education</label>
                     <p className="font-medium">
                       {certification.continuingEducationCompleted}/{certification.continuingEducationRequired} hours
                     </p>
@@ -573,16 +592,16 @@ const Certifications = () => {
                 {/* Actions */}
                 <div className="flex space-x-3 pt-4 border-t">
                   {certification.certificateFile && (
-                    <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                       <Download className="h-4 w-4" />
                       <span>Download Certificate</span>
-                    </Button>
+                    </button>
                   )}
                   {certification.verificationUrl && (
-                    <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                       <ExternalLink className="h-4 w-4" />
                       <span>Verify Online</span>
-                    </Button>
+                    </button>
                   )}
                 </div>
 
@@ -592,40 +611,41 @@ const Certifications = () => {
                     <h4 className="font-medium text-gray-900 mb-3">Edit Certification</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <Label>Status</Label>
-                        <Select value={certification.status} onValueChange={(value) => handleUpdateCertification(certification.id, 'status', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Expired">Expired</SelectItem>
-                            <SelectItem value="Expiring Soon">Expiring Soon</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select 
+                          value={certification.status} 
+                          onChange={(e) => handleUpdateCertification(certification.id, 'status', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Expired">Expired</option>
+                          <option value="Expiring Soon">Expiring Soon</option>
+                          <option value="Pending">Pending</option>
+                        </select>
                       </div>
                       <div>
-                        <Label>Hours Completed</Label>
-                        <Input
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Hours Completed</label>
+                        <input
                           type="number"
                           value={certification.hoursCompleted}
                           onChange={(e) => handleUpdateCertification(certification.id, 'hoursCompleted', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
-                        <Label>Continuing Education Completed</Label>
-                        <Input
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Continuing Education Completed</label>
+                        <input
                           type="number"
                           value={certification.continuingEducationCompleted}
                           onChange={(e) => handleUpdateCertification(certification.id, 'continuingEducationCompleted', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

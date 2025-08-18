@@ -73,7 +73,7 @@ const FindCourt = () => {
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Hero/Header Section */}
-        <div className="text-center mb-16 animate-on-scroll">
+        <div className="text-center mb-16">
           <div className="w-full h-64 mb-8 rounded-lg overflow-hidden shadow-lg animate-on-scroll">
             <img 
               src="/img/7.jpg" 
@@ -90,7 +90,7 @@ const FindCourt = () => {
         </div>
 
         {/* Court Search Section */}
-        <div className="mb-16 animate-on-scroll">
+        <div className="mb-16">
           <div className="bg-white rounded-lg shadow-md p-8 overflow-hidden relative animate-on-scroll">
             {/* Background Image */}
             <div className="absolute inset-0 opacity-5">
@@ -128,7 +128,7 @@ const FindCourt = () => {
         </div>
 
         {/* Court Types Section */}
-        <div className="mb-16 animate-on-scroll">
+        <div className="mb-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center animate-on-scroll">
             Court Types
           </h3>
@@ -163,7 +163,7 @@ const FindCourt = () => {
         </div>
 
         {/* Court Features Section */}
-        <div className="mb-16 animate-on-scroll">
+        <div className="mb-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center animate-on-scroll">
             Court Features
           </h3>
@@ -207,7 +207,7 @@ const FindCourt = () => {
         </div>
 
         {/* Call to Action Section */}
-        <div className="text-center animate-on-scroll">
+        <div className="text-center">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white overflow-hidden relative animate-on-scroll">
             {/* Background Image */}
             <div className="absolute inset-0 opacity-20">
@@ -225,7 +225,7 @@ const FindCourt = () => {
                 Find the perfect court and start your pickleball journey today.
               </p>
               <button 
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 animate-on-scroll"
+                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 animate-on-scroll"
               >
                 Find Courts Now
               </button>

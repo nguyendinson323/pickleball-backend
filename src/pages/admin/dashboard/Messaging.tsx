@@ -1,33 +1,4 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
-import { 
-  MessageSquare,
-  Search,
-  Filter,
-  Eye,
-  Edit3,
-  Send,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Download,
-  Bell,
-  Users,
-  Building2,
-  Star,
-  MapPin,
-  AlertTriangle,
-  Archive,
-  Trash2,
-  Reply,
-  Forward
-} from 'lucide-react';
 
 interface Message {
   id: number;
@@ -107,12 +78,36 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sent': return <CheckCircle className="h-4 w-4" />;
-      case 'delivered': return <CheckCircle className="h-4 w-4" />;
-      case 'read': return <CheckCircle className="h-4 w-4" />;
-      case 'failed': return <XCircle className="h-4 w-4" />;
-      case 'draft': return <Clock className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'sent': return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+      case 'delivered': return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+      case 'read': return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+      case 'failed': return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+      case 'draft': return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+      default: return (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
     }
   };
 
@@ -177,365 +172,390 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
       {/* Header Actions */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">System Messaging</h2>
-          <p className="text-gray-600">Manage system-wide communications and announcements</p>
+          <h2 className="text-2xl font-bold text-gray-900 animate-on-scroll">System Messaging</h2>
+          <p className="text-gray-600 animate-on-scroll">Manage system-wide communications and announcements</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" onClick={generateReport} className="flex items-center space-x-2">
-            <Download className="h-4 w-4" />
+          <button 
+            onClick={generateReport} 
+            className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
             <span>Generate Report</span>
-          </Button>
-          <Button onClick={() => setShowCompose(true)} className="flex items-center space-x-2">
-            <MessageSquare className="h-4 w-4" />
+          </button>
+          <button 
+            onClick={() => setShowCompose(true)} 
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
             <span>Compose Message</span>
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-            <p className="text-xs text-gray-600">all messages</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Messages</h3>
+            <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+          <p className="text-xs text-gray-600">all messages</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sent</CardTitle>
-            <Send className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.sent}</div>
-            <p className="text-xs text-gray-600">successfully sent</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Sent</h3>
+            <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-green-600">{stats.sent}</div>
+          <p className="text-xs text-gray-600">successfully sent</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Delivered</CardTitle>
-            <CheckCircle className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.delivered}</div>
-            <p className="text-xs text-gray-600">delivered to recipients</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Delivered</h3>
+            <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{stats.delivered}</div>
+          <p className="text-xs text-gray-600">delivered to recipients</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Read</CardTitle>
-            <Eye className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{stats.read}</div>
-            <p className="text-xs text-gray-600">read by recipients</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Read</h3>
+            <svg className="h-4 w-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-purple-600">{stats.read}</div>
+          <p className="text-xs text-gray-600">read by recipients</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed</CardTitle>
-            <XCircle className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
-            <p className="text-xs text-gray-600">delivery failed</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Failed</h3>
+            <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
+          <p className="text-xs text-gray-600">delivery failed</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Drafts</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.drafts}</div>
-            <p className="text-xs text-gray-600">saved drafts</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Drafts</h3>
+            <svg className="h-4 w-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-yellow-600">{stats.drafts}</div>
+          <p className="text-xs text-gray-600">saved drafts</p>
+        </div>
       </div>
 
       {/* Search and Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label htmlFor="search">Search Messages</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="search"
-                  placeholder="Search by subject, sender, or content..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="statusFilter">Status Filter</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="sent">Sent</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="read">Read</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="priorityFilter">Priority Filter</Label>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Priorities</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="normal">Normal</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="categoryFilter">Category Filter</Label>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="announcement">Announcement</SelectItem>
-                  <SelectItem value="notification">Notification</SelectItem>
-                  <SelectItem value="update">Update</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="general">General</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search Messages</label>
+            <div className="relative">
+              <svg className="absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                id="search"
+                placeholder="Search by subject, sender, or content..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700">Status Filter</label>
+            <select
+              id="statusFilter"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Statuses</option>
+              <option value="draft">Draft</option>
+              <option value="sent">Sent</option>
+              <option value="delivered">Delivered</option>
+              <option value="read">Read</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="priorityFilter" className="block text-sm font-medium text-gray-700">Priority Filter</label>
+            <select
+              id="priorityFilter"
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="categoryFilter" className="block text-sm font-medium text-gray-700">Category Filter</label>
+            <select
+              id="categoryFilter"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Categories</option>
+              <option value="announcement">Announcement</option>
+              <option value="notification">Notification</option>
+              <option value="update">Update</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       {/* Messages Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Messages</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Subject</TableHead>
-                <TableHead>Sender</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Recipients</TableHead>
-                <TableHead>Sent At</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+      <div className="bg-white rounded-lg shadow-md p-6 animate-on-scroll">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-gray-900">All Messages</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sender</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recipients</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sent At</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
               {filteredMessages.map((message) => (
-                <TableRow key={message.id}>
-                  <TableCell className="font-medium">
+                <tr key={message.id} className="hover:bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div>
                       <div>{message.subject}</div>
                       {message.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {message.tags.slice(0, 2).map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
+                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               {tag}
-                            </Badge>
+                            </span>
                           ))}
                           {message.tags.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               +{message.tags.length - 2}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell>{message.sender}</TableCell>
-                  <TableCell>
-                    <Badge className={getPriorityColor(message.priority)}>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{message.sender}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
                       <span className="capitalize">{message.priority}</span>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getCategoryColor(message.category)}>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(message.category)}`}>
                       <span className="capitalize">{message.category}</span>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(message.status)}>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(message.status)}`}>
                       <div className="flex items-center space-x-1">
                         {getStatusIcon(message.status)}
                         <span className="capitalize">{message.status}</span>
                       </div>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="flex items-center space-x-1">
-                      <Users className="h-4 w-4 text-gray-400" />
+                      <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
                       <span>{message.recipients.length}</span>
                     </div>
-                  </TableCell>
-                  <TableCell>{message.sentAt}</TableCell>
-                  <TableCell>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{message.sentAt}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-sm font-medium">
                     <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
+                      <button
                         onClick={() => setSelectedMessage(message)}
+                        className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
+                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 6v12a3 3 0 103-3H6a3 3 0 103 3V6a3 3 0 10-3 3h12a3 3 0 10-3-3" />
+                        </svg>
                         View
-                      </Button>
+                      </button>
                       {message.status === 'draft' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
+                        <button
                           onClick={() => handleMessageAction(message.id, 'edit')}
+                          className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         >
-                          <Edit3 className="h-4 w-4 mr-1" />
+                          <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                           Edit
-                        </Button>
+                        </button>
                       )}
                       {message.status === 'sent' && (
                         <>
-                          <Button
-                            size="sm"
-                            variant="outline"
+                          <button
                             onClick={() => handleMessageAction(message.id, 'reply')}
+                            className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           >
-                            <Reply className="h-4 w-4 mr-1" />
+                            <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10a8 8 0 008 8v2M3 10a8 8 0 018-8V0C5 0 0 5 0 10h3zm8 0h3a8 8 0 018 8v2M11 12h2m-6 0H3" />
+                            </svg>
                             Reply
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
+                          </button>
+                          <button
                             onClick={() => handleMessageAction(message.id, 'forward')}
+                            className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           >
-                            <Forward className="h-4 w-4 mr-1" />
+                            <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                            </svg>
                             Forward
-                          </Button>
+                          </button>
                         </>
                       )}
                     </div>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
 
           {filteredMessages.length === 0 && (
             <div className="text-center py-8">
-              <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <svg className="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No messages found</h3>
               <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Message Detail Modal */}
       {selectedMessage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-on-scroll">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Message Details</h3>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedMessage(null)}>
-                <XCircle className="h-4 w-4" />
-              </Button>
+              <button onClick={() => setSelectedMessage(null)} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Subject</Label>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
                   <p className="font-medium">{selectedMessage.subject}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Sender</Label>
+                  <label htmlFor="sender" className="block text-sm font-medium text-gray-700">Sender</label>
                   <p>{selectedMessage.sender}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Priority</Label>
-                  <Badge className={getPriorityColor(selectedMessage.priority)}>
+                  <label htmlFor="priority" className="block text-sm font-medium text-gray-700">Priority</label>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(selectedMessage.priority)}`}>
                     <span className="capitalize">{selectedMessage.priority}</span>
-                  </Badge>
+                  </span>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Category</Label>
-                  <Badge className={getCategoryColor(selectedMessage.category)}>
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(selectedMessage.category)}`}>
                     <span className="capitalize">{selectedMessage.category}</span>
-                  </Badge>
+                  </span>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Status</Label>
-                  <Badge className={getStatusColor(selectedMessage.status)}>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedMessage.status)}`}>
                     <div className="flex items-center space-x-1">
                       {getStatusIcon(selectedMessage.status)}
                       <span className="capitalize">{selectedMessage.status}</span>
                     </div>
-                  </Badge>
+                  </span>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Sent At</Label>
+                  <label htmlFor="sentAt" className="block text-sm font-medium text-gray-700">Sent At</label>
                   <p>{selectedMessage.sentAt}</p>
                 </div>
               </div>
               
               {selectedMessage.readAt && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Read At</Label>
+                  <label htmlFor="readAt" className="block text-sm font-medium text-gray-700">Read At</label>
                   <p>{selectedMessage.readAt}</p>
                 </div>
               )}
               
               <div>
-                <Label className="text-sm font-medium text-gray-500">Recipients</Label>
+                <label htmlFor="recipients" className="block text-sm font-medium text-gray-700">Recipients</label>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {selectedMessage.recipients.map((recipient, index) => (
-                    <Badge key={index} variant="outline">{recipient}</Badge>
+                    <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {recipient}
+                    </span>
                   ))}
                 </div>
               </div>
               
               <div>
-                <Label className="text-sm font-medium text-gray-500">Content</Label>
-                <div className="mt-1 p-3 bg-gray-50 rounded-lg">
+                <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content</label>
+                <div className="mt-1 p-3 bg-gray-50 rounded-md">
                   <p className="whitespace-pre-wrap">{selectedMessage.content}</p>
                 </div>
               </div>
               
               {selectedMessage.attachments.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Attachments</Label>
+                  <label htmlFor="attachments" className="block text-sm font-medium text-gray-700">Attachments</label>
                   <div className="mt-1 flex flex-wrap gap-2">
                     {selectedMessage.attachments.map((attachment, index) => (
-                      <Badge key={index} variant="secondary">{attachment}</Badge>
+                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {attachment}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -543,10 +563,12 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
               
               {selectedMessage.tags.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-500">Tags</Label>
+                  <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags</label>
                   <div className="mt-1 flex flex-wrap gap-2">
                     {selectedMessage.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline">{tag}</Badge>
+                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -554,25 +576,30 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
             </div>
             
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
-              <Button variant="outline" onClick={() => setSelectedMessage(null)}>
+              <button onClick={() => setSelectedMessage(null)} className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 Close
-              </Button>
+              </button>
               {selectedMessage.status === 'draft' && (
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => handleMessageAction(selectedMessage.id, 'edit')}
+                  className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <Edit3 className="h-4 w-4 mr-2" />
+                  <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
                   Edit
-                </Button>
+                </button>
               )}
               {selectedMessage.status === 'sent' && (
-                <Button
+                <button
                   onClick={() => handleMessageAction(selectedMessage.id, 'reply')}
+                  className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <Reply className="h-4 w-4 mr-2" />
+                  <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10a8 8 0 008 8v2M3 10a8 8 0 018-8V0C5 0 0 5 0 10h3zm8 0h3a8 8 0 018 8v2M11 12h2m-6 0H3" />
+                  </svg>
                   Reply
-                </Button>
+                </button>
               )}
             </div>
           </div>
@@ -582,61 +609,65 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
       {/* Compose Message Modal */}
       {showCompose && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto animate-on-scroll">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Compose System Message</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowCompose(false)}>
-                <XCircle className="h-4 w-4" />
-              </Button>
+              <button onClick={() => setShowCompose(false)} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="subject">Subject</Label>
-                <Input
-                  id="subject"
+                <label htmlFor="composeSubject" className="block text-sm font-medium text-gray-700">Subject</label>
+                <input
+                  type="text"
+                  id="composeSubject"
                   value={composeData.subject}
                   onChange={(e) => setComposeData({...composeData, subject: e.target.value})}
                   placeholder="Enter message subject"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="priority">Priority</Label>
-                  <Select value={composeData.priority} onValueChange={(value: any) => setComposeData({...composeData, priority: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {priorities.map(priority => (
-                        <SelectItem key={priority} value={priority}>
-                          <span className="capitalize">{priority}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label htmlFor="composePriority" className="block text-sm font-medium text-gray-700">Priority</label>
+                  <select
+                    id="composePriority"
+                    value={composeData.priority}
+                    onChange={(e) => setComposeData({...composeData, priority: e.target.value as 'low' | 'normal' | 'high' | 'urgent'})}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {priorities.map(priority => (
+                      <option key={priority} value={priority}>
+                        <span className="capitalize">{priority}</span>
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={composeData.category} onValueChange={(value: any) => setComposeData({...composeData, category: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category}>
-                          <span className="capitalize">{category}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label htmlFor="composeCategory" className="block text-sm font-medium text-gray-700">Category</label>
+                  <select
+                    id="composeCategory"
+                    value={composeData.category}
+                    onChange={(e) => setComposeData({...composeData, category: e.target.value as 'announcement' | 'notification' | 'update' | 'maintenance' | 'general'})}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>
+                        <span className="capitalize">{category}</span>
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
               
               <div>
-                <Label className="text-sm font-medium">Recipients</Label>
+                <label htmlFor="composeRecipients" className="block text-sm font-medium text-gray-700">Recipients</label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                   {Object.entries(composeData.recipients).map(([key, value]) => (
                     <label key={key} className="flex items-center space-x-2">
@@ -650,7 +681,7 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
                             [key]: e.target.checked
                           }
                         })}
-                        className="rounded"
+                        className="rounded text-blue-600 focus:ring-blue-500"
                       />
                       <span className="text-sm capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
                     </label>
@@ -659,42 +690,43 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
               </div>
               
               <div>
-                <Label htmlFor="content">Message Content</Label>
+                <label htmlFor="composeContent" className="block text-sm font-medium text-gray-700">Message Content</label>
                 <textarea
-                  id="content"
+                  id="composeContent"
                   value={composeData.content}
                   onChange={(e) => setComposeData({...composeData, content: e.target.value})}
                   placeholder="Enter your message content..."
                   rows={6}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="sendTime">Send Time</Label>
-                  <Select value={composeData.sendImmediately ? 'immediate' : 'scheduled'} onValueChange={(value) => setComposeData({
-                    ...composeData, 
-                    sendImmediately: value === 'immediate'
-                  })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="immediate">Send Immediately</SelectItem>
-                      <SelectItem value="scheduled">Schedule for Later</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label htmlFor="composeSendTime" className="block text-sm font-medium text-gray-700">Send Time</label>
+                  <select
+                    id="composeSendTime"
+                    value={composeData.sendImmediately ? 'immediate' : 'scheduled'}
+                    onChange={(e) => setComposeData({
+                      ...composeData, 
+                      sendImmediately: e.target.value === 'immediate'
+                    })}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="immediate">Send Immediately</option>
+                    <option value="scheduled">Schedule for Later</option>
+                  </select>
                 </div>
                 
                 {!composeData.sendImmediately && (
                   <div>
-                    <Label htmlFor="scheduledTime">Scheduled Time</Label>
-                    <Input
-                      id="scheduledTime"
+                    <label htmlFor="composeScheduledTime" className="block text-sm font-medium text-gray-700">Scheduled Time</label>
+                    <input
                       type="datetime-local"
+                      id="composeScheduledTime"
                       value={composeData.scheduledTime}
                       onChange={(e) => setComposeData({...composeData, scheduledTime: e.target.value})}
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 )}
@@ -702,16 +734,18 @@ const Messaging: React.FC<MessagingProps> = ({ messages }) => {
             </div>
             
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
-              <Button variant="outline" onClick={() => setShowCompose(false)}>
+              <button onClick={() => setShowCompose(false)} className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 Cancel
-              </Button>
-              <Button variant="outline" onClick={() => setComposeData({...composeData, content: ''})}>
+              </button>
+              <button onClick={() => setComposeData({...composeData, content: ''})} className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 Save Draft
-              </Button>
-              <Button onClick={handleSendMessage} className="flex items-center space-x-2">
-                <Send className="h-4 w-4" />
+              </button>
+              <button onClick={handleSendMessage} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10a8 8 0 008 8v2M3 10a8 8 0 018-8V0C5 0 0 5 0 10h3zm8 0h3a8 8 0 018 8v2M11 12h2m-6 0H3" />
+                </svg>
                 <span>Send Message</span>
-              </Button>
+              </button>
             </div>
           </div>
         </div>

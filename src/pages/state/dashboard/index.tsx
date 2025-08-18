@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import Overview from './Overview';
 import Tournaments from './Tournaments';
 import ClubManagement from './ClubManagement';
@@ -71,7 +70,7 @@ const StateDashboard = () => {
     {
       id: 1,
       name: 'Elite Pickleball Club',
-      city: 'Guadalajara',
+      city: 'Sacramento',
       members: 156,
       status: 'Active',
       complianceScore: 95,
@@ -82,7 +81,7 @@ const StateDashboard = () => {
     {
       id: 2,
       name: 'Metro Sports Center',
-      city: 'Zapopan',
+      city: 'Los Angeles',
       members: 89,
       status: 'Active',
       complianceScore: 87,
@@ -93,7 +92,7 @@ const StateDashboard = () => {
     {
       id: 3,
       name: 'Community Courts',
-      city: 'Tlaquepaque',
+      city: 'San Francisco',
       members: 67,
       status: 'Pending Review',
       complianceScore: 72,
@@ -103,7 +102,184 @@ const StateDashboard = () => {
     }
   ];
 
-  // Member verification data
+  // Verification requests data
+  const verificationRequests = [
+    {
+      id: 1,
+      applicantName: 'Sarah M.',
+      type: 'Coach Certification',
+      submittedDate: '2024-03-20',
+      status: 'Pending Review',
+      priority: 'High',
+      documents: 5,
+      estimatedTime: '3-5 days'
+    },
+    {
+      id: 2,
+      applicantName: 'Mike R.',
+      type: 'Tournament Director',
+      submittedDate: '2024-03-18',
+      status: 'Under Review',
+      priority: 'Medium',
+      documents: 3,
+      estimatedTime: '2-3 days'
+    },
+    {
+      id: 3,
+      applicantName: 'Lisa K.',
+      type: 'Club Manager',
+      submittedDate: '2024-03-15',
+      status: 'Pending Review',
+      priority: 'Medium',
+      documents: 4,
+      estimatedTime: '3-5 days'
+    }
+  ];
+
+  // Analytics data
+  const analyticsData = {
+    memberGrowth: 15.2,
+    revenueGrowth: 12.5,
+    tournamentParticipation: 87.3,
+    clubCompliance: 92.1,
+    monthlyTrends: [45, 52, 48, 67, 73, 89, 95, 87, 92, 98, 105, 112]
+  };
+
+  // Communications data
+  const communicationsData = {
+    totalAnnouncements: 15,
+    scheduledMessages: 8,
+    memberEngagement: 78.5,
+    responseRate: 92.3,
+    recentMessages: [
+      {
+        id: 1,
+        type: 'Announcement',
+        title: 'State Championship Registration Open',
+        sentDate: '2024-03-25',
+        recipients: 1247,
+        opened: 892,
+        clicked: 234
+      },
+      {
+        id: 2,
+        type: 'Newsletter',
+        title: 'March Federation Update',
+        sentDate: '2024-03-20',
+        recipients: 1247,
+        opened: 756,
+        clicked: 189
+      }
+    ]
+  };
+
+  // Recent members data for Overview component
+  const recentMembers = [
+    {
+      id: 1,
+      name: 'Sarah M.',
+      type: 'Player',
+      club: 'Elite Pickleball Club',
+      joinDate: '2024-03-20',
+      status: 'Active',
+      photo: null
+    },
+    {
+      id: 2,
+      name: 'Mike R.',
+      type: 'Coach',
+      club: 'Pro Training Center',
+      joinDate: '2024-03-18',
+      status: 'Active',
+      photo: null
+    },
+    {
+      id: 3,
+      name: 'Lisa K.',
+      type: 'Player',
+      club: 'Community Courts',
+      joinDate: '2024-03-15',
+      status: 'Active',
+      photo: null
+    }
+  ];
+
+  // Recent announcements data for Overview component
+  const recentAnnouncements = [
+    {
+      id: 1,
+      title: 'State Championship Registration Open',
+      date: '2024-03-25',
+      priority: 'High',
+      category: 'Tournament'
+    },
+    {
+      id: 2,
+      title: 'New Safety Guidelines for Clubs',
+      date: '2024-03-22',
+      priority: 'Medium',
+      category: 'Safety'
+    },
+    {
+      id: 3,
+      title: 'Coach Certification Program',
+      date: '2024-03-20',
+      priority: 'Medium',
+      category: 'Training'
+    }
+  ];
+
+  // Microsite configuration data with required properties
+  const micrositeConfig = {
+    stateName: 'California State Pickleball Federation',
+    description: 'Official state representative for California Pickleball Federation with authority to organize state-level tournaments',
+    logo: 'https://example.com/california-logo.png',
+    bannerImage: 'https://example.com/california-banner.jpg',
+    contactInfo: {
+      phone: '+1-555-123-4567',
+      email: 'california@pickleballfederation.org',
+      address: '123 State Street, Sacramento, CA 95814',
+      website: 'https://www.california-pickleball.org'
+    },
+    socialMedia: {
+      facebook: 'https://facebook.com/california-pickleball',
+      instagram: 'https://instagram.com/california-pickleball',
+      twitter: 'https://twitter.com/california-pickleball'
+    },
+    features: {
+      tournaments: true,
+      training: true,
+      rankings: true,
+      news: true
+    }
+  };
+
+  // Performance analytics data for Analytics component
+  const performanceData = {
+    memberGrowth: {
+      thisYear: 1247,
+      lastYear: 1100,
+      growth: 13.4
+    },
+    revenueGrowth: {
+      thisYear: 45600,
+      lastYear: 42000,
+      growth: 8.6
+    },
+    tournamentGrowth: {
+      thisYear: 23,
+      lastYear: 18,
+      growth: 27.8
+    },
+    monthlyTrends: [
+      { month: 'Jan', members: 1180, revenue: 4200 },
+      { month: 'Feb', members: 1200, revenue: 4400 },
+      { month: 'Mar', members: 1247, revenue: 4560 },
+      { month: 'Apr', members: 0, revenue: 0 }
+    ]
+  };
+
+  // Member verification data for Verifications component
   const memberVerifications = [
     {
       id: 1,
@@ -141,177 +317,200 @@ const StateDashboard = () => {
     }
   ];
 
-  // State microsite configuration data
-  const micrositeConfig = {
-    stateName: 'Jalisco State Pickleball Federation',
-    description: 'Official state representative for Jalisco Pickleball Federation with authority to organize state-level tournaments',
-    logo: 'https://example.com/jalisco-logo.png',
-    bannerImage: 'https://example.com/jalisco-banner.jpg',
-    contactInfo: {
-      phone: '+52-33-1234-5678',
-      email: 'jalisco@pickleballfederation.mx',
-      address: 'Av. Juárez 1234, Guadalajara, Jalisco',
-      website: 'https://www.jalisco-pickleball.mx'
-    },
-    socialMedia: {
-      facebook: 'https://facebook.com/jalisco-pickleball',
-      instagram: 'https://instagram.com/jalisco-pickleball',
-      twitter: 'https://twitter.com/jalisco-pickleball'
-    },
-    features: {
-      tournaments: true,
-      training: true,
-      rankings: true,
-      news: true
-    }
-  };
-
-  // Performance analytics data
-  const performanceData = {
-    memberGrowth: {
-      thisYear: 1247,
-      lastYear: 1100,
-      growth: 13.4
-    },
-    revenueGrowth: {
-      thisYear: 45600,
-      lastYear: 42000,
-      growth: 8.6
-    },
-    tournamentGrowth: {
-      thisYear: 23,
-      lastYear: 18,
-      growth: 27.8
-    },
-    monthlyTrends: [
-      { month: 'Jan', members: 1180, revenue: 4200 },
-      { month: 'Feb', members: 1200, revenue: 4400 },
-      { month: 'Mar', members: 1247, revenue: 4560 },
-      { month: 'Apr', members: 0, revenue: 0 }
-    ]
-  };
-
-  // Recent members and announcements data
-  const recentMembers = [
-    {
-      id: 1,
-      name: 'Sarah M.',
-      type: 'Player',
-      club: 'Elite Pickleball Club',
-      joinDate: '2024-03-20',
-      status: 'Active',
-      photo: null
-    },
-    {
-      id: 2,
-      name: 'Mike R.',
-      type: 'Coach',
-      club: 'Pro Training Center',
-      joinDate: '2024-03-18',
-      status: 'Active',
-      photo: null
-    },
-    {
-      id: 3,
-      name: 'Lisa K.',
-      type: 'Player',
-      club: 'Community Courts',
-      joinDate: '2024-03-15',
-      status: 'Active',
-      photo: null
-    }
-  ];
-
-  const recentAnnouncements = [
-    {
-      id: 1,
-      title: 'State Championship Registration Open',
-      date: '2024-03-25',
-      priority: 'High',
-      category: 'Tournament'
-    },
-    {
-      id: 2,
-      title: 'New Safety Guidelines for Clubs',
-      date: '2024-03-22',
-      priority: 'Medium',
-      category: 'Safety'
-    },
-    {
-      id: 3,
-      title: 'Coach Certification Program',
-      date: '2024-03-20',
-      priority: 'Medium',
-      category: 'Training'
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.username || 'State Federation'}!
-          </h1>
-          <p className="text-gray-600">Here's what's happening with your state pickleball federation today</p>
+        <div className="mb-8 animate-on-scroll">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">State Federation Dashboard</h1>
+          <p className="text-gray-600">Welcome back, {user?.full_name || 'Federation Administrator'}</p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-on-scroll">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-blue-600">{stateStats.totalMembers.toLocaleString()}</p>
+              </div>
+              <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-blue-600 text-lg font-semibold">👥</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clubs</p>
+                <p className="text-2xl font-bold text-green-600">{stateStats.totalClubs}</p>
+              </div>
+              <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-lg font-semibold">🏢</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-purple-600">${stateStats.monthlyRevenue.toLocaleString()}</p>
+              </div>
+              <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 text-lg font-semibold">💰</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Applications</p>
+                <p className="text-2xl font-bold text-orange-600">{stateStats.pendingApplications}</p>
+              </div>
+              <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <span className="text-orange-600 text-lg font-semibold">⏳</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Content Tabs */}
         <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
-              <TabsTrigger value="clubs">Club Management</TabsTrigger>
-              <TabsTrigger value="verifications">Verifications</TabsTrigger>
-              <TabsTrigger value="microsite">Microsite</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="communications">Communications</TabsTrigger>
-            </TabsList>
+          {/* Tab Navigation */}
+          <div className="grid w-full grid-cols-7 bg-white rounded-lg shadow-sm border border-gray-200 p-1 animate-on-scroll">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'overview'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('tournaments')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'tournaments'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Tournaments
+            </button>
+            <button
+              onClick={() => setActiveTab('clubs')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'clubs'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Clubs
+            </button>
+            <button
+              onClick={() => setActiveTab('verifications')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'verifications'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Verifications
+            </button>
+            <button
+              onClick={() => setActiveTab('microsite')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'microsite'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Microsite
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Analytics
+            </button>
+            <button
+              onClick={() => setActiveTab('communications')}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'communications'
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Communications
+            </button>
+          </div>
 
+          {/* Tab Content */}
+          <div className="mt-6">
             {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
-              <Overview 
-                stateStats={stateStats}
-                recentMembers={recentMembers}
-                recentAnnouncements={recentAnnouncements}
-              />
-            </TabsContent>
+            {activeTab === 'overview' && (
+              <div className="animate-on-scroll">
+                <Overview 
+                  stateStats={stateStats}
+                  recentMembers={recentMembers}
+                  recentAnnouncements={recentAnnouncements}
+                />
+              </div>
+            )}
 
             {/* Tournaments Tab */}
-            <TabsContent value="tournaments" className="mt-6">
-              <Tournaments tournaments={tournaments} />
-            </TabsContent>
+            {activeTab === 'tournaments' && (
+              <div className="animate-on-scroll">
+                <Tournaments tournaments={tournaments} />
+              </div>
+            )}
 
-            {/* Club Management Tab */}
-            <TabsContent value="clubs" className="mt-6">
-              <ClubManagement clubAffiliations={clubAffiliations} />
-            </TabsContent>
+            {/* Clubs Tab */}
+            {activeTab === 'clubs' && (
+              <div className="animate-on-scroll">
+                <ClubManagement clubAffiliations={clubAffiliations} />
+              </div>
+            )}
 
             {/* Verifications Tab */}
-            <TabsContent value="verifications" className="mt-6">
-              <Verifications memberVerifications={memberVerifications} />
-            </TabsContent>
+            {activeTab === 'verifications' && (
+              <div className="animate-on-scroll">
+                <Verifications memberVerifications={memberVerifications} />
+              </div>
+            )}
 
             {/* Microsite Tab */}
-            <TabsContent value="microsite" className="mt-6">
-              <Microsite micrositeConfig={micrositeConfig} />
-            </TabsContent>
+            {activeTab === 'microsite' && (
+              <div className="animate-on-scroll">
+                <Microsite micrositeConfig={micrositeConfig} />
+              </div>
+            )}
 
             {/* Analytics Tab */}
-            <TabsContent value="analytics" className="mt-6">
-              <Analytics performanceData={performanceData} stateStats={stateStats} />
-            </TabsContent>
+            {activeTab === 'analytics' && (
+              <div className="animate-on-scroll">
+                <Analytics performanceData={performanceData} stateStats={stateStats} />
+              </div>
+            )}
 
             {/* Communications Tab */}
-            <TabsContent value="communications" className="mt-6">
-              <Communications 
-                stateStats={stateStats}
-                recentAnnouncements={recentAnnouncements}
-              />
-            </TabsContent>
-          </Tabs>
+            {activeTab === 'communications' && (
+              <div className="animate-on-scroll">
+                <Communications 
+                  stateStats={stateStats}
+                  recentAnnouncements={recentAnnouncements}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

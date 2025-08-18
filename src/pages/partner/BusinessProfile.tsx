@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { 
   Building2, 
   MapPin, 
@@ -99,49 +91,89 @@ const BusinessProfile = () => {
     setIsEditing(false);
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const updateField = (field: string, value: any) => {
     setEditedData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleArrayChange = (field: string, index: number, value: string) => {
+  const updateBusinessHours = (day: string, value: string) => {
     setEditedData(prev => ({
       ...prev,
-      [field]: prev[field as keyof typeof prev].map((item: any, i: number) => 
-        i === index ? value : item
-      )
+      businessHours: {
+        ...prev.businessHours,
+        [day]: value
+      }
     }));
   };
 
-  const addArrayItem = (field: string) => {
+  const updateSocialMedia = (platform: string, value: string) => {
     setEditedData(prev => ({
       ...prev,
-      [field]: [...(prev[field as keyof typeof prev] as any[]), '']
+      socialMedia: {
+        ...prev.socialMedia,
+        [platform]: value
+      }
     }));
   };
 
-  const removeArrayItem = (field: string, index: number) => {
+  const addService = () => {
+    const newService = prompt('Enter new service:');
+    if (newService && newService.trim()) {
+      setEditedData(prev => ({
+        ...prev,
+        services: [...prev.services, newService.trim()]
+      }));
+    }
+  };
+
+  const removeService = (index: number) => {
     setEditedData(prev => ({
       ...prev,
-      [field]: (prev[field as keyof typeof prev] as any[]).filter((_, i) => i !== index)
+      services: prev.services.filter((_, i) => i !== index)
     }));
   };
 
-  const businessStats = {
-    totalCourts: 12,
-    totalCustomers: 89,
-    averageRating: 4.7,
-    totalBookings: 156,
-    monthlyRevenue: 12450
+  const addAmenity = () => {
+    const newAmenity = prompt('Enter new amenity:');
+    if (newAmenity && newAmenity.trim()) {
+      setEditedData(prev => ({
+        ...prev,
+        amenities: [...prev.amenities, newAmenity.trim()]
+      }));
+    }
+  };
+
+  const removeAmenity = (index: number) => {
+    setEditedData(prev => ({
+      ...prev,
+      amenities: prev.amenities.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addPaymentMethod = () => {
+    const newMethod = prompt('Enter new payment method:');
+    if (newMethod && newMethod.trim()) {
+      setEditedData(prev => ({
+        ...prev,
+        paymentMethods: [...prev.paymentMethods, newMethod.trim()]
+      }));
+    }
+  };
+
+  const removePaymentMethod = (index: number) => {
+    setEditedData(prev => ({
+      ...prev,
+      paymentMethods: prev.paymentMethods.filter((_, i) => i !== index)
+    }));
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Business Profile</h1>
             <p className="text-gray-600">Manage your business information and settings</p>
@@ -149,393 +181,383 @@ const BusinessProfile = () => {
           <div className="flex space-x-3">
             {isEditing ? (
               <>
-                <Button onClick={handleSave} className="flex items-center space-x-2">
+                <button
+                  onClick={handleSave}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2"
+                >
                   <Save className="h-4 w-4" />
                   <span>Save Changes</span>
-                </Button>
-                <Button variant="outline" onClick={handleCancel} className="flex items-center space-x-2">
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                >
                   <X className="h-4 w-4" />
                   <span>Cancel</span>
-                </Button>
+                </button>
               </>
             ) : (
-              <Button onClick={() => setIsEditing(true)} className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2"
+              >
                 <Edit3 className="h-4 w-4" />
                 <span>Edit Profile</span>
-              </Button>
+              </button>
             )}
           </div>
         </div>
 
-        {/* Business Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Courts</CardTitle>
-              <MapPin className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{businessStats.totalCourts}</div>
-              <p className="text-xs text-gray-600">courts available</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-              <Users className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{businessStats.totalCustomers}</div>
-              <p className="text-xs text-gray-600">registered customers</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
-              <Star className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{businessStats.averageRating}</div>
-              <p className="text-xs text-gray-600">out of 5 stars</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-              <Calendar className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{businessStats.totalBookings}</div>
-              <p className="text-xs text-gray-600">bookings this month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">${businessStats.monthlyRevenue.toLocaleString()}</div>
-              <p className="text-xs text-gray-600">this month</p>
-            </CardContent>
-          </Card>
+        {/* Business Overview */}
+        <div className="bg-white rounded-lg shadow-md mb-8 animate-on-scroll">
+          <div className="p-6 border-b">
+            <div className="flex items-center space-x-4">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center text-2xl font-bold">
+                {businessData.businessName.split(' ').map(word => word[0]).join('')}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{businessData.businessName}</h2>
+                <p className="text-gray-600">{businessData.businessType}</p>
+                <p className="text-sm text-gray-500">Founded {businessData.foundedYear}</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-700 leading-relaxed">{businessData.description}</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Business Information */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Basic Information */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
                   <Building2 className="h-5 w-5 text-blue-500" />
                   <span>Basic Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="businessName">Business Name</Label>
-                    <Input
-                      id="businessName"
-                      value={isEditing ? editedData.businessName : businessData.businessName}
-                      onChange={(e) => handleInputChange('businessName', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                    <input
+                      type="text"
+                      value={editedData.businessName}
+                      onChange={(e) => updateField('businessName', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="businessType">Business Type</Label>
-                    <Select 
-                      value={isEditing ? editedData.businessType : businessData.businessType}
-                      onValueChange={(value) => handleInputChange('businessType', value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Business Type</label>
+                    <input
+                      type="text"
+                      value={editedData.businessType}
+                      onChange={(e) => updateField('businessType', e.target.value)}
                       disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Sports Facility">Sports Facility</SelectItem>
-                        <SelectItem value="Recreation Center">Recreation Center</SelectItem>
-                        <SelectItem value="Fitness Club">Fitness Club</SelectItem>
-                        <SelectItem value="Community Center">Community Center</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="foundedYear">Founded Year</Label>
-                    <Input
-                      id="foundedYear"
-                      value={isEditing ? editedData.foundedYear : businessData.foundedYear}
-                      onChange={(e) => handleInputChange('foundedYear', e.target.value)}
-                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="operatingHours">Operating Hours</Label>
-                    <Input
-                      id="operatingHours"
-                      value={isEditing ? editedData.operatingHours : businessData.operatingHours}
-                      onChange={(e) => handleInputChange('operatingHours', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Founded Year</label>
+                    <input
+                      type="text"
+                      value={editedData.foundedYear}
+                      onChange={(e) => updateField('foundedYear', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea
+                      value={editedData.description}
+                      onChange={(e) => updateField('description', e.target.value)}
+                      disabled={!isEditing}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="description">Business Description</Label>
-                  <Textarea
-                    id="description"
-                    value={isEditing ? editedData.description : businessData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    disabled={!isEditing}
-                    rows={4}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Mail className="h-5 w-5 text-green-500" />
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Phone className="h-5 w-5 text-green-500" />
                   <span>Contact Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input
                       type="email"
-                      value={isEditing ? editedData.email : businessData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      value={editedData.email}
+                      onChange={(e) => updateField('email', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={isEditing ? editedData.phone : businessData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      value={editedData.phone}
+                      onChange={(e) => updateField('phone', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={isEditing ? editedData.website : businessData.website}
-                      onChange={(e) => handleInputChange('website', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                    <input
+                      type="url"
+                      value={editedData.website}
+                      onChange={(e) => updateField('website', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Address */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
                   <MapPin className="h-5 w-5 text-red-500" />
                   <span>Address</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="address">Street Address</Label>
-                  <Input
-                    id="address"
-                    value={isEditing ? editedData.address : businessData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
+                </h3>
+              </div>
+              <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={isEditing ? editedData.city : businessData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                    <input
+                      type="text"
+                      value={editedData.address}
+                      onChange={(e) => updateField('address', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      value={isEditing ? editedData.state : businessData.state}
-                      onChange={(e) => handleInputChange('state', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                    <input
+                      type="text"
+                      value={editedData.city}
+                      onChange={(e) => updateField('city', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="zipCode">ZIP Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={isEditing ? editedData.zipCode : businessData.zipCode}
-                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                    <input
+                      type="text"
+                      value={editedData.state}
+                      onChange={(e) => updateField('state', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+                    <input
+                      type="text"
+                      value={editedData.zipCode}
+                      onChange={(e) => updateField('zipCode', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Services */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Services Offered</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {(isEditing ? editedData.services : businessData.services).map((service, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        value={service}
-                        onChange={(e) => handleArrayChange('services', index, e.target.value)}
-                        disabled={!isEditing}
-                      />
-                      {isEditing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeArrayItem('services', index)}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                  {isEditing && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addArrayItem('services')}
-                    >
-                      Add Service
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Amenities */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Amenities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {(isEditing ? editedData.amenities : businessData.amenities).map((amenity, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        value={amenity}
-                        onChange={(e) => handleArrayChange('amenities', index, e.target.value)}
-                        disabled={!isEditing}
-                      />
-                      {isEditing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeArrayItem('amenities', index)}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                  {isEditing && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addArrayItem('amenities')}
-                    >
-                      Add Amenity
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Right Column */}
           <div className="space-y-6">
-            {/* Business Logo */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Business Logo</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <Avatar className="h-24 w-24 mx-auto mb-4">
-                  <AvatarImage src={businessData.businessLogo} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl">
-                    {businessData.businessName.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                {isEditing && (
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Upload Logo
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Payment Methods */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Methods</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {businessData.paymentMethods.map((method, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm">{method}</span>
+            {/* Operating Hours */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Clock className="h-5 w-5 text-yellow-500" />
+                  <span>Operating Hours</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-3">
+                  {Object.entries(editedData.businessHours).map(([day, hours]) => (
+                    <div key={day} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700 capitalize">{day}</span>
+                      <input
+                        type="text"
+                        value={hours}
+                        onChange={(e) => updateBusinessHours(day, e.target.value)}
+                        disabled={!isEditing}
+                        className="w-32 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                      />
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Social Media */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Social Media</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {Object.entries(businessData.socialMedia).map(([platform, url]) => (
-                    <div key={platform} className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm capitalize">{platform}</span>
-                      {isEditing ? (
-                        <Input
-                          value={url}
-                          onChange={(e) => setEditedData(prev => ({
-                            ...prev,
-                            socialMedia: { ...prev.socialMedia, [platform]: e.target.value }
-                          }))}
-                          className="text-xs"
-                        />
-                      ) : (
-                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs hover:underline">
-                          {url}
-                        </a>
+            {/* Services */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Star className="h-5 w-5 text-purple-500" />
+                  <span>Services</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-2">
+                  {editedData.services.map((service, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <span className="text-sm">{service}</span>
+                      {isEditing && (
+                        <button
+                          onClick={() => removeService(index)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       )}
                     </div>
                   ))}
+                  {isEditing && (
+                    <button
+                      onClick={addService}
+                      className="w-full px-3 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                    >
+                      + Add Service
+                    </button>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+
+            {/* Amenities */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Users className="h-5 w-5 text-green-500" />
+                  <span>Amenities</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-2">
+                  {editedData.amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <span className="text-sm">{amenity}</span>
+                      {isEditing && (
+                        <button
+                          onClick={() => removeAmenity(index)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {isEditing && (
+                    <button
+                      onClick={addAmenity}
+                      className="w-full px-3 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                    >
+                      + Add Amenity
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Methods */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <DollarSign className="h-5 w-5 text-green-500" />
+                  <span>Payment Methods</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-2">
+                  {editedData.paymentMethods.map((method, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <span className="text-sm">{method}</span>
+                      {isEditing && (
+                        <button
+                          onClick={() => removePaymentMethod(index)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {isEditing && (
+                    <button
+                      onClick={addPaymentMethod}
+                      className="w-full px-3 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                    >
+                      + Add Payment Method
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Globe className="h-5 w-5 text-blue-500" />
+                  <span>Social Media</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Facebook</label>
+                    <input
+                      type="url"
+                      value={editedData.socialMedia.facebook}
+                      onChange={(e) => updateSocialMedia('facebook', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
+                    <input
+                      type="url"
+                      value={editedData.socialMedia.instagram}
+                      onChange={(e) => updateSocialMedia('instagram', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Twitter</label>
+                    <input
+                      type="url"
+                      value={editedData.socialMedia.twitter}
+                      onChange={(e) => updateSocialMedia('twitter', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

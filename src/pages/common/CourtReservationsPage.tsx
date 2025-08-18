@@ -31,7 +31,7 @@ const CourtCard: React.FC<CourtCardProps> = ({
   if (viewMode === 'list') {
     return (
       <div 
-        className={`cursor-pointer transition-all duration-300 hover:shadow-md border rounded-lg ${
+        className={`cursor-pointer transition-all duration-300 hover:shadow-md border rounded-lg animate-on-scroll ${
           isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
         }`}
         onClick={onSelect}
@@ -51,23 +51,23 @@ const CourtCard: React.FC<CourtCardProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{court.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{court.club_name}</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1 animate-on-scroll">{court.name}</h3>
+                <p className="text-sm text-gray-600 mb-2 animate-on-scroll">{court.club_name}</p>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 animate-on-scroll">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     {court.location}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 animate-on-scroll">
                     <svg className="w-4 h-4 text-yellow-500 fill-current" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                     </svg>
                     {court.rating}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 animate-on-scroll">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 5.477 5.754 5 7.5 5c1.747 0 3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.523 18.246 19 16.5 19c-1.746 0-3.332-.477-4.5-1.253" />
                     </svg>
@@ -77,9 +77,9 @@ const CourtCard: React.FC<CourtCardProps> = ({
               </div>
               
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">${court.hourly_rate}</div>
-                <div className="text-sm text-gray-500">per hour</div>
-                <div className="text-sm text-green-600 font-medium">
+                <div className="text-2xl font-bold text-blue-600 animate-on-scroll">${court.hourly_rate}</div>
+                <div className="text-sm text-gray-500 animate-on-scroll">per hour</div>
+                <div className="text-sm text-green-600 font-medium animate-on-scroll">
                   Member: ${court.member_rate}
                 </div>
               </div>
@@ -87,7 +87,7 @@ const CourtCard: React.FC<CourtCardProps> = ({
           </div>
           
           <div className="flex flex-col gap-2">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium animate-on-scroll ${
               court.is_available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
             }`}>
               {court.is_available ? 'Available' : 'Unavailable'}
@@ -99,7 +99,9 @@ const CourtCard: React.FC<CourtCardProps> = ({
                   e.stopPropagation();
                   onFavorite(court.id);
                 }}
-                className={`p-2 rounded-md hover:bg-gray-100 transition-colors ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
+                className={`p-2 rounded-md hover:bg-gray-100 transition-colors animate-on-scroll ${
+                  isFavorite ? 'text-red-500' : 'text-gray-400'
+                }`}
               >
                 <svg className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -110,7 +112,7 @@ const CourtCard: React.FC<CourtCardProps> = ({
                   e.stopPropagation();
                   onShare(court);
                 }}
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
@@ -121,7 +123,7 @@ const CourtCard: React.FC<CourtCardProps> = ({
                   e.stopPropagation();
                   onViewDetails(court);
                 }}
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -135,139 +137,98 @@ const CourtCard: React.FC<CourtCardProps> = ({
     );
   }
 
+  // Grid view
   return (
     <div 
-      className={`cursor-pointer transition-all duration-300 hover:shadow-lg border rounded-lg ${
+      className={`cursor-pointer transition-all duration-300 hover:shadow-lg border rounded-lg overflow-hidden animate-on-scroll ${
         isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
       }`}
       onClick={onSelect}
     >
-      <div className="relative">
-        <div className="w-full h-48 rounded-t-lg overflow-hidden bg-gray-100">
-          <img 
-            src={court.image} 
-            alt={court.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = '/img/placeholder.svg';
-            }}
-          />
+      <div className="w-full h-48 overflow-hidden">
+        <img 
+          src={court.image} 
+          alt={court.name}
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            e.currentTarget.src = '/img/placeholder.svg';
+          }}
+        />
+      </div>
+      
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 animate-on-scroll">{court.name}</h3>
+            <p className="text-sm text-gray-600 mb-2 animate-on-scroll">{court.club_name}</p>
+          </div>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium animate-on-scroll ${
+            court.is_available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}>
+            {court.is_available ? 'Available' : 'Unavailable'}
+          </span>
         </div>
         
-        <div className="absolute top-3 right-3 flex gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onFavorite(court.id);
-            }}
-            className={`p-2 rounded-md bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-colors ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
-          >
-            <svg className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onShare(court);
-            }}
-            className="p-2 rounded-md bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-colors text-gray-400 hover:text-gray-600"
-          >
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600 animate-on-scroll">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-          </button>
-        </div>
-        
-        <span className={`absolute top-3 left-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          court.is_available ? "bg-green-500 text-white" : "bg-red-500 text-white"
-        }`}>
-          {court.is_available ? 'Available' : 'Unavailable'}
-        </span>
-      </div>
-      
-      <div className="p-4 pb-3">
-        <h3 className="text-lg font-semibold text-gray-900">{court.name}</h3>
-        <p className="text-sm text-gray-600 flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-          {court.club_name}
-        </p>
-      </div>
-      
-      <div className="px-4 pb-4 space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Type:</span>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
-            {court.court_type}
-          </span>
-        </div>
-        
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Surface:</span>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
-            {court.surface.replace('_', ' ')}
-          </span>
-        </div>
-        
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Rating:</span>
-          <div className="flex items-center gap-1">
+            {court.location}
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600 animate-on-scroll">
             <svg className="w-4 h-4 text-yellow-500 fill-current" fill="currentColor" viewBox="0 0 24 24">
               <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
-            <span className="font-medium">{court.rating}</span>
+            {court.rating} • {court.total_bookings} bookings
           </div>
         </div>
         
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Bookings:</span>
-          <span className="font-medium">{court.total_bookings}</span>
-        </div>
-        
-        <div className="pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Pricing</span>
+        <div className="flex items-center justify-between">
+          <div className="text-right">
+            <div className="text-xl font-bold text-blue-600 animate-on-scroll">${court.hourly_rate}</div>
+            <div className="text-sm text-gray-500 animate-on-scroll">per hour</div>
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-lg font-bold text-blue-600">${court.hourly_rate}</div>
-              <div className="text-xs text-gray-500">Regular Rate</div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-medium text-green-600">${court.member_rate}</div>
-              <div className="text-xs text-gray-500">Member Rate</div>
-            </div>
+          
+          <div className="flex gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onFavorite(court.id);
+              }}
+              className={`p-2 rounded-md hover:bg-gray-100 transition-colors animate-on-scroll ${
+                isFavorite ? 'text-red-500' : 'text-gray-400'
+              }`}
+            >
+              <svg className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare(court);
+              }}
+              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              </svg>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails(court);
+              }}
+              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
           </div>
-        </div>
-        
-        <div className="flex gap-2 pt-2">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onViewDetails(court);
-            }}
-            className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-          >
-            <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Details
-          </button>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect();
-            }}
-            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-          >
-            <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Book Now
-          </button>
         </div>
       </div>
     </div>
@@ -1246,4 +1207,5 @@ const CourtReservationsPage: React.FC = () => {
   );
 };
 
+export default CourtReservationsPage; 
 export default CourtReservationsPage; 

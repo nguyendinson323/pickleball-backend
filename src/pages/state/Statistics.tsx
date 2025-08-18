@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Label } from '../../components/ui/label';
 import { 
   TrendingUp, 
   TrendingDown,
@@ -98,437 +93,360 @@ const Statistics = () => {
     },
     tournaments: {
       byType: [
-        { type: 'State Championship', count: 3, participants: 456 },
-        { type: 'Regional', count: 8, participants: 892 },
-        { type: 'Local', count: 12, participants: 1234 }
+        { type: 'State Championship', count: 8, percentage: 34.8 },
+        { type: 'Regional', count: 12, percentage: 52.2 },
+        { type: 'Local', count: 3, percentage: 13.0 }
       ],
-      byCategory: [
-        { category: 'Singles', count: 15, percentage: 65.2 },
-        { category: 'Doubles', count: 6, percentage: 26.1 },
-        { category: 'Mixed', count: 2, percentage: 8.7 }
+      bySeason: [
+        { season: 'Spring', count: 8, percentage: 34.8 },
+        { season: 'Summer', count: 6, percentage: 26.1 },
+        { season: 'Fall', count: 6, percentage: 26.1 },
+        { season: 'Winter', count: 3, percentage: 13.0 }
       ],
-      monthlySchedule: [
-        { month: 'Jan', count: 2, participants: 234 },
-        { month: 'Feb', count: 1, participants: 156 },
-        { month: 'Mar', count: 3, participants: 345 },
-        { month: 'Apr', count: 2, participants: 267 },
-        { month: 'May', count: 4, participants: 456 },
-        { month: 'Jun', count: 3, participants: 378 },
-        { month: 'Jul', count: 2, participants: 289 },
-        { month: 'Aug', count: 1, participants: 198 },
-        { month: 'Sep', count: 2, participants: 234 },
-        { month: 'Oct', count: 2, participants: 267 },
-        { month: 'Nov', count: 1, participants: 189 },
-        { month: 'Dec', count: 0, participants: 0 }
-      ]
+      monthlyCount: [2, 1, 3, 2, 2, 1, 2, 3, 2, 2, 2, 1]
     },
     revenue: {
       bySource: [
-        { source: 'Membership Fees', amount: 28900, percentage: 63.4 },
-        { source: 'Tournament Fees', amount: 8900, percentage: 19.5 },
-        { source: 'Coach Certifications', amount: 5600, percentage: 12.3 },
-        { source: 'Club Affiliations', amount: 2200, percentage: 4.8 }
+        { source: 'Memberships', amount: 28900, percentage: 63.4 },
+        { source: 'Tournaments', amount: 8900, percentage: 19.5 },
+        { source: 'Training Programs', amount: 5600, percentage: 12.3 },
+        { source: 'Equipment Sales', amount: 2200, percentage: 4.8 }
       ],
-      monthlyTrend: [
-        { month: 'Jan', amount: 38900 },
-        { month: 'Feb', amount: 41200 },
-        { month: 'Mar', amount: 45600 },
-        { month: 'Apr', amount: 42300 },
-        { month: 'May', amount: 47800 },
-        { month: 'Jun', amount: 51200 },
-        { month: 'Jul', amount: 48900 },
-        { month: 'Aug', amount: 45600 },
-        { month: 'Sep', amount: 52300 },
-        { month: 'Oct', amount: 49800 },
-        { month: 'Nov', amount: 53400 },
-        { month: 'Dec', amount: 56700 }
-      ]
+      monthlyRevenue: [42000, 43500, 44100, 44800, 45200, 45600, 45900, 46200, 46500, 46800, 47100, 47400],
+      growthRate: 12.5
     }
   };
 
-  const getGrowthColor = (growth: number) => {
-    return growth >= 0 ? 'text-green-600' : 'text-red-600';
+  const getGrowthIcon = (value: number) => {
+    if (value > 0) {
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    } else if (value < 0) {
+      return <TrendingDown className="h-4 w-4 text-red-500" />;
+    }
+    return <Target className="h-4 w-4 text-gray-500" />;
   };
 
-  const getGrowthIcon = (growth: number) => {
-    return growth >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />;
+  const getGrowthColor = (value: number) => {
+    if (value > 0) return 'text-green-600';
+    if (value < 0) return 'text-red-600';
+    return 'text-gray-600';
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Federation Statistics</h1>
-            <p className="text-gray-600">Comprehensive analytics and performance metrics for your state federation</p>
+            <p className="text-gray-600">Comprehensive overview of your federation's performance and growth</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Label htmlFor="timeRange">Time Range:</Label>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Last 7 days</SelectItem>
-                <SelectItem value="30">Last 30 days</SelectItem>
-                <SelectItem value="90">Last 90 days</SelectItem>
-                <SelectItem value="365">Last year</SelectItem>
-              </SelectContent>
-            </Select>
-            <Label htmlFor="region">Region:</Label>
-            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                <SelectItem value="northern">Northern CA</SelectItem>
-                <SelectItem value="central">Central CA</SelectItem>
-                <SelectItem value="southern">Southern CA</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex space-x-3">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last year</option>
+            </select>
+            <select
+              value={selectedRegion}
+              onChange={(e) => setSelectedRegion(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Regions</option>
+              <option value="northern">Northern CA</option>
+              <option value="central">Central CA</option>
+              <option value="southern">Southern CA</option>
+            </select>
           </div>
         </div>
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{statisticsData.overview.totalMembers.toLocaleString()}</div>
-              <div className={`flex items-center text-sm ${getGrowthColor(statisticsData.overview.memberGrowth)}`}>
-                {getGrowthIcon(statisticsData.overview.memberGrowth)}
-                <span className="ml-1">+{statisticsData.overview.memberGrowth}%</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-on-scroll">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-gray-900">{statisticsData.overview.totalMembers.toLocaleString()}</p>
               </div>
-              <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+              <Users className="h-8 w-8 text-blue-500" />
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              {getGrowthIcon(statisticsData.overview.memberGrowth)}
+              <span className={`ml-2 ${getGrowthColor(statisticsData.overview.memberGrowth)}`}>
+                {statisticsData.overview.memberGrowth > 0 ? '+' : ''}{statisticsData.overview.memberGrowth}%
+              </span>
+              <span className="ml-2 text-gray-600">from last month</span>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Clubs</CardTitle>
-              <Building2 className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{statisticsData.overview.totalClubs}</div>
-              <div className={`flex items-center text-sm ${getGrowthColor(statisticsData.overview.clubGrowth)}`}>
-                {getGrowthIcon(statisticsData.overview.clubGrowth)}
-                <span className="ml-1">+{statisticsData.overview.clubGrowth}%</span>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Clubs</p>
+                <p className="text-2xl font-bold text-gray-900">{statisticsData.overview.totalClubs}</p>
               </div>
-              <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+              <Building2 className="h-8 w-8 text-green-500" />
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              {getGrowthIcon(statisticsData.overview.clubGrowth)}
+              <span className={`ml-2 ${getGrowthColor(statisticsData.overview.clubGrowth)}`}>
+                {statisticsData.overview.clubGrowth > 0 ? '+' : ''}{statisticsData.overview.clubGrowth}%
+              </span>
+              <span className="ml-2 text-gray-600">from last month</span>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Courts</CardTitle>
-              <MapPin className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{statisticsData.overview.totalCourts}</div>
-              <p className="text-xs text-gray-600">available courts</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Courts</p>
+                <p className="text-2xl font-bold text-gray-900">{statisticsData.overview.totalCourts}</p>
+              </div>
+              <MapPin className="h-8 w-8 text-purple-500" />
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              <span className="text-gray-600">Available for play</span>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                ${statisticsData.overview.monthlyRevenue.toLocaleString()}
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">${statisticsData.overview.monthlyRevenue.toLocaleString()}</p>
               </div>
-              <div className={`flex items-center text-sm ${getGrowthColor(statisticsData.overview.revenueGrowth)}`}>
-                {getGrowthIcon(statisticsData.overview.revenueGrowth)}
-                <span className="ml-1">+{statisticsData.overview.revenueGrowth}%</span>
-              </div>
-              <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+              <DollarSign className="h-8 w-8 text-green-500" />
+            </div>
+            <div className="mt-4 flex items-center text-sm">
+              {getGrowthIcon(statisticsData.overview.revenueGrowth)}
+              <span className={`ml-2 ${getGrowthColor(statisticsData.overview.revenueGrowth)}`}>
+                {statisticsData.overview.revenueGrowth > 0 ? '+' : ''}{statisticsData.overview.revenueGrowth}%
+              </span>
+              <span className="ml-2 text-gray-600">from last month</span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Membership Demographics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+        {/* Detailed Statistics Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Membership Breakdown */}
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold flex items-center space-x-2">
                 <Users className="h-5 w-5 text-blue-500" />
-                <span>Membership Demographics</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {statisticsData.membership.byType.map((item) => (
-                  <div key={item.type} className="flex items-center justify-between">
-                    <span className="font-medium">{item.type}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600 w-12 text-right">{item.count}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Club Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building2 className="h-5 w-5 text-green-500" />
-                <span>Club Distribution by Type</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {statisticsData.clubs.byType.map((item) => (
-                  <div key={item.type} className="flex items-center justify-between">
-                    <span className="font-medium">{item.type}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-green-600 h-2 rounded-full" 
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600 w-12 text-right">{item.count}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Court Analysis */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-purple-500" />
-                <span>Court Analysis</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+                <span>Membership Breakdown</span>
+              </h3>
+            </div>
+            <div className="p-6">
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">By Type</h4>
-                  {statisticsData.courts.byType.map((item) => (
-                    <div key={item.type} className="flex items-center justify-between mb-2">
-                      <span className="text-sm">{item.type}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-purple-600 h-2 rounded-full" 
-                            style={{ width: `${item.percentage}%` }}
-                          ></div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Type</h4>
+                  <div className="space-y-2">
+                    {statisticsData.membership.byType.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.type}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
                         </div>
-                        <span className="text-sm text-gray-600 w-8 text-right">{item.count}</span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">By Surface</h4>
-                  {statisticsData.courts.bySurface.map((item) => (
-                    <div key={item.surface} className="flex items-center justify-between mb-2">
-                      <span className="text-sm">{item.surface}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-orange-600 h-2 rounded-full" 
-                            style={{ width: `${item.percentage}%` }}
-                          ></div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Skill Level</h4>
+                  <div className="space-y-2">
+                    {statisticsData.membership.bySkillLevel.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.level}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
                         </div>
-                        <span className="text-sm text-gray-600 w-8 text-right">{item.count}</span>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tournament Statistics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Award className="h-5 w-5 text-yellow-500" />
-                <span>Tournament Statistics</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {statisticsData.tournaments.byType.map((item) => (
-                  <div key={item.type} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{item.type}</h4>
-                      <p className="text-sm text-gray-600">{item.participants} participants</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold text-yellow-600">{item.count}</div>
-                      <p className="text-xs text-gray-600">tournaments</p>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Revenue Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Revenue Sources */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="h-5 w-5 text-green-500" />
-                <span>Revenue Sources</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {statisticsData.revenue.bySource.map((item) => (
-                  <div key={item.source} className="flex items-center justify-between">
-                    <span className="font-medium">{item.source}</span>
-                    <div className="text-right">
-                      <div className="font-semibold text-green-600">${item.amount.toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">{item.percentage}%</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Regional Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Flag className="h-5 w-5 text-red-500" />
-                <span>Regional Distribution</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {statisticsData.clubs.byRegion.map((item) => (
-                  <div key={item.region} className="flex items-center justify-between">
-                    <span className="font-medium">{item.region}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-red-600 h-2 rounded-full" 
-                          style={{ width: `${(item.count / statisticsData.overview.totalClubs) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600 w-12 text-right">{item.count}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Monthly Trends */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-blue-500" />
-              <span>Monthly Trends</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Revenue Trend */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-4">Revenue Trend</h4>
-                <div className="space-y-2">
-                  {statisticsData.revenue.monthlyTrend.map((item) => (
-                    <div key={item.month} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{item.month}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-green-600 h-2 rounded-full" 
-                            style={{ width: `${(item.amount / 56700) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-600 w-16 text-right">${(item.amount / 1000).toFixed(0)}k</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tournament Schedule */}
-              <div>
-                <h4 className="font-medium text-gray-900 mb-4">Tournament Schedule</h4>
-                <div className="space-y-2">
-                  {statisticsData.tournaments.monthlySchedule.map((item) => (
-                    <div key={item.month} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{item.month}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-yellow-600 h-2 rounded-full" 
-                            style={{ width: `${(item.count / 4) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-600 w-16 text-right">{item.count}</span>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Members</CardTitle>
-              <Target className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{statisticsData.overview.activeMembers.toLocaleString()}</div>
-              <p className="text-xs text-gray-600">currently active</p>
-            </CardContent>
-          </Card>
+          {/* Club Statistics */}
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold flex items-center space-x-2">
+                <Building2 className="h-5 w-5 text-green-500" />
+                <span>Club Statistics</span>
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Type</h4>
+                  <div className="space-y-2">
+                    {statisticsData.clubs.byType.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.type}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Region</h4>
+                  <div className="space-y-2">
+                    {statisticsData.clubs.byRegion.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.region}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.clubs}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Tournaments</CardTitle>
-              <Award className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{statisticsData.overview.totalTournaments}</div>
-              <p className="text-xs text-gray-600">this year</p>
-            </CardContent>
-          </Card>
+          {/* Court Information */}
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold flex items-center space-x-2">
+                <MapPin className="h-5 w-5 text-purple-500" />
+                <span>Court Information</span>
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Type</h4>
+                  <div className="space-y-2">
+                    {statisticsData.courts.byType.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.type}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Surface</h4>
+                  <div className="space-y-2">
+                    {statisticsData.courts.bySurface.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.surface}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Court Utilization</CardTitle>
-              <Activity className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">87%</div>
-              <p className="text-xs text-gray-600">average utilization</p>
-            </CardContent>
-          </Card>
+          {/* Tournament Statistics */}
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold flex items-center space-x-2">
+                <Calendar className="h-5 w-5 text-orange-500" />
+                <span>Tournament Statistics</span>
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Type</h4>
+                  <div className="space-y-2">
+                    {statisticsData.tournaments.byType.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.type}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3">By Season</h4>
+                  <div className="space-y-2">
+                    {statisticsData.tournaments.bySeason.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">{item.season}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                          <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Revenue Analysis */}
+        <div className="mt-8 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <DollarSign className="h-5 w-5 text-green-500" />
+              <span>Revenue Analysis</span>
+            </h3>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3">Revenue by Source</h4>
+                <div className="space-y-2">
+                  {statisticsData.revenue.bySource.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">{item.source}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-900">${item.amount.toLocaleString()}</span>
+                        <span className="text-xs text-gray-500">({item.percentage}%)</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3">Monthly Revenue Trend</h4>
+                <div className="h-32 flex items-end space-x-1">
+                  {statisticsData.revenue.monthlyRevenue.map((amount, index) => (
+                    <div
+                      key={index}
+                      className="flex-1 bg-blue-500 rounded-t"
+                      style={{
+                        height: `${(amount / Math.max(...statisticsData.revenue.monthlyRevenue)) * 100}%`
+                      }}
+                      title={`${new Date(2024, index, 1).toLocaleDateString('en-US', { month: 'short' })}: $${amount.toLocaleString()}`}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 text-sm text-gray-600 text-center">
+                  Monthly revenue trend over the past year
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

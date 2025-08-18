@@ -3,10 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import { registerUser } from '../../store/slices/authSlice';
-import { Button } from '../../components/ui/button';
-import { Label } from '../../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 const RequiredFieldsPage = () => {
@@ -205,20 +201,20 @@ const RequiredFieldsPage = () => {
         </div>
 
         <div>
-          <Card className="animate-on-scroll w-full">
-            <CardHeader>
-              <CardTitle className="animate-on-scroll text-xl">Account Details</CardTitle>
-              <CardDescription className="animate-on-scroll">
+          <div className="animate-on-scroll w-full bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="animate-on-scroll text-xl font-semibold text-gray-900">Account Details</h2>
+              <p className="animate-on-scroll text-gray-600">
                 These fields are required to create your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="px-6 py-4 space-y-6">
               {getRequiredFields().map((field, index) => (
                 <div
                   key={field.name}
                   className="space-y-2"
                 >
-                  <Label htmlFor={field.name} className="animate-on-scroll">{field.label}</Label>
+                  <label htmlFor={field.name} className="animate-on-scroll block text-sm font-medium text-gray-700">{field.label}</label>
                   <div className="relative">
                     <input
                       id={field.name}
@@ -247,29 +243,47 @@ const RequiredFieldsPage = () => {
                         }}
                       >
                         {field.name === 'password' 
-                          ? (showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />)
-                          : (showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />)
+                          ? (showPassword ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            ))
+                          : (showConfirmPassword ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            ))
                         }
                       </button>
                     )}
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Privacy Policy Section */}
         {(userType === 'player' || userType === 'coach') && (
           <div className="mt-6">
-            <Card className="animate-on-scroll w-full">
-              <CardHeader>
-                <CardTitle className="animate-on-scroll text-xl">Privacy Policy</CardTitle>
-                <CardDescription className="animate-on-scroll">
+            <div className="animate-on-scroll w-full bg-white rounded-lg shadow-lg border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="animate-on-scroll text-xl font-semibold text-gray-900">Privacy Policy</h2>
+                <p className="animate-on-scroll text-gray-600">
                   Please read and accept our privacy policy to continue
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="px-6 py-4">
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
                     <input
@@ -304,40 +318,42 @@ const RequiredFieldsPage = () => {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
-          <Button
-            variant="outline"
+          <button
+            className="animate-on-scroll flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             onClick={handleBack}
-            className="animate-on-scroll flex items-center gap-2 w-full sm:w-auto hover:scale-105 transition-transform duration-300"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
             Back
-          </Button>
+          </button>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Button
-              variant="outline"
+            <button
+              className="animate-on-scroll px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSkipToRegister}
               disabled={loading || userType === 'player' || userType === 'coach'}
-              className="animate-on-scroll w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               title={userType === 'player' || userType === 'coach' ? 'Players and coaches must complete full registration' : 'Skip optional fields and register now'}
             >
               {loading ? 'Creating Account...' : 'Skip & Register Now'}
-            </Button>
+            </button>
             
-            <Button
+            <button
+              className="animate-on-scroll flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300"
               onClick={handleContinue}
               disabled={loading}
-              className="animate-on-scroll flex items-center gap-2 w-full sm:w-auto hover:scale-105 transition-transform duration-300"
             >
               Continue
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

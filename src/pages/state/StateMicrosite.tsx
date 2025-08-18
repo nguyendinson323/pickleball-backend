@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Switch } from '../../components/ui/switch';
 import { 
   Globe, 
   Settings,
@@ -100,21 +92,20 @@ const StateMicrosite = () => {
     }
   });
 
-  const [newProgram, setNewProgram] = useState('');
-  const [newBenefit, setNewBenefit] = useState('');
-  const [newTestimonial, setNewTestimonial] = useState({ name: '', role: '', comment: '' });
+  const [editedData, setEditedData] = useState(micrositeData);
 
   const handleSave = () => {
-    console.log('Saving microsite data:', micrositeData);
+    setMicrositeData(editedData);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
+    setEditedData(micrositeData);
     setIsEditing(false);
   };
 
-  const handleInputChange = (section: string, field: string, value: any) => {
-    setMicrositeData(prev => ({
+  const handleInputChange = (section: string, field: string, value: string) => {
+    setEditedData(prev => ({
       ...prev,
       [section]: {
         ...prev[section as keyof typeof prev],
@@ -123,67 +114,62 @@ const StateMicrosite = () => {
     }));
   };
 
-  const handleAddProgram = () => {
-    if (newProgram.trim()) {
-      setMicrositeData(prev => ({
-        ...prev,
-        content: {
-          ...prev.content,
-          programs: [...prev.content.programs, newProgram.trim()]
-        }
-      }));
-      setNewProgram('');
-    }
-  };
-
-  const handleRemoveProgram = (index: number) => {
-    setMicrositeData(prev => ({
+  const handleArrayChange = (section: string, field: string, index: number, value: string) => {
+    setEditedData(prev => ({
       ...prev,
-      content: {
-        ...prev.content,
-        programs: prev.content.programs.filter((_, i) => i !== index)
+      [section]: {
+        ...prev[section as keyof typeof prev],
+        [field]: (prev[section as keyof typeof prev] as any)[field].map((item: any, i: number) => 
+          i === index ? value : item
+        )
       }
     }));
   };
 
-  const handleAddBenefit = () => {
-    if (newBenefit.trim()) {
-      setMicrositeData(prev => ({
-        ...prev,
-        content: {
-          ...prev.content,
-          benefits: [...prev.content.benefits, newBenefit.trim()]
-        }
-      }));
-      setNewBenefit('');
-    }
-  };
-
-  const handleRemoveBenefit = (index: number) => {
-    setMicrositeData(prev => ({
+  const addArrayItem = (section: string, field: string) => {
+    setEditedData(prev => ({
       ...prev,
-      content: {
-        ...prev.content,
-        benefits: prev.content.benefits.filter((_, i) => i !== index)
+      [section]: {
+        ...prev[section as keyof typeof prev],
+        [field]: [...(prev[section as keyof typeof prev] as any)[field], '']
       }
     }));
   };
 
-  const handleAddTestimonial = () => {
-    if (newTestimonial.name.trim() && newTestimonial.comment.trim()) {
-      setMicrositeData(prev => ({
-        ...prev,
-        content: {
-          ...prev.content,
-          testimonials: [...prev.content.testimonials, { ...newTestimonial }]
-        }
-      }));
-      setNewTestimonial({ name: '', role: '', comment: '' });
-    }
+  const removeArrayItem = (section: string, field: string, index: number) => {
+    setEditedData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section as keyof typeof prev],
+        [field]: (prev[section as keyof typeof prev] as any)[field].filter((_, i) => i !== index)
+      }
+    }));
   };
 
-  const handleRemoveTestimonial = (index: number) => {
-    setMicrositeData(prev => ({
+  const handleTestimonialChange = (index: number, field: string, value: string) => {
+    setEditedData(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        testimonials: prev.content.testimonials.map((testimonial, i) => 
+          i === index ? { ...testimonial, [field]: value } : testimonial
+        )
+      }
+    }));
+  };
+
+  const addTestimonial = () => {
+    setEditedData(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        testimonials: [...prev.content.testimonials, { name: '', role: '', comment: '' }]
+      }
+    }));
+  };
+
+  const removeTestimonial = (index: number) => {
+    setEditedData(prev => ({
       ...prev,
       content: {
         ...prev.content,
@@ -192,580 +178,611 @@ const StateMicrosite = () => {
     }));
   };
 
+  const handleToggleChange = (section: string, field: string, value: boolean) => {
+    setEditedData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section as keyof typeof prev],
+        [field]: value
+      }
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">State Federation Microsite</h1>
-            <p className="text-gray-600">Customize and manage your federation's public website</p>
+            <p className="text-gray-600">Configure and customize your public-facing microsite</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Eye className="h-4 w-4" />
-              <span>Preview</span>
-            </Button>
             {isEditing ? (
-              <Button onClick={handleSave} className="flex items-center space-x-2">
-                <Save className="h-4 w-4" />
-                <span>Save Changes</span>
-              </Button>
+              <>
+                <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2">
+                  <Save className="h-4 w-4" />
+                  <span>Save Changes</span>
+                </button>
+                <button onClick={handleCancel} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg flex items-center space-x-2">
+                  <X className="h-4 w-4" />
+                  <span>Cancel</span>
+                </button>
+              </>
             ) : (
-              <Button onClick={() => setIsEditing(true)} className="flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
-                <span>Edit Site</span>
-              </Button>
+              <button onClick={() => setIsEditing(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2">
+                <Edit3 className="h-4 w-4" />
+                <span>Edit Microsite</span>
+              </button>
             )}
           </div>
         </div>
 
-        {/* Status Bar */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Globe className="h-5 w-5 text-blue-500" />
-                  <span className="font-medium">Site Status:</span>
-                  <Badge className={micrositeData.settings.isPublished ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                    {micrositeData.settings.isPublished ? 'Published' : 'Draft'}
-                  </Badge>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Last updated: {new Date().toLocaleDateString()}
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left Sidebar - Navigation */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Settings className="h-5 w-5 text-gray-500" />
+                  <span>Configuration</span>
+                </h3>
               </div>
-              <div className="text-sm text-gray-600">
-                Site URL: <span className="font-mono text-blue-600">{micrositeData.settings.customDomain}</span>
+              <div className="p-4">
+                <nav className="space-y-2">
+                  <button
+                    onClick={() => setActiveTab('general')}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${
+                      activeTab === 'general'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Globe className="h-4 w-4" />
+                      <span>General</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('appearance')}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${
+                      activeTab === 'appearance'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Palette className="h-4 w-4" />
+                      <span>Appearance</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('content')}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${
+                      activeTab === 'content'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Layout className="h-4 w-4" />
+                      <span>Content</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('settings')}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-200 ${
+                      activeTab === 'settings'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </div>
+                  </button>
+                </nav>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Navigation Tabs */}
-        <div className="flex space-x-1 mb-8">
-          {['general', 'appearance', 'content', 'settings'].map((tab) => (
-            <Button
-              key={tab}
-              variant={activeTab === tab ? 'default' : 'outline'}
-              onClick={() => setActiveTab(tab)}
-              className="capitalize"
-            >
-              {tab === 'general' && <Globe className="h-4 w-4 mr-2" />}
-              {tab === 'appearance' && <Palette className="h-4 w-4 mr-2" />}
-              {tab === 'content' && <Layout className="h-4 w-4 mr-2" />}
-              {tab === 'settings' && <Settings className="h-4 w-4 mr-2" />}
-              {tab}
-            </Button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === 'general' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="siteName">Site Name</Label>
-                    <Input
-                      id="siteName"
-                      value={micrositeData.general.siteName}
-                      onChange={(e) => handleInputChange('general', 'siteName', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="tagline">Tagline</Label>
-                    <Input
-                      id="tagline"
-                      value={micrositeData.general.tagline}
-                      onChange={(e) => handleInputChange('general', 'tagline', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={micrositeData.general.description}
-                    onChange={(e) => handleInputChange('general', 'description', e.target.value)}
-                    disabled={!isEditing}
-                    rows={4}
-                    placeholder="Tell visitors about your federation..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Mail className="h-5 w-5 text-green-500" />
-                  <span>Contact Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contactEmail">Email</Label>
-                    <Input
-                      id="contactEmail"
-                      type="email"
-                      value={micrositeData.general.contactEmail}
-                      onChange={(e) => handleInputChange('general', 'contactEmail', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="contactPhone">Phone</Label>
-                    <Input
-                      id="contactPhone"
-                      value={micrositeData.general.contactPhone}
-                      onChange={(e) => handleInputChange('general', 'contactPhone', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={micrositeData.general.website}
-                      onChange={(e) => handleInputChange('general', 'website', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="officeHours">Office Hours</Label>
-                    <Input
-                      id="officeHours"
-                      value={micrositeData.general.officeHours}
-                      onChange={(e) => handleInputChange('general', 'officeHours', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    value={micrositeData.general.address}
-                    onChange={(e) => handleInputChange('general', 'address', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            {/* Preview Button */}
+            <div className="mt-6">
+              <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center justify-center space-x-2">
+                <Eye className="h-4 w-4" />
+                <span>Preview Microsite</span>
+              </button>
+            </div>
           </div>
-        )}
 
-        {activeTab === 'appearance' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Color Scheme</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="primaryColor">Primary Color</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        id="primaryColor"
-                        type="color"
-                        value={micrositeData.appearance.primaryColor}
-                        onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+          {/* Main Content Area */}
+          <div className="lg:col-span-3">
+            {activeTab === 'general' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Globe className="h-5 w-5 text-blue-500" />
+                    <span>Basic Information</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="siteName" className="block text-sm font-medium text-gray-700">Site Name</label>
+                      <input
+                        type="text"
+                        id="siteName"
+                        value={editedData.general.siteName}
+                        onChange={(e) => handleInputChange('general', 'siteName', e.target.value)}
                         disabled={!isEditing}
-                        className="w-16 h-10"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                       />
-                      <Input
-                        value={micrositeData.appearance.primaryColor}
-                        onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+                    </div>
+                    <div>
+                      <label htmlFor="tagline" className="block text-sm font-medium text-gray-700">Tagline</label>
+                      <input
+                        type="text"
+                        id="tagline"
+                        value={editedData.general.tagline}
+                        onChange={(e) => handleInputChange('general', 'tagline', e.target.value)}
                         disabled={!isEditing}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                       />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="secondaryColor">Secondary Color</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        id="secondaryColor"
-                        type="color"
-                        value={micrositeData.appearance.secondaryColor}
-                        onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea
+                      id="description"
+                      value={editedData.general.description}
+                      onChange={(e) => handleInputChange('general', 'description', e.target.value)}
+                      disabled={!isEditing}
+                      rows={4}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      placeholder="Tell visitors about your federation..."
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'appearance' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Palette className="h-5 w-5 text-blue-500" />
+                    <span>Color Scheme</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label htmlFor="primaryColor" className="block text-sm font-medium text-gray-700">Primary Color</label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          id="primaryColor"
+                          value={editedData.appearance.primaryColor}
+                          onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-16 h-10 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                        <input
+                          type="text"
+                          value={editedData.appearance.primaryColor}
+                          onChange={(e) => handleInputChange('appearance', 'primaryColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="secondaryColor" className="block text-sm font-medium text-gray-700">Secondary Color</label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          id="secondaryColor"
+                          value={editedData.appearance.secondaryColor}
+                          onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-16 h-10 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                        <input
+                          type="text"
+                          value={editedData.appearance.secondaryColor}
+                          onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="accentColor" className="block text-sm font-medium text-gray-700">Accent Color</label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          id="accentColor"
+                          value={editedData.appearance.accentColor}
+                          onChange={(e) => handleInputChange('appearance', 'accentColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-16 h-10 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                        <input
+                          type="text"
+                          value={editedData.appearance.accentColor}
+                          onChange={(e) => handleInputChange('appearance', 'accentColor', e.target.value)}
+                          disabled={!isEditing}
+                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="theme" className="block text-sm font-medium text-gray-700">Theme Style</label>
+                    <select 
+                      id="theme"
+                      value={editedData.appearance.theme} 
+                      onChange={(e) => handleInputChange('appearance', 'theme', e.target.value)}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    >
+                      <option value="modern">Modern</option>
+                      <option value="classic">Classic</option>
+                      <option value="minimal">Minimal</option>
+                      <option value="sporty">Sporty</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>Content Display</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Show Statistics</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.appearance.showStats}
+                        onChange={(e) => handleToggleChange('appearance', 'showStats', e.target.checked)}
                         disabled={!isEditing}
-                        className="w-16 h-10"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <Input
-                        value={micrositeData.appearance.secondaryColor}
-                        onChange={(e) => handleInputChange('appearance', 'secondaryColor', e.target.value)}
+                      <span className="ml-2 text-sm text-gray-600">Display member count, court count, etc.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Show Member Directory</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.appearance.showMemberDirectory}
+                        onChange={(e) => handleToggleChange('appearance', 'showMemberDirectory', e.target.checked)}
                         disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
+                      <span className="ml-2 text-sm text-gray-600">Display member listings and profiles</span>
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="accentColor">Accent Color</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        id="accentColor"
-                        type="color"
-                        value={micrositeData.appearance.accentColor}
-                        onChange={(e) => handleInputChange('appearance', 'accentColor', e.target.value)}
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Show Tournament Calendar</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.appearance.showTournamentCalendar}
+                        onChange={(e) => handleToggleChange('appearance', 'showTournamentCalendar', e.target.checked)}
                         disabled={!isEditing}
-                        className="w-16 h-10"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <Input
-                        value={micrositeData.appearance.accentColor}
-                        onChange={(e) => handleInputChange('appearance', 'accentColor', e.target.value)}
+                      <span className="ml-2 text-sm text-gray-600">Display upcoming tournaments and events</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Show Court Locator</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.appearance.showCourtLocator}
+                        onChange={(e) => handleToggleChange('appearance', 'showCourtLocator', e.target.checked)}
                         disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
+                      <span className="ml-2 text-sm text-gray-600">Display interactive court map and locations</span>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="theme">Theme Style</Label>
-                  <Select 
-                    value={micrositeData.appearance.theme} 
-                    onValueChange={(value) => handleInputChange('appearance', 'theme', value)}
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="modern">Modern</SelectItem>
-                      <SelectItem value="classic">Classic</SelectItem>
-                      <SelectItem value="minimal">Minimal</SelectItem>
-                      <SelectItem value="sporty">Sporty</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Content Display</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Show Statistics</Label>
-                    <p className="text-sm text-gray-600">Display member count, court count, etc.</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.appearance.showStats}
-                    onCheckedChange={(checked) => handleInputChange('appearance', 'showStats', checked)}
-                    disabled={!isEditing}
-                  />
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Settings className="h-5 w-5 text-blue-500" />
+                    <span>Site Settings</span>
+                  </h3>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Show Member Directory</Label>
-                    <p className="text-sm text-gray-600">Display member listings and profiles</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.appearance.showMemberDirectory}
-                    onCheckedChange={(checked) => handleInputChange('appearance', 'showMemberDirectory', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Show Tournament Calendar</Label>
-                    <p className="text-sm text-gray-600">Display upcoming tournaments and events</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.appearance.showTournamentCalendar}
-                    onCheckedChange={(checked) => handleInputChange('appearance', 'showTournamentCalendar', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Show Court Locator</Label>
-                    <p className="text-sm text-gray-600">Display interactive court map and locations</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.appearance.showCourtLocator}
-                    onCheckedChange={(checked) => handleInputChange('appearance', 'showCourtLocator', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'content' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>About Section</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  value={micrositeData.content.aboutSection}
-                  onChange={(e) => handleInputChange('content', 'aboutSection', e.target.value)}
-                  disabled={!isEditing}
-                  rows={6}
-                  placeholder="Tell visitors about your federation's history, mission, and what makes you special..."
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Mission & Vision</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="mission">Mission Statement</Label>
-                  <Textarea
-                    id="mission"
-                    value={micrositeData.content.mission}
-                    onChange={(e) => handleInputChange('content', 'mission', e.target.value)}
-                    disabled={!isEditing}
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="vision">Vision Statement</Label>
-                  <Textarea
-                    id="vision"
-                    value={micrositeData.content.vision}
-                    onChange={(e) => handleInputChange('content', 'vision', e.target.value)}
-                    disabled={!isEditing}
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Programs Offered</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex space-x-2">
-                  <Input
-                    placeholder="Add new program..."
-                    value={newProgram}
-                    onChange={(e) => setNewProgram(e.target.value)}
-                    disabled={!isEditing}
-                  />
-                  <Button onClick={handleAddProgram} disabled={!isEditing || !newProgram.trim()}>
-                    Add
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {micrositeData.content.programs.map((program, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                      <span>{program}</span>
-                      {isEditing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveProgram(index)}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Member Benefits</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex space-x-2">
-                  <Input
-                    placeholder="Add new benefit..."
-                    value={newBenefit}
-                    onChange={(e) => setNewBenefit(e.target.value)}
-                    disabled={!isEditing}
-                  />
-                  <Button onClick={handleAddBenefit} disabled={!isEditing || !newBenefit.trim()}>
-                    Add
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {micrositeData.content.benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                      <span>{benefit}</span>
-                      {isEditing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveBenefit(index)}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Member Testimonials</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {isEditing && (
-                  <div className="p-4 border rounded-md space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <Input
-                        placeholder="Member name"
-                        value={newTestimonial.name}
-                        onChange={(e) => setNewTestimonial({...newTestimonial, name: e.target.value})}
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Publish Site</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.settings.isPublished}
+                        onChange={(e) => handleToggleChange('settings', 'isPublished', e.target.checked)}
+                        disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <Input
-                        placeholder="Member role"
-                        value={newTestimonial.role}
-                        onChange={(e) => setNewTestimonial({...newTestimonial, role: e.target.value})}
-                      />
+                      <span className="ml-2 text-sm text-gray-600">Make your site visible to the public</span>
                     </div>
-                    <Textarea
-                      placeholder="Member testimonial..."
-                      value={newTestimonial.comment}
-                      onChange={(e) => setNewTestimonial({...newTestimonial, comment: e.target.value})}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Allow Member Registration</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.settings.allowMemberRegistration}
+                        onChange={(e) => handleToggleChange('settings', 'allowMemberRegistration', e.target.checked)}
+                        disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">Let visitors register as federation members</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Show Court Locations</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.settings.showCourtLocations}
+                        onChange={(e) => handleToggleChange('settings', 'showCourtLocations', e.target.checked)}
+                        disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">Display interactive court map and locations</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">Allow Public Comments</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.settings.allowPublicComments}
+                        onChange={(e) => handleToggleChange('settings', 'allowPublicComments', e.target.checked)}
+                        disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">Let visitors leave comments</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">SEO Optimization</label>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editedData.settings.seoEnabled}
+                        onChange={(e) => handleToggleChange('settings', 'seoEnabled', e.target.checked)}
+                        disabled={!isEditing}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">Enable search engine optimization</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>About Section</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <textarea
+                    value={editedData.content.aboutSection}
+                    onChange={(e) => handleInputChange('content', 'aboutSection', e.target.value)}
+                    disabled={!isEditing}
+                    rows={6}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    placeholder="Tell visitors about your federation's history, mission, and what makes you special..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>Mission & Vision</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div>
+                    <label htmlFor="mission" className="block text-sm font-medium text-gray-700">Mission Statement</label>
+                    <textarea
+                      id="mission"
+                      value={editedData.content.mission}
+                      onChange={(e) => handleInputChange('content', 'mission', e.target.value)}
+                      disabled={!isEditing}
                       rows={3}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     />
-                    <Button onClick={handleAddTestimonial} disabled={!newTestimonial.name.trim() || !newTestimonial.comment.trim()}>
-                      Add Testimonial
-                    </Button>
                   </div>
-                )}
-                
-                <div className="space-y-4">
-                  {micrositeData.content.testimonials.map((testimonial, index) => (
-                    <div key={index} className="p-4 border rounded-md">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{testimonial.name}</h4>
-                          <p className="text-sm text-gray-600">{testimonial.role}</p>
-                        </div>
+                  <div>
+                    <label htmlFor="vision" className="block text-sm font-medium text-gray-700">Vision Statement</label>
+                    <textarea
+                      id="vision"
+                      value={editedData.content.vision}
+                      onChange={(e) => handleInputChange('content', 'vision', e.target.value)}
+                      disabled={!isEditing}
+                      rows={3}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>Programs Offered</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Add new program..."
+                      value={editedData.content.programs[editedData.content.programs.length - 1]}
+                      onChange={(e) => handleArrayChange('content', 'programs', editedData.content.programs.length - 1, e.target.value)}
+                      disabled={!isEditing}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    />
+                    <button onClick={() => addArrayItem('content', 'programs')} disabled={!isEditing} className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                      Add
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {editedData.content.programs.map((program, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                        <span>{program}</span>
                         {isEditing && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRemoveTestimonial(index)}
+                          <button
+                            onClick={() => removeArrayItem('content', 'programs', index)}
+                            className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
                           >
                             Remove
-                          </Button>
+                          </button>
                         )}
                       </div>
-                      <p className="text-gray-700">{testimonial.comment}</p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              </div>
+            )}
 
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Site Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Publish Site</Label>
-                    <p className="text-sm text-gray-600">Make your site visible to the public</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.settings.isPublished}
-                    onCheckedChange={(checked) => handleInputChange('settings', 'isPublished', checked)}
-                    disabled={!isEditing}
-                  />
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>Member Benefits</span>
+                  </h3>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Allow Member Registration</Label>
-                    <p className="text-sm text-gray-600">Let visitors register as federation members</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.settings.allowMemberRegistration}
-                    onCheckedChange={(checked) => handleInputChange('settings', 'allowMemberRegistration', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Show Court Locations</Label>
-                    <p className="text-sm text-gray-600">Display interactive court map and locations</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.settings.showCourtLocations}
-                    onCheckedChange={(checked) => handleInputChange('settings', 'showCourtLocations', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Allow Public Comments</Label>
-                    <p className="text-sm text-gray-600">Let visitors leave comments</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.settings.allowPublicComments}
-                    onCheckedChange={(checked) => handleInputChange('settings', 'allowPublicComments', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>SEO Optimization</Label>
-                    <p className="text-sm text-gray-600">Enable search engine optimization</p>
-                  </div>
-                  <Switch
-                    checked={micrositeData.settings.seoEnabled}
-                    onCheckedChange={(checked) => handleInputChange('settings', 'seoEnabled', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Custom Domain</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="customDomain">Domain Name</Label>
-                    <Input
-                      id="customDomain"
-                      value={micrositeData.settings.customDomain}
-                      onChange={(e) => handleInputChange('settings', 'customDomain', e.target.value)}
+                <div className="p-6 space-y-4">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Add new benefit..."
+                      value={editedData.content.benefits[editedData.content.benefits.length - 1]}
+                      onChange={(e) => handleArrayChange('content', 'benefits', editedData.content.benefits.length - 1, e.target.value)}
                       disabled={!isEditing}
-                      placeholder="california.pickleball.org"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     />
+                    <button onClick={() => addArrayItem('content', 'benefits')} disabled={!isEditing} className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                      Add
+                    </button>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Configure your DNS settings to point to our servers for custom domain support.
-                  </p>
+                  <div className="space-y-2">
+                    {editedData.content.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                        <span>{benefit}</span>
+                        {isEditing && (
+                          <button
+                            onClick={() => removeArrayItem('content', 'benefits', index)}
+                            className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            )}
+
+            {activeTab === 'content' && (
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+                <div className="p-6 border-b">
+                  <h3 className="text-lg font-semibold flex items-center space-x-2">
+                    <Layout className="h-5 w-5 text-blue-500" />
+                    <span>Member Testimonials</span>
+                  </h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  {isEditing && (
+                    <div className="p-4 border rounded-md space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Member name"
+                          value={editedData.content.testimonials[editedData.content.testimonials.length - 1]?.name}
+                          onChange={(e) => handleTestimonialChange(editedData.content.testimonials.length - 1, 'name', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Member role"
+                          value={editedData.content.testimonials[editedData.content.testimonials.length - 1]?.role}
+                          onChange={(e) => handleTestimonialChange(editedData.content.testimonials.length - 1, 'role', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <textarea
+                        placeholder="Member testimonial..."
+                        value={editedData.content.testimonials[editedData.content.testimonials.length - 1]?.comment}
+                        onChange={(e) => handleTestimonialChange(editedData.content.testimonials.length - 1, 'comment', e.target.value)}
+                        rows={3}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      />
+                      <button onClick={addTestimonial} disabled={!isEditing} className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                        Add Testimonial
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
+                    {editedData.content.testimonials.map((testimonial, index) => (
+                      <div key={index} className="p-4 border rounded-md">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-medium text-gray-900">{testimonial.name}</h4>
+                            <p className="text-sm text-gray-600">{testimonial.role}</p>
+                          </div>
+                          {isEditing && (
+                            <button
+                              onClick={() => removeTestimonial(index)}
+                              className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-gray-700">{testimonial.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

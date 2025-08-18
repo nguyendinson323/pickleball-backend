@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Switch } from '../../components/ui/switch';
-import ProfilePhoto from '../../components/ui/ProfilePhoto';
 import { imageBaseURL } from '../../lib/const';
 import { 
   User, 
@@ -98,58 +89,53 @@ const PlayerProfile = () => {
     tournamentsPlayed: 12,
     tournamentsWon: 3,
     currentRanking: 45,
-    totalPoints: 1250,
-    matchesPlayed: 48,
-    winRate: 68,
-    memberSince: '2023-01-15'
+    totalMatches: 89,
+    winRate: 67,
+    averageScore: 21.5,
+    bestScore: 25,
+    skillLevel: 'Intermediate',
+    playingStyle: 'All-Around',
+    experience: '3 years',
+    favoriteCourt: 'Central Park Courts',
+    achievements: [
+      'Tournament Champion - Spring 2024',
+      'Most Improved Player - 2023',
+      'Sportsmanship Award - 2022'
+    ]
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  const handleSave = async () => {
+    try {
+      // Update profile data
+      const response = await api.put(`/users/${user?.id}/profile`, {
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        phone: profileData.phone,
+        city: profileData.city,
+        state: profileData.state,
+        date_of_birth: profileData.dateOfBirth,
+        skill_level: profileData.skillLevel,
+        preferences: {
+          playing_style: profileData.playingStyle,
+          show_contact_info: privacySettings.showContactInfo,
+          show_skill_level: privacySettings.showSkillLevel
+        },
+        bio: profileData.bio
+      });
 
-  const handlePrivacyChange = async (setting: string, value: boolean) => {
-    if (setting === 'isVisibleInSearch') {
-      try {
-        // Call API to toggle visibility
-        const response = await api.put(`/users/${user?.id}/toggle-visibility`, {}) as any;
-        
-        if (response.success) {
-          setPrivacySettings(prev => ({
-            ...prev,
-            [setting]: value
-          }));
-          toast.success(response.message);
-        }
-      } catch (error) {
-        console.error('Error toggling visibility:', error);
-        toast.error('Failed to update visibility setting');
-        // Revert the change
-        setPrivacySettings(prev => ({
-          ...prev,
-          [setting]: !value
-        }));
+      // Check if the response was successful
+      if (response && typeof response === 'object' && 'status' in response && response.status === 200) {
+        toast.success('Profile updated successfully!');
+        setIsEditing(false);
       }
-    } else {
-      setPrivacySettings(prev => ({
-        ...prev,
-        [setting]: value
-      }));
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile. Please try again.');
     }
   };
 
-  const handleSave = () => {
-    // Here you would typically save to API
-    console.log('Saving profile:', profileData);
-    console.log('Saving privacy settings:', privacySettings);
-    setIsEditing(false);
-  };
-
   const handleCancel = () => {
-    // Reset to current user data
+    // Reset to original user data
     if (user) {
       setProfileData({
         username: user.username || '',
@@ -175,448 +161,393 @@ const PlayerProfile = () => {
     setIsEditing(false);
   };
 
+  const updateField = (field: string, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const updatePrivacySetting = (setting: string, value: boolean) => {
+    setPrivacySettings(prev => ({
+      ...prev,
+      [setting]: value
+    }));
+  };
+
+  const getSkillLevelColor = (level: string) => {
+    switch (level.toLowerCase()) {
+      case 'beginner': return 'bg-green-100 text-green-800';
+      case 'intermediate': return 'bg-blue-100 text-blue-800';
+      case 'advanced': return 'bg-purple-100 text-purple-800';
+      case 'expert': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Player Profile</h1>
-            <p className="text-gray-600">Manage your personal information and preferences</p>
+            <p className="text-gray-600">Manage your profile and preferences</p>
           </div>
           <div className="flex space-x-3">
-            {!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} className="flex items-center space-x-2">
-                <Edit3 className="h-4 w-4" />
-                <span>Edit Profile</span>
-              </Button>
-            ) : (
+            {isEditing ? (
               <>
-                <Button onClick={handleSave} className="flex items-center space-x-2">
+                <button
+                  onClick={handleSave}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2"
+                >
                   <Save className="h-4 w-4" />
-                  <span>Save</span>
-                </Button>
-                <Button variant="outline" onClick={handleCancel} className="flex items-center space-x-2">
+                  <span>Save Changes</span>
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                >
                   <X className="h-4 w-4" />
                   <span>Cancel</span>
-                </Button>
+                </button>
               </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2"
+              >
+                <Edit3 className="h-4 w-4" />
+                <span>Edit Profile</span>
+              </button>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Information */}
+          {/* Left Column - Profile Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <User className="h-5 w-5 text-blue-500" />
                   <span>Basic Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      value={profileData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      value={profileData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input
+                      type="text"
                       value={profileData.username}
-                      onChange={(e) => handleInputChange('username', e.target.value)}
-                      disabled={!isEditing}
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input
                       type="email"
                       value={profileData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      disabled={!isEditing}
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <input
+                      type="text"
+                      value={profileData.firstName}
+                      onChange={(e) => updateField('firstName', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input
+                      type="text"
+                      value={profileData.lastName}
+                      onChange={(e) => updateField('lastName', e.target.value)}
+                      disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
                       value={profileData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      onChange={(e) => updateField('phone', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                    <input
                       type="date"
                       value={profileData.dateOfBirth}
-                      onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                      onChange={(e) => updateField('dateOfBirth', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Location Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5" />
-                  <span>Location</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                    <input
+                      type="text"
                       value={profileData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
+                      onChange={(e) => updateField('city', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                    <input
+                      type="text"
                       value={profileData.state}
-                      onChange={(e) => handleInputChange('state', e.target.value)}
+                      onChange={(e) => updateField('state', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Playing Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Trophy className="h-5 w-5" />
-                  <span>Playing Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Playing Preferences */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Target className="h-5 w-5 text-green-500" />
+                  <span>Playing Preferences</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="skillLevel">Skill Level</Label>
-                    <Select
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                    <select
                       value={profileData.skillLevel}
-                      onValueChange={(value) => handleInputChange('skillLevel', value)}
+                      onChange={(e) => updateField('skillLevel', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                        <SelectItem value="expert">Expert</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                      <option value="expert">Expert</option>
+                    </select>
                   </div>
                   <div>
-                    <Label htmlFor="playingStyle">Playing Style</Label>
-                    <Select
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Playing Style</label>
+                    <select
                       value={profileData.playingStyle}
-                      onValueChange={(value) => handleInputChange('playingStyle', value)}
+                      onChange={(e) => updateField('playingStyle', e.target.value)}
                       disabled={!isEditing}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-around">All-Around</SelectItem>
-                        <SelectItem value="aggressive">Aggressive</SelectItem>
-                        <SelectItem value="defensive">Defensive</SelectItem>
-                        <SelectItem value="strategic">Strategic</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="all-around">All-Around</option>
+                      <option value="aggressive">Aggressive</option>
+                      <option value="defensive">Defensive</option>
+                      <option value="strategic">Strategic</option>
+                    </select>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                  <textarea
                     value={profileData.bio}
-                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    onChange={(e) => updateField('bio', e.target.value)}
                     disabled={!isEditing}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     placeholder="Tell us about your pickleball journey..."
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Privacy Settings */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Shield className="h-5 w-5" />
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Shield className="h-5 w-5 text-purple-500" />
                   <span>Privacy Settings</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h3>
+              </div>
+              <div className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-medium">Can Be Found in Search</Label>
-                      <p className="text-sm text-gray-600">
-                        {privacySettings.isVisibleInSearch 
-                          ? "Other players can find you in the player search results"
-                          : "You will not appear in player search results"
-                        }
-                      </p>
-                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-blue-800">
-                          <strong>What this means:</strong> When enabled, other players can find you in the player search 
-                          and send match requests. When disabled, you remain completely private and won't appear in any 
-                          search results. You can change this setting at any time.
-                        </p>
-                      </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Visible in Search</h4>
+                      <p className="text-sm text-gray-600">Allow other players to find you</p>
                     </div>
-                    <Switch
-                      checked={privacySettings.isVisibleInSearch}
-                      onCheckedChange={(checked) => handlePrivacyChange('isVisibleInSearch', checked)}
-                      disabled={false} // Always allow privacy changes
-                    />
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={privacySettings.isVisibleInSearch}
+                        onChange={(e) => updatePrivacySetting('isVisibleInSearch', e.target.checked)}
+                        disabled={!isEditing}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 disabled:opacity-50"></div>
+                    </label>
                   </div>
-                  
                   <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-medium">Show Contact Information</Label>
-                      <p className="text-sm text-gray-600">
-                        {privacySettings.showContactInfo 
-                          ? "Your phone and email will be visible to other players"
-                          : "Your contact information will be hidden from other players"
-                        }
-                      </p>
-                      <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-xs text-green-800">
-                          <strong>What this means:</strong> When enabled, other players can see your phone number and email 
-                          to contact you directly. When disabled, they can only send match requests through the platform. 
-                          This setting only applies when "Can Be Found in Search" is enabled.
-                        </p>
-                      </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Show Contact Info</h4>
+                      <p className="text-sm text-gray-600">Display phone and email to other players</p>
                     </div>
-                    <Switch
-                      checked={privacySettings.showContactInfo}
-                      onCheckedChange={(checked) => handlePrivacyChange('showContactInfo', checked)}
-                      disabled={!isEditing}
-                    />
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={privacySettings.showContactInfo}
+                        onChange={(e) => updatePrivacySetting('showContactInfo', e.target.checked)}
+                        disabled={!isEditing}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 disabled:opacity-50"></div>
+                    </label>
                   </div>
-                  
                   <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-base font-medium">Show Skill Level</Label>
-                      <p className="text-sm text-gray-600">
-                        {privacySettings.showSkillLevel 
-                          ? "Your skill level will be visible to other players"
-                          : "Your skill level will be hidden from other players"
-                        }
-                      </p>
-                      <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                        <p className="text-xs text-purple-800">
-                          <strong>What this means:</strong> When enabled, other players can see your skill level to find 
-                          suitable match partners. When disabled, your skill level remains private. This setting only applies 
-                          when "Can Be Found in Search" is enabled.
-                        </p>
-                      </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Show Skill Level</h4>
+                      <p className="text-sm text-gray-600">Display your skill level to other players</p>
                     </div>
-                    <Switch
-                      checked={privacySettings.showSkillLevel}
-                      onCheckedChange={(checked) => handlePrivacyChange('showSkillLevel', checked)}
-                      disabled={!isEditing}
-                    />
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={privacySettings.showSkillLevel}
+                        onChange={(e) => updatePrivacySetting('showSkillLevel', e.target.checked)}
+                        disabled={!isEditing}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 disabled:opacity-50"></div>
+                    </label>
                   </div>
                 </div>
-                
-                {!privacySettings.isVisibleInSearch && (
-                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="flex items-start space-x-3">
-                      <EyeOff className="h-5 w-5 text-yellow-600 mt-0.5" />
-                      <div className="text-sm text-yellow-800">
-                        <p className="font-medium">You are currently hidden from search results</p>
-                        <p className="mt-1">
-                          Other players won't be able to find you in the player search. 
-                          Enable "Can Be Found in Search" to make your profile discoverable.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {privacySettings.isVisibleInSearch && (
-                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-start space-x-3">
-                      <Eye className="h-5 w-5 text-green-600 mt-0.5" />
-                      <div className="text-sm text-green-800">
-                        <p className="font-medium">You are visible to other players</p>
-                        <p className="mt-1">
-                          Other players can find you in the player search results. 
-                          You can disable this at any time for privacy.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Right Column - Profile Photo & Stats */}
           <div className="space-y-6">
             {/* Profile Photo */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Photo</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="relative">
-                  <ProfilePhoto
-                    profilePhoto={user?.profile_photo}
-                    alt={user?.full_name || user?.username || 'Player'}
-                    size="xl"
-                    className="mx-auto ring-4 ring-white shadow-lg"
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Camera className="h-5 w-5 text-pink-500" />
+                  <span>Profile Photo</span>
+                </h3>
+              </div>
+              <div className="p-6 text-center">
+                {profileData.profilePhoto ? (
+                  <img
+                    src={profileData.profilePhoto.startsWith('http') ? profileData.profilePhoto : `${imageBaseURL}${profileData.profilePhoto}`}
+                    alt="Profile Photo"
+                    className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
                   />
-                  {isEditing && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="absolute bottom-2 right-2 rounded-full w-10 h-10 p-0 hover:scale-110 transition-transform duration-300 bg-white shadow-md"
-                      title="Change Profile Photo"
-                    >
-                      <Camera className="h-5 w-5" />
-                    </Button>
-                  )}
-                  
-                  {/* Show a small indicator when profile photo is available */}
-                  {user?.profile_photo && (
-                    <div
-                      className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"
-                      title="Profile photo uploaded"
-                    />
-                  )}
-                </div>
-                
-                {/* Status message */}
-                {user?.profile_photo ? (
-                  <div className="mt-2 text-xs text-green-600 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    Profile photo loaded successfully
-                  </div>
                 ) : (
-                  <div className="mt-2 text-xs text-gray-500 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-                    No profile photo uploaded
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-semibold text-4xl mx-auto mb-4">
+                    {profileData.firstName?.charAt(0)}{profileData.lastName?.charAt(0)}
                   </div>
                 )}
-                
                 {isEditing && (
-                  <div className="mt-4 space-y-2">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Change Photo
-                    </Button>
-                    {user?.profile_photo && (
-                      <Button variant="outline" size="sm" className="w-full text-red-600 hover:text-red-700">
-                        Remove Photo
-                      </Button>
-                    )}
-                  </div>
+                  <button className="w-full px-4 py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200">
+                    Change Photo
+                  </button>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Player Statistics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
-                  <span>Statistics</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">{playerStats.tournamentsWon}</div>
-                    <div className="text-sm text-gray-600">Tournaments Won</div>
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  <span>Player Statistics</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Tournaments Played</span>
+                    <span className="font-semibold text-blue-600">{playerStats.tournamentsPlayed}</span>
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">{playerStats.winRate}%</div>
-                    <div className="text-sm text-gray-600">Win Rate</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Tournaments Won</span>
+                    <span className="font-semibold text-green-600">{playerStats.tournamentsWon}</span>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">#{playerStats.currentRanking}</div>
-                    <div className="text-sm text-gray-600">Current Ranking</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Current Ranking</span>
+                    <span className="font-semibold text-purple-600">#{playerStats.currentRanking}</span>
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-orange-600">{playerStats.totalPoints}</div>
-                    <div className="text-sm text-gray-600">Total Points</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Matches</span>
+                    <span className="font-semibold text-gray-900">{playerStats.totalMatches}</span>
                   </div>
-                </div>
-                <div className="pt-4 border-t">
-                  <div className="text-center">
-                    <div className="text-sm text-gray-600">Member Since</div>
-                    <div className="font-medium">
-                      {new Date(playerStats.memberSince).toLocaleDateString('en-US', {
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Win Rate</span>
+                    <span className="font-semibold text-green-600">{playerStats.winRate}%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Average Score</span>
+                    <span className="font-semibold text-blue-600">{playerStats.averageScore}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Trophy className="h-4 w-4 mr-2" />
-                  View Rankings
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  My Tournaments
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Target className="h-4 w-4 mr-2" />
-                  Performance Stats
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Current Status */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold">Current Status</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Skill Level</span>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getSkillLevelColor(playerStats.skillLevel)}`}>
+                      {playerStats.skillLevel}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Playing Style</span>
+                    <span className="font-medium text-gray-900">{playerStats.playingStyle}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Experience</span>
+                    <span className="font-medium text-gray-900">{playerStats.experience}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Favorite Court</span>
+                    <span className="font-medium text-gray-900">{playerStats.favoriteCourt}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Achievements */}
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold">Recent Achievements</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-3">
+                  {playerStats.achievements.map((achievement, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                      <span className="text-sm text-gray-700">{achievement}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

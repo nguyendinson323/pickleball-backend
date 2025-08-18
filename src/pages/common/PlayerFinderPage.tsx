@@ -24,21 +24,21 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   isFavorite
 }) => {
   return (
-    <div className="hover:shadow-lg transition-all duration-300 border border-gray-200 rounded-lg">
+    <div className="hover:shadow-lg transition-all duration-300 border border-gray-200 rounded-lg animate-on-scroll">
       <div className="p-4 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold flex items-center justify-center animate-on-scroll">
               {player.full_name.split(' ').map((n: string) => n[0]).join('')}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 animate-on-scroll">
                 {player.full_name}
                 {player.is_online && (
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 )}
               </h3>
-              <p className="text-sm text-gray-600 flex items-center gap-2">
+              <p className="text-sm text-gray-600 flex items-center gap-2 animate-on-scroll">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -50,7 +50,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
           <div className="flex gap-1">
             <button
               onClick={() => onFavorite(player.id)}
-              className={`p-2 rounded-md hover:bg-gray-100 transition-colors ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
+              className={`p-2 rounded-md hover:bg-gray-100 transition-colors animate-on-scroll ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
             >
               <svg className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -58,7 +58,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             </button>
             <button
               onClick={() => onShare(player)}
-              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
@@ -66,7 +66,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             </button>
             <button
               onClick={() => onViewProfile(player)}
-              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+              className="p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 animate-on-scroll"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -84,8 +84,8 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             <svg className="w-4 h-4 text-yellow-500 fill-current" fill="currentColor" viewBox="0 0 24 24">
               <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
-            <span className="font-semibold text-lg">{player.skill_level}</span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <span className="font-semibold text-lg animate-on-scroll">{player.skill_level}</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 animate-on-scroll">
               Skill Level
             </span>
           </div>
@@ -94,111 +94,48 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
               <svg className="w-4 h-4 text-yellow-500 fill-current" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               </svg>
-              <span className="font-semibold">{player.rating}</span>
+              <span className="font-semibold animate-on-scroll">{player.rating}</span>
             </div>
-            <p className="text-xs text-gray-500">Rating</p>
+            <p className="text-xs text-gray-500 animate-on-scroll">Rating</p>
           </div>
         </div>
 
-        {/* Bio */}
-        <p className="text-sm text-gray-600 overflow-hidden text-ellipsis display-webkit-box -webkit-line-clamp-2 -webkit-box-orient-vertical">
-          {player.bio}
-        </p>
-
-        {/* Achievements */}
-        {player.achievements.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-gray-700 uppercase tracking-wide">Achievements</p>
-            <div className="flex flex-wrap gap-1">
-              {player.achievements.slice(0, 3).map((achievement: string, index: number) => (
-                <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white border border-gray-300 text-gray-700">
-                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  {achievement}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Match Types */}
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-gray-700 uppercase tracking-wide">Preferred Match Types</p>
-          <div className="flex flex-wrap gap-1">
-            {player.preferred_match_types.map((type: string) => (
-              <span key={type} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                {type.replace('_', ' ')}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact Information (Privacy-aware) */}
-        <div className="space-y-2 pt-2 border-t border-gray-100">
-          <div className="flex justify-between text-sm">
-            <span>Phone:</span>
-            {player.phone ? (
-              <span className="text-green-600 font-medium flex items-center gap-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                Available
-              </span>
-            ) : (
-              <span className="text-gray-500">Private</span>
-            )}
-          </div>
-          <div className="flex justify-between text-sm">
-            <span>Email:</span>
-            {player.email ? (
-              <span className="text-green-600 font-medium flex items-center gap-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Available
-              </span>
-            ) : (
-              <span className="text-gray-500">Private</span>
-            )}
-          </div>
-          <div className="flex justify-between text-sm">
-            <span>Experience:</span>
-            <span className="font-medium">{player.experience_years} years</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span>Availability:</span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white border border-gray-300 text-gray-700 capitalize">
-              {player.availability}
+        {/* Availability & Preferences */}
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium animate-on-scroll ${
+              player.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
+              {player.is_available ? 'Available' : 'Unavailable'}
             </span>
+            {player.preferred_play_times && (
+              <span className="text-gray-600 animate-on-scroll">
+                {player.preferred_play_times}
+              </span>
+            )}
+          </div>
+          <div className="text-right">
+            <div className="text-sm font-medium text-gray-900 animate-on-scroll">
+              {player.distance_km.toFixed(1)}km away
+            </div>
+            <div className="text-xs text-gray-500 animate-on-scroll">Distance</div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3">
-          <button 
+        <div className="flex gap-2 pt-2">
+          <button
             onClick={() => onSendRequest(player.id)}
-            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-colors flex items-center justify-center"
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            Send Request
+            Send Match Request
           </button>
-          <button 
+          <button
             onClick={() => onViewProfile(player)}
-            className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            View Profile
           </button>
-        </div>
-
-        {/* Last Active */}
-        <div className="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">
-          Last active: {player.last_active}
         </div>
       </div>
     </div>

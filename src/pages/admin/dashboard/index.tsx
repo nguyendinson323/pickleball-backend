@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import Overview from './Overview';
 import Rankings from './Rankings';
 import Microsites from './Microsites';
@@ -324,64 +323,128 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 animate-on-scroll">
             Welcome back, {user?.username || 'Super Admin'}!
           </h1>
-          <p className="text-gray-600">System-wide overview and performance metrics</p>
+          <p className="text-gray-600 animate-on-scroll">System-wide overview and performance metrics</p>
         </div>
 
         {/* Main Content Tabs */}
         <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="rankings">Rankings</TabsTrigger>
-              <TabsTrigger value="microsites">Microsites</TabsTrigger>
-              <TabsTrigger value="court-monitor">Court Monitor</TabsTrigger>
-              <TabsTrigger value="affiliations">Affiliations</TabsTrigger>
-              <TabsTrigger value="messaging">Messaging</TabsTrigger>
-            </TabsList>
+          <div className="w-full">
+            {/* Tab Navigation */}
+            <div className="grid w-full grid-cols-6 bg-white rounded-lg shadow-sm border border-gray-200 mb-6 animate-on-scroll">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-3 text-sm font-medium rounded-l-lg transition-colors ${
+                  activeTab === 'overview'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('rankings')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  activeTab === 'rankings'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Rankings
+              </button>
+              <button
+                onClick={() => setActiveTab('microsites')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  activeTab === 'microsites'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Microsites
+              </button>
+              <button
+                onClick={() => setActiveTab('court-monitor')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  activeTab === 'court-monitor'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Court Monitor
+              </button>
+              <button
+                onClick={() => setActiveTab('affiliations')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  activeTab === 'affiliations'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Affiliations
+              </button>
+              <button
+                onClick={() => setActiveTab('messaging')}
+                className={`px-4 py-3 text-sm font-medium rounded-r-lg transition-colors ${
+                  activeTab === 'messaging'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                } animate-on-scroll`}
+              >
+                Messaging
+              </button>
+            </div>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
-              <Overview
-                systemStats={systemStats}
-                recentSystemEvents={recentSystemEvents}
-                pendingActions={pendingActions}
-                timeRange="30"
-                setTimeRange={() => {}}
-                showMessaging={showMessaging}
-                setShowMessaging={setShowMessaging}
-                messageData={messageData}
-                setMessageData={setMessageData}
-              />
-            </TabsContent>
+            {/* Tab Content */}
+            <div className="mt-6">
+              {activeTab === 'overview' && (
+                <div className="animate-on-scroll">
+                  <Overview
+                    systemStats={systemStats}
+                    recentSystemEvents={recentSystemEvents}
+                    pendingActions={pendingActions}
+                    timeRange="30"
+                    setTimeRange={() => {}}
+                    showMessaging={showMessaging}
+                    setShowMessaging={setShowMessaging}
+                    messageData={messageData}
+                    setMessageData={setMessageData}
+                  />
+                </div>
+              )}
 
-            {/* Rankings Tab */}
-            <TabsContent value="rankings" className="mt-6">
-              <Rankings rankingIssues={rankingIssues} />
-            </TabsContent>
+              {activeTab === 'rankings' && (
+                <div className="animate-on-scroll">
+                  <Rankings rankingIssues={rankingIssues} />
+                </div>
+              )}
 
-            {/* Microsites Tab */}
-            <TabsContent value="microsites" className="mt-6">
-              <Microsites microsites={microsites} />
-            </TabsContent>
+              {activeTab === 'microsites' && (
+                <div className="animate-on-scroll">
+                  <Microsites microsites={microsites} />
+                </div>
+              )}
 
-            {/* Court Monitor Tab */}
-            <TabsContent value="court-monitor" className="mt-6">
-              <CourtMonitor courtPerformance={courtPerformance} />
-            </TabsContent>
+              {activeTab === 'court-monitor' && (
+                <div className="animate-on-scroll">
+                  <CourtMonitor courtPerformance={courtPerformance} />
+                </div>
+              )}
 
-            {/* Affiliations Tab */}
-            <TabsContent value="affiliations" className="mt-6">
-              <Affiliations affiliations={affiliations} />
-            </TabsContent>
+              {activeTab === 'affiliations' && (
+                <div className="animate-on-scroll">
+                  <Affiliations affiliations={affiliations} />
+                </div>
+              )}
 
-            {/* Messaging Tab */}
-            <TabsContent value="messaging" className="mt-6">
-              <Messaging messages={messages} />
-            </TabsContent>
-          </Tabs>
+              {activeTab === 'messaging' && (
+                <div className="animate-on-scroll">
+                  <Messaging messages={messages} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

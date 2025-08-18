@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import Overview from './Overview';
 import Credentials from './Credentials';
 import Matches from './Matches';
@@ -144,7 +143,7 @@ const PlayerDashboard = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 animate-on-scroll">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, {user?.username || 'Player'}!
           </h1>
@@ -153,53 +152,123 @@ const PlayerDashboard = () => {
 
         {/* Main Content Tabs */}
         <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="credentials">Credentials</TabsTrigger>
-              <TabsTrigger value="matches">Matches</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
-              <TabsTrigger value="activity">Activity</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
+          <div className="w-full">
+            {/* Tab Navigation */}
+            <div className="grid w-full grid-cols-6 bg-white rounded-lg shadow-sm border border-gray-200 p-1 animate-on-scroll">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'overview'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('credentials')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'credentials'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Credentials
+              </button>
+              <button
+                onClick={() => setActiveTab('matches')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'matches'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Matches
+              </button>
+              <button
+                onClick={() => setActiveTab('tournaments')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'tournaments'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Tournaments
+              </button>
+              <button
+                onClick={() => setActiveTab('activity')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'activity'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Activity
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === 'settings'
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Settings
+              </button>
+            </div>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
-              <Overview 
-                playerStats={playerStats}
-                profileCompletion={profileCompletion}
-                affiliationData={affiliationData}
-              />
-            </TabsContent>
+            {/* Tab Content */}
+            <div className="mt-6">
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="animate-on-scroll">
+                  <Overview 
+                    playerStats={playerStats}
+                    profileCompletion={profileCompletion}
+                    affiliationData={affiliationData}
+                  />
+                </div>
+              )}
 
-            {/* Credentials Tab */}
-            <TabsContent value="credentials" className="mt-6">
-              <Credentials digitalCredential={digitalCredential} />
-            </TabsContent>
+              {/* Credentials Tab */}
+              {activeTab === 'credentials' && (
+                <div className="animate-on-scroll">
+                  <Credentials digitalCredential={digitalCredential} />
+                </div>
+              )}
 
-            {/* Matches Tab */}
-            <TabsContent value="matches" className="mt-6">
-              <Matches matchHistory={matchHistory} />
-            </TabsContent>
+              {/* Matches Tab */}
+              {activeTab === 'matches' && (
+                <div className="animate-on-scroll">
+                  <Matches matchHistory={matchHistory} />
+                </div>
+              )}
 
-            {/* Tournaments Tab */}
-            <TabsContent value="tournaments" className="mt-6">
-              <Tournaments playerStats={playerStats} />
-            </TabsContent>
+              {/* Tournaments Tab */}
+              {activeTab === 'tournaments' && (
+                <div className="animate-on-scroll">
+                  <Tournaments playerStats={playerStats} />
+                </div>
+              )}
 
-            {/* Activity Tab */}
-            <TabsContent value="activity" className="mt-6">
-              <Activity recentActivity={recentActivity} />
-            </TabsContent>
+              {/* Activity Tab */}
+              {activeTab === 'activity' && (
+                <div className="animate-on-scroll">
+                  <Activity recentActivity={recentActivity} />
+                </div>
+              )}
 
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="mt-6">
-              <Settings 
-                privacySettings={privacySettings}
-                profileCompletion={profileCompletion}
-              />
-            </TabsContent>
-          </Tabs>
+              {/* Settings Tab */}
+              {activeTab === 'settings' && (
+                <div className="animate-on-scroll">
+                  <Settings 
+                    privacySettings={privacySettings}
+                    profileCompletion={profileCompletion}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

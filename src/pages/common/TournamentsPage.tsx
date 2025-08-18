@@ -98,197 +98,56 @@ const mockTournaments: Tournament[] = [
     total_matches: 31,
     completed_matches: 0,
     settings: { consolation_rounds: true, third_place_match: true },
-    notes: 'Winners receive automatic entry to next season\'s league.',
-    created_at: '2024-02-01T00:00:00Z',
+    notes: 'League championship event.',
+    created_at: '2024-01-10T00:00:00Z',
     updated_at: '2024-03-20T00:00:00Z'
   },
   {
     id: '3',
-    name: 'Youth Development Cup',
+    name: 'Beginner Friendly Tournament',
     tournament_type: 'local',
     category: 'singles',
-    description: 'Special tournament designed for young players (ages 12-17) to develop competitive skills in a supportive environment.',
+    description: 'Perfect for new players! This tournament focuses on skill development and friendly competition. Great prizes and learning opportunities.',
     organizer_id: 'club-2',
     organizer_type: 'club',
-    organizer_name: 'Community Courts',
-    venue_name: 'Community Center',
-    venue_address: 'Plaza Principal 89, Tlaquepaque, Jalisco',
+    organizer_name: 'Community Pickleball Center',
+    venue_name: 'Community Courts',
+    venue_address: 'Calle Hidalgo 890, Tlaquepaque, Jalisco',
     state: 'Jalisco',
     city: 'Tlaquepaque',
     latitude: 20.6409,
-    longitude: -103.3119,
+    longitude: -103.3113,
     start_date: '2024-07-10',
     end_date: '2024-07-10',
     registration_deadline: '2024-07-05',
     entry_fee: 45,
     max_participants: 48,
-    current_participants: 32,
+    current_participants: 23,
     max_teams: 48,
-    current_teams: 32,
-    skill_levels: ['2.5', '3.0', '3.5'],
-    age_categories: ['12-14', '15-17'],
-    gender_categories: ['Boys', 'Girls'],
+    current_teams: 23,
+    skill_levels: ['2.0', '2.5', '3.0'],
+    age_categories: ['18+'],
+    gender_categories: ['Men', 'Women'],
     tournament_format: 'Round Robin',
     points_to_win: 11,
     win_by: 2,
     status: 'registration_open',
-    rules: 'Modified rules for youth players. Coaches and parents welcome.',
+    rules: 'Beginner-friendly rules with coaching available. All skill levels welcome.',
     schedule: { start_time: '10:00 AM', format: 'Single Day' },
-    court_assignments: { courts: 3, indoor: 1, outdoor: 2 },
-    banner_image: '/img/coaches-training.jpg',
+    court_assignments: { courts: 6, indoor: 3, outdoor: 3 },
+    banner_image: '/img/tournament-management.jpg',
     logo: '/logo.jpeg',
-    photos: { gallery: ['youth1.jpg'] },
-    contact_email: 'youth@communitycourts.mx',
+    photos: { gallery: ['beginner1.jpg'] },
+    contact_email: 'beginner@communitypickleball.mx',
     contact_phone: '+52-33-5555-1234',
-    registration_requirements: { age_verification: true, parent_consent: true },
-    registration_notes: 'Equipment provided for beginners. Snacks and drinks included.',
+    registration_requirements: { skill_assessment: false, age_verification: false },
+    registration_notes: 'Equipment provided for beginners. Free clinic included.',
     total_matches: 72,
     completed_matches: 0,
-    settings: { max_players_per_team: 1, consolation_rounds: false },
-    notes: 'Great opportunity for young players to experience tournament play.',
-    created_at: '2024-03-01T00:00:00Z',
-    updated_at: '2024-03-25T00:00:00Z'
-  },
-  {
-    id: '4',
-    name: 'International Exhibition Match',
-    tournament_type: 'exhibition',
-    category: 'doubles',
-    description: 'Special exhibition featuring international players and local champions. Pro-level demonstration matches and clinics.',
-    organizer_id: 'federation-1',
-    organizer_type: 'federation',
-    organizer_name: 'Mexican Pickleball Federation',
-    venue_name: 'Arena Guadalajara',
-    venue_address: 'Av. de las Rosas 1234, Guadalajara, Jalisco',
-    state: 'Jalisco',
-    city: 'Guadalajara',
-    latitude: 20.6597,
-    longitude: -103.3496,
-    start_date: '2024-08-15',
-    end_date: '2024-08-16',
-    registration_deadline: '2024-08-01',
-    entry_fee: 120,
-    max_participants: 200,
-    current_participants: 156,
-    max_teams: 100,
-    current_teams: 78,
-    skill_levels: ['4.0', '4.5', '5.0', '5.5'],
-    age_categories: ['18-34', '35-49', '50+'],
-    gender_categories: ['Men', 'Women', 'Mixed'],
-    tournament_format: 'Exhibition + Competition',
-    points_to_win: 11,
-    win_by: 2,
-    status: 'registration_open',
-    rules: 'Professional rules with exhibition format. Spectator tickets available.',
-    schedule: { day1: 'Exhibition Matches', day2: 'Competition' },
-    court_assignments: { courts: 6, indoor: 6, outdoor: 0 },
-    banner_image: '/img/tournament-scene-BJUfmDBV.jpg',
-    logo: '/logo.jpeg',
-    photos: { gallery: ['exhibition1.jpg'] },
-    contact_email: 'exhibition@pickleballfederation.mx',
-    contact_phone: '+52-55-1234-5678',
-    registration_requirements: { skill_assessment: true, international_players: true },
-    registration_notes: 'Limited spots available. VIP packages include meet & greet.',
-    total_matches: 89,
-    completed_matches: 0,
-    settings: { max_players_per_team: 2, exhibition_format: true },
-    notes: 'Featured on national sports networks. Great exposure opportunity.',
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-03-25T00:00:00Z'
-  },
-  {
-    id: '5',
-    name: 'Senior Masters Championship',
-    tournament_type: 'national',
-    category: 'mixed_doubles',
-    description: 'National championship for senior players (ages 50+). Multiple age divisions with age-appropriate rules and formats.',
-    organizer_id: 'federation-1',
-    organizer_type: 'federation',
-    organizer_name: 'Mexican Pickleball Federation',
-    venue_name: 'Senior Sports Complex',
-    venue_address: 'Av. de la Juventud 789, Guadalajara, Jalisco',
-    state: 'Jalisco',
-    city: 'Guadalajara',
-    latitude: 20.6597,
-    longitude: -103.3496,
-    start_date: '2024-09-20',
-    end_date: '2024-09-22',
-    registration_deadline: '2024-09-10',
-    entry_fee: 95,
-    max_participants: 300,
-    current_participants: 234,
-    max_teams: 150,
-    current_teams: 117,
-    skill_levels: ['3.0', '3.5', '4.0', '4.5'],
-    age_categories: ['50-59', '60-69', '70-79', '80+'],
-    gender_categories: ['Men', 'Women', 'Mixed'],
-    tournament_format: 'Modified Double Elimination',
-    points_to_win: 11,
-    win_by: 2,
-    status: 'registration_open',
-    rules: 'Senior-friendly rules with longer breaks and modified scoring.',
-    schedule: { day1: '50-69 divisions', day2: '70+ divisions', day3: 'Finals' },
-    court_assignments: { courts: 10, indoor: 6, outdoor: 4 },
-    banner_image: '/img/ranking-credentials.jpg',
-    logo: '/logo.jpeg',
-    photos: { gallery: ['senior1.jpg'] },
-    contact_email: 'seniors@pickleballfederation.mx',
-    contact_phone: '+52-55-9876-5432',
-    registration_requirements: { age_verification: true, medical_clearance: true },
-    registration_notes: 'Medical staff on site. Accommodations for mobility needs.',
-    total_matches: 267,
-    completed_matches: 0,
-    settings: { max_players_per_team: 2, senior_rules: true },
-    notes: 'Qualifies winners for international senior championships.',
-    created_at: '2024-02-15T00:00:00Z',
-    updated_at: '2024-03-25T00:00:00Z'
-  },
-  {
-    id: '6',
-    name: 'Corporate Team Challenge',
-    tournament_type: 'exhibition',
-    category: 'team',
-    description: 'Fun team tournament for corporate groups and companies. Great for team building and networking.',
-    organizer_id: 'partner-1',
-    organizer_type: 'partner',
-    organizer_name: 'Business Sports Network',
-    venue_name: 'Corporate Sports Center',
-    venue_address: 'Av. Empresarial 456, Zapopan, Jalisco',
-    state: 'Jalisco',
-    city: 'Zapopan',
-    latitude: 20.7239,
-    longitude: -103.3849,
-    start_date: '2024-10-05',
-    end_date: '2024-10-05',
-    registration_deadline: '2024-09-25',
-    entry_fee: 75,
-    max_participants: 120,
-    current_participants: 89,
-    max_teams: 20,
-    current_teams: 15,
-    skill_levels: ['2.5', '3.0', '3.5', '4.0'],
-    age_categories: ['18+'],
-    gender_categories: ['Mixed Teams'],
-    tournament_format: 'Team Round Robin',
-    points_to_win: 11,
-    win_by: 2,
-    status: 'registration_open',
-    rules: 'Fun format with team scoring. No skill level restrictions.',
-    schedule: { start_time: '9:00 AM', format: 'Single Day' },
-    court_assignments: { courts: 5, indoor: 3, outdoor: 2 },
-    banner_image: '/img/partners-business.jpg',
-    logo: '/logo.jpeg',
-    photos: { gallery: ['corporate1.jpg'] },
-    contact_email: 'corporate@businesssports.mx',
-    contact_phone: '+52-33-7777-8888',
-    registration_requirements: { team_registration: true, company_verification: true },
-    registration_notes: 'Team packages available. Corporate sponsorship opportunities.',
-    total_matches: 95,
-    completed_matches: 0,
-    settings: { max_players_per_team: 6, team_format: true },
-    notes: 'Great networking opportunity. Prizes for top teams.',
-    created_at: '2024-03-10T00:00:00Z',
-    updated_at: '2024-03-25T00:00:00Z'
+    settings: { consolation_rounds: true, coaching_available: true },
+    notes: 'Great for first-time tournament players.',
+    created_at: '2024-02-01T00:00:00Z',
+    updated_at: '2024-03-15T00:00:00Z'
   }
 ];
 
@@ -698,10 +557,10 @@ const TournamentsPage = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-6 animate-on-scroll">
             Tournaments
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-on-scroll">
             Discover and register for pickleball tournaments near you. From local competitions 
             to national championships, find your next challenge.
           </p>
@@ -710,17 +569,17 @@ const TournamentsPage = () => {
         {/* Filters */}
         <div className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="flex gap-2">
+            <div className="flex gap-2 animate-on-scroll">
               <input
                 type="text"
               placeholder="Search tournaments..."
               value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
+            />
               <button 
                 onClick={() => applyFilters(filters)}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
               >
                 Search
               </button>
@@ -728,7 +587,7 @@ const TournamentsPage = () => {
             <select 
               value={filters.tournament_type} 
               onChange={(e) => handleFilterChange('tournament_type', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
             >
               <option value="all">All Types</option>
               <option value="local">Local</option>
@@ -741,7 +600,7 @@ const TournamentsPage = () => {
             <select 
               value={filters.category} 
               onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
             >
               <option value="all">All Categories</option>
               <option value="singles">Singles</option>
@@ -752,7 +611,7 @@ const TournamentsPage = () => {
             <select 
               value={filters.status} 
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
             >
               <option value="all">All Statuses</option>
               <option value="registration_open">Registration Open</option>
@@ -769,14 +628,14 @@ const TournamentsPage = () => {
               placeholder="City"
               value={filters.city}
               onChange={(e) => handleFilterChange('city', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
             />
             <input
               type="text"
               placeholder="State"
               value={filters.state}
               onChange={(e) => handleFilterChange('state', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
             />
           </div>
           <div className="flex justify-end mt-4">
@@ -795,7 +654,7 @@ const TournamentsPage = () => {
                 setFilteredTournaments(mockTournaments);
                 toast.success('Filters cleared!');
               }}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2 animate-on-scroll"
             >
               <span>Clear Filters</span>
             </button>
@@ -805,62 +664,62 @@ const TournamentsPage = () => {
         {/* Tournament Statistics */}
         <div className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg animate-on-scroll">
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-100 text-sm font-medium">Total Tournaments</p>
-                    <p className="text-3xl font-bold drop-shadow-sm">{tournaments.length}</p>
+                    <p className="text-blue-100 text-sm font-medium animate-on-scroll">Total Tournaments</p>
+                    <p className="text-3xl font-bold drop-shadow-sm animate-on-scroll">{tournaments.length}</p>
                   </div>
-                  <svg className="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-blue-200 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                   </svg>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg animate-on-scroll">
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-100 text-sm font-medium">Registration Open</p>
-                    <p className="text-3xl font-bold drop-shadow-sm">
+                    <p className="text-green-100 text-sm font-medium animate-on-scroll">Registration Open</p>
+                    <p className="text-3xl font-bold drop-shadow-sm animate-on-scroll">
                       {tournaments.filter(t => t.status === 'registration_open').length}
                     </p>
                   </div>
-                  <svg className="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-green-200 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg animate-on-scroll">
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-purple-100 text-sm font-medium">Total Participants</p>
-                    <p className="text-3xl font-bold drop-shadow-sm">
+                    <p className="text-purple-100 text-sm font-medium animate-on-scroll">Total Participants</p>
+                    <p className="text-3xl font-bold drop-shadow-sm animate-on-scroll">
                       {tournaments.reduce((sum, t) => sum + t.current_participants, 0)}
                     </p>
                   </div>
-                  <svg className="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-purple-200 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg animate-on-scroll">
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-orange-100 text-sm font-medium">Total Matches</p>
-                    <p className="text-3xl font-bold drop-shadow-sm">
+                    <p className="text-orange-100 text-sm font-medium animate-on-scroll">Total Matches</p>
+                    <p className="text-3xl font-bold drop-shadow-sm animate-on-scroll">
                       {tournaments.reduce((sum, t) => sum + t.total_matches, 0)}
                     </p>
                   </div>
-                  <svg className="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-orange-200 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
@@ -871,19 +730,19 @@ const TournamentsPage = () => {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
             <div className="p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Actions</h3>
-                  <p className="text-gray-600">Get started with tournament activities</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 animate-on-scroll">Quick Actions</h3>
+                  <p className="text-gray-600 animate-on-scroll">Get started with tournament activities</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <button 
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2 animate-on-scroll"
                     onClick={() => handleQuickAction('my-tournaments')}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 animate-on-scroll" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     My Tournaments

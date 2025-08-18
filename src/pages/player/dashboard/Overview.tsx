@@ -1,8 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Badge } from '../../../components/ui/badge';
-import { Button } from '../../../components/ui/button';
 import { 
   Trophy, 
   Award, 
@@ -62,61 +59,53 @@ const Overview: React.FC<OverviewProps> = ({
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tournaments Won</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-on-scroll">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Tournaments Won</h3>
             <Trophy className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{playerStats.tournamentsWon}</div>
-            <p className="text-xs text-gray-600">out of {playerStats.tournamentsPlayed} played</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-yellow-600">{playerStats.tournamentsWon}</div>
+          <p className="text-xs text-gray-600">out of {playerStats.tournamentsPlayed} played</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Ranking</CardTitle>
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Current Ranking</h3>
             <Award className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">#{playerStats.currentRanking}</div>
-            <p className="text-xs text-green-600">{playerStats.rankingChange} this month</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-blue-600">#{playerStats.currentRanking}</div>
+          <p className="text-xs text-green-600">{playerStats.rankingChange} this month</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Win Rate</h3>
             <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{playerStats.winRate}%</div>
-            <p className="text-xs text-gray-600">{playerStats.matchesPlayed} matches</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-green-600">{playerStats.winRate}%</div>
+          <p className="text-xs text-gray-600">{playerStats.matchesPlayed} matches</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Points</CardTitle>
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Points</h3>
             <Target className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{playerStats.totalPoints}</div>
-            <p className="text-xs text-gray-600">lifetime points</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-purple-600">{playerStats.totalPoints}</div>
+          <p className="text-xs text-gray-600">lifetime points</p>
+        </div>
       </div>
 
       {/* Affiliation Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <MapPin className="h-5 w-5 text-indigo-500" />
             <span>Affiliation & Location</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -179,9 +168,9 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                       <span className="text-sm text-gray-700">
                         <strong>Membership:</strong> 
-                        <Badge variant="outline" className="ml-2 capitalize">
+                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300 capitalize">
                           {affiliationData.membershipStatus}
-                        </Badge>
+                        </span>
                       </span>
                     </div>
                   )}
@@ -189,18 +178,18 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Profile Completion Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             <span>Profile Completion</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700">Profile Completion</span>
@@ -267,52 +256,48 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
             </div>
             {profileCompletion.completed < profileCompletion.total && (
-              <Button 
-                variant="outline" 
-                className="w-full"
+              <button 
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg"
                 onClick={() => navigate('/player/profile')}
               >
                 Complete Profile
-              </Button>
+              </button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">Quick Actions</h3>
+        </div>
+        <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg"
               onClick={() => navigate('/tournaments')}
             >
-              <Trophy className="h-6 w-6" />
+              <Trophy className="h-6 w-6 mx-auto" />
               <span>Find Tournaments</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            </button>
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg"
               onClick={() => navigate('/player-finder')}
             >
-              <Award className="h-6 w-6" />
+              <Award className="h-6 w-6 mx-auto" />
               <span>Find Players</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-20 flex-col space-y-2"
+            </button>
+            <button 
+              className="h-20 flex-col space-y-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200 hover:shadow-lg"
               onClick={() => navigate('/court-reservations')}
             >
-              <MapPin className="h-6 w-6" />
+              <MapPin className="h-6 w-6 mx-auto" />
               <span>Book Court</span>
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

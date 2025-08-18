@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Label } from '../../components/ui/label';
 import { 
   TrendingUp, 
   TrendingDown,
@@ -107,35 +102,34 @@ const Analytics = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Business Analytics</h1>
             <p className="text-gray-600">Track your business performance and gain insights</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Label htmlFor="timeRange">Time Range:</Label>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Last 7 days</SelectItem>
-                <SelectItem value="30">Last 30 days</SelectItem>
-                <SelectItem value="90">Last 90 days</SelectItem>
-                <SelectItem value="365">Last year</SelectItem>
-              </SelectContent>
-            </Select>
+            <label htmlFor="timeRange" className="text-sm font-medium text-gray-700">Time Range:</label>
+            <select 
+              value={timeRange} 
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last year</option>
+            </select>
           </div>
         </div>
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Revenue</h3>
               <DollarSign className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-green-600">
                 ${analyticsData.overview.totalRevenue.toLocaleString()}
               </div>
@@ -144,15 +138,15 @@ const Analytics = () => {
                 <span className="ml-1">+{analyticsData.overview.revenueGrowth}%</span>
               </div>
               <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Bookings</h3>
               <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-blue-600">
                 {analyticsData.overview.totalBookings.toLocaleString()}
               </div>
@@ -161,15 +155,15 @@ const Analytics = () => {
                 <span className="ml-1">+{analyticsData.overview.bookingGrowth}%</span>
               </div>
               <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Customers</h3>
               <Users className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-purple-600">
                 {analyticsData.overview.totalCustomers}
               </div>
@@ -178,33 +172,33 @@ const Analytics = () => {
                 <span className="ml-1">+{analyticsData.overview.customerGrowth}%</span>
               </div>
               <p className="text-xs text-gray-600">vs previous period</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Average Rating</h3>
               <Star className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-yellow-600">
                 {analyticsData.overview.averageRating}
               </div>
               <p className="text-xs text-gray-600">out of 5 stars</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Revenue by Court */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5 text-blue-500" />
                 <span>Revenue by Court</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-4">
                 {analyticsData.revenue.byCourt.map((court) => (
                   <div key={court.name} className="flex items-center justify-between">
@@ -219,18 +213,18 @@ const Analytics = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Customer Demographics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <PieChart className="h-5 w-5 text-purple-500" />
                 <span>Customer Demographics</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-4">
                 {analyticsData.customers.bySkillLevel.map((level) => (
                   <div key={level.level} className="flex items-center justify-between">
@@ -247,21 +241,21 @@ const Analytics = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Bookings Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Bookings by Hour */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-green-500" />
                 <span>Bookings by Hour</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-3">
                 {analyticsData.bookings.byHour.map((hour) => (
                   <div key={hour.hour} className="flex items-center justify-between">
@@ -278,18 +272,18 @@ const Analytics = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Bookings by Day */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <Calendar className="h-5 w-5 text-orange-500" />
                 <span>Bookings by Day</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-3">
                 {analyticsData.bookings.byDay.map((day) => (
                   <div key={day.day} className="flex items-center justify-between">
@@ -301,21 +295,21 @@ const Analytics = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Performance Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Court Utilization */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <Target className="h-5 w-5 text-blue-500" />
                 <span>Court Utilization</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-4">
                 {analyticsData.performance.courtUtilization.map((court) => (
                   <div key={court.court} className="flex items-center justify-between">
@@ -332,26 +326,26 @@ const Analytics = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Peak vs Slow Hours */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="flex items-center space-x-2">
                 <Activity className="h-5 w-5 text-green-500" />
                 <span>Peak vs Slow Hours</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div className="pt-2">
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-green-600 mb-2">Peak Hours</h4>
                   <div className="flex flex-wrap gap-2">
                     {analyticsData.performance.peakHours.map((hour) => (
-                      <Badge key={hour} className="bg-green-100 text-green-800">
+                      <span key={hour} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                         {hour}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -359,26 +353,26 @@ const Analytics = () => {
                   <h4 className="font-medium text-red-600 mb-2">Slow Hours</h4>
                   <div className="flex flex-wrap gap-2">
                     {analyticsData.performance.slowHours.map((hour) => (
-                      <Badge key={hour} className="bg-red-100 text-red-800">
+                      <span key={hour} className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
                         {hour}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Top Customers */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-purple-500" />
               <span>Top Customers</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div className="pt-2">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -401,8 +395,8 @@ const Analytics = () => {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

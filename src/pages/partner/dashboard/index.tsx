@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import Overview from './Overview';
 import CourtManagement from './CourtManagement';
 import Bookings from './Bookings';
@@ -99,22 +98,26 @@ const PartnerDashboard = () => {
       amount: 45,
       paymentStatus: 'Paid',
       customerEmail: 'emma@email.com'
-    },
-    {
-      id: 6,
-      customerName: 'David L.',
-      courtName: 'Court 3',
-      date: '2024-03-28',
-      time: '4:00 PM',
-      duration: 1,
-      status: 'Pending',
-      amount: 25,
-      paymentStatus: 'Pending',
-      customerEmail: 'david@email.com'
     }
   ];
 
-  // Financial data
+  // Customer data
+  const allCustomers = [
+    { id: 1, name: 'Sarah M.', email: 'sarah@email.com', phone: '+1-555-0123', totalBookings: 15, totalSpent: 675, lastVisit: '2024-03-25', status: 'Active', rating: 5, feedback: 'Great courts and friendly staff!' },
+    { id: 2, name: 'Mike R.', email: 'mike@email.com', phone: '+1-555-0124', totalBookings: 8, totalSpent: 320, lastVisit: '2024-03-25', status: 'Active', rating: 4, feedback: 'Courts are well-maintained' },
+    { id: 3, name: 'Lisa K.', email: 'lisa@email.com', phone: '+1-555-0125', totalBookings: 12, totalSpent: 540, lastVisit: '2024-03-26', status: 'Active', rating: 5, feedback: 'Best pickleball facility in town!' },
+    { id: 4, name: 'John D.', email: 'john@email.com', phone: '+1-555-0126', totalBookings: 6, totalSpent: 210, lastVisit: '2024-03-26', status: 'Active', rating: 4, feedback: 'Good experience overall' },
+    { id: 5, name: 'Emma W.', email: 'emma@email.com', phone: '+1-555-0127', totalBookings: 9, totalSpent: 405, lastVisit: '2024-03-27', status: 'Active', rating: 5, feedback: 'Excellent facility!' }
+  ];
+
+  // Maintenance data
+  const maintenanceItems = [
+    { id: 1, courtName: 'Court 4', type: 'Emergency', description: 'Surface repair needed', startDate: '2024-03-22', endDate: '2024-03-25', status: 'In Progress', technician: 'Maintenance Team', cost: 500 },
+    { id: 2, courtName: 'Court 7', type: 'Scheduled', description: 'Net replacement', startDate: '2024-03-25', endDate: '2024-03-29', status: 'Scheduled', technician: 'Maintenance Team', cost: 300 },
+    { id: 3, courtName: 'Court 2', type: 'Preventive', description: 'Lighting check', startDate: '2024-03-24', endDate: '2024-03-24', status: 'Completed', technician: 'Maintenance Team', cost: 150 }
+  ];
+
+  // Financial data for Overview and Analytics
   const financialData = {
     thisMonth: 12450,
     lastMonth: 11200,
@@ -133,47 +136,7 @@ const PartnerDashboard = () => {
     }
   };
 
-  // Customer management data
-  const customers = [
-    {
-      id: 1,
-      name: 'Sarah M.',
-      email: 'sarah@email.com',
-      phone: '+1-555-0123',
-      totalBookings: 15,
-      totalSpent: 675,
-      lastVisit: '2024-03-25',
-      status: 'Active',
-      rating: 5,
-      feedback: 'Great courts and friendly staff!'
-    },
-    {
-      id: 2,
-      name: 'Mike R.',
-      email: 'mike@email.com',
-      phone: '+1-555-0124',
-      totalBookings: 8,
-      totalSpent: 320,
-      lastVisit: '2024-03-25',
-      status: 'Active',
-      rating: 4,
-      feedback: 'Courts are well-maintained'
-    },
-    {
-      id: 3,
-      name: 'Lisa K.',
-      email: 'lisa@email.com',
-      phone: '+1-555-0125',
-      totalBookings: 22,
-      totalSpent: 990,
-      lastVisit: '2024-03-26',
-      status: 'Active',
-      rating: 5,
-      feedback: 'Best pickleball facility in town!'
-    }
-  ];
-
-  // Business microsite configuration data
+  // Microsite config
   const micrositeConfig = {
     businessName: 'Elite Pickleball Courts',
     description: 'Premium indoor and outdoor pickleball courts with professional equipment and amenities',
@@ -205,107 +168,154 @@ const PartnerDashboard = () => {
     ]
   };
 
-  // Maintenance schedule data
-  const maintenanceSchedule = [
-    {
-      id: 1,
-      courtName: 'Court 4',
-      type: 'Scheduled',
-      description: 'Regular surface maintenance',
-      startDate: '2024-03-22',
-      endDate: '2024-03-25',
-      status: 'In Progress',
-      technician: 'Mike Johnson',
-      cost: 500
-    },
-    {
-      id: 2,
-      courtName: 'Court 7',
-      type: 'Emergency',
-      description: 'Net replacement and surface repair',
-      startDate: '2024-03-22',
-      endDate: '2024-03-29',
-      status: 'In Progress',
-      technician: 'Sarah Wilson',
-      cost: 800
-    },
-    {
-      id: 3,
-      courtName: 'Court 1',
-      type: 'Preventive',
-      description: 'Surface cleaning and line repainting',
-      startDate: '2024-04-15',
-      endDate: '2024-04-16',
-      status: 'Scheduled',
-      technician: 'Mike Johnson',
-      cost: 300
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 animate-on-scroll">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, {user?.username || 'Partner'}!
           </h1>
-          <p className="text-gray-600">Here's what's happening with your pickleball business today</p>
+          <p className="text-gray-600">
+            Here's your business overview and management dashboard.
+          </p>
         </div>
 
         {/* Main Content Tabs */}
-        <div className="mb-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="courts">Court Management</TabsTrigger>
-              <TabsTrigger value="bookings">Bookings</TabsTrigger>
-              <TabsTrigger value="customers">Customers</TabsTrigger>
-              <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-              <TabsTrigger value="microsite">Microsite</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            </TabsList>
+        <div className="mb-8 animate-on-scroll">
+          {/* Custom Tabs Implementation */}
+          <div className="w-full">
+            {/* Tab Navigation */}
+            <div className="grid w-full grid-cols-7 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'overview'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('courts')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'courts'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Courts
+              </button>
+              <button
+                onClick={() => setActiveTab('bookings')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'bookings'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Bookings
+              </button>
+              <button
+                onClick={() => setActiveTab('customers')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'customers'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Customers
+              </button>
+              <button
+                onClick={() => setActiveTab('maintenance')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'maintenance'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Maintenance
+              </button>
+              <button
+                onClick={() => setActiveTab('microsite')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'microsite'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Microsite
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === 'analytics'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Analytics
+              </button>
+            </div>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-6">
-              <Overview 
-                partnerStats={partnerStats}
-                allCourts={allCourts}
-                allBookings={allBookings}
-                financialData={financialData}
-              />
-            </TabsContent>
+            {/* Tab Content */}
+            <div className="mt-6">
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="animate-on-scroll">
+                  <Overview 
+                    partnerStats={partnerStats}
+                    allCourts={allCourts}
+                    allBookings={allBookings}
+                    financialData={financialData}
+                  />
+                </div>
+              )}
 
-            {/* Court Management Tab */}
-            <TabsContent value="courts" className="mt-6">
-              <CourtManagement allCourts={allCourts} />
-            </TabsContent>
+              {/* Courts Tab */}
+              {activeTab === 'courts' && (
+                <div className="animate-on-scroll">
+                  <CourtManagement allCourts={allCourts} />
+                </div>
+              )}
 
-            {/* Bookings Tab */}
-            <TabsContent value="bookings" className="mt-6">
-              <Bookings allBookings={allBookings} />
-            </TabsContent>
+              {/* Bookings Tab */}
+              {activeTab === 'bookings' && (
+                <div className="animate-on-scroll">
+                  <Bookings allBookings={allBookings} />
+                </div>
+              )}
 
-            {/* Customers Tab */}
-            <TabsContent value="customers" className="mt-6">
-              <Customers customers={customers} />
-            </TabsContent>
+              {/* Customers Tab */}
+              {activeTab === 'customers' && (
+                <div className="animate-on-scroll">
+                  <Customers customers={allCustomers} />
+                </div>
+              )}
 
-            {/* Maintenance Tab */}
-            <TabsContent value="maintenance" className="mt-6">
-              <Maintenance maintenanceSchedule={maintenanceSchedule} />
-            </TabsContent>
+              {/* Maintenance Tab */}
+              {activeTab === 'maintenance' && (
+                <div className="animate-on-scroll">
+                  <Maintenance maintenanceSchedule={maintenanceItems} />
+                </div>
+              )}
 
-            {/* Microsite Tab */}
-            <TabsContent value="microsite" className="mt-6">
-              <Microsite micrositeConfig={micrositeConfig} />
-            </TabsContent>
+              {/* Microsite Tab */}
+              {activeTab === 'microsite' && (
+                <div className="animate-on-scroll">
+                  <Microsite micrositeConfig={micrositeConfig} />
+                </div>
+              )}
 
-            {/* Analytics Tab */}
-            <TabsContent value="analytics" className="mt-6">
-              <Analytics financialData={financialData} partnerStats={partnerStats} />
-            </TabsContent>
-          </Tabs>
+              {/* Analytics Tab */}
+              {activeTab === 'analytics' && (
+                <div className="animate-on-scroll">
+                  <Analytics financialData={financialData} partnerStats={partnerStats} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

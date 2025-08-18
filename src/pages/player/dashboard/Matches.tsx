@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Trophy, Users } from 'lucide-react';
 
 interface Match {
@@ -29,52 +28,46 @@ const Matches: React.FC<MatchesProps> = ({ matchHistory }) => {
   return (
     <div className="space-y-6">
       {/* Match Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Matches</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-on-scroll">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Total Matches</h3>
             <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{totalMatches}</div>
-            <p className="text-xs text-gray-600">matches played</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{totalMatches}</div>
+          <p className="text-xs text-gray-600">matches played</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Win Rate</h3>
             <Trophy className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{winRate}%</div>
-            <p className="text-xs text-gray-600">{wins} wins</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-yellow-600">{winRate}%</div>
+          <p className="text-xs text-gray-600">{wins} wins</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Net Points</CardTitle>
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium">Net Points</h3>
             <span className="text-sm font-medium">📊</span>
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${totalPoints >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totalPoints >= 0 ? `+${totalPoints}` : totalPoints}
-            </div>
-            <p className="text-xs text-gray-600">total points</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className={`text-2xl font-bold ${totalPoints >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {totalPoints >= 0 ? `+${totalPoints}` : totalPoints}
+          </div>
+          <p className="text-xs text-gray-600">total points</p>
+        </div>
       </div>
 
       {/* Match History */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center space-x-2">
             <Users className="h-5 w-5 text-green-500" />
             <span>Match History</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-4">
             {matchHistory.map((match) => (
               <div key={match.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -99,20 +92,20 @@ const Matches: React.FC<MatchesProps> = ({ matchHistory }) => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Recent Performance Chart Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">Performance Trend</h3>
+        </div>
+        <div className="p-6">
           <div className="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
             <p className="text-gray-500">Performance chart will be displayed here</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

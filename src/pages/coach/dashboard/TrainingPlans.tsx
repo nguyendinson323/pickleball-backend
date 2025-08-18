@@ -1,6 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
 import { 
   BookOpen, 
   Plus, 
@@ -30,31 +28,34 @@ const TrainingPlans: React.FC<TrainingPlansProps> = ({ trainingPlans }) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+      <div className="p-6 border-b">
+        <h3 className="text-lg font-semibold flex items-center space-x-2">
           <BookOpen className="h-5 w-5 text-purple-500" />
           <span>Training Plans Management</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Create and Manage Training Programs</h3>
-            <Button onClick={() => handleTrainingPlanAction(0, 'create')}>
+            <button 
+              onClick={() => handleTrainingPlanAction(0, 'create')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center"
+            >
               <Plus className="h-4 w-4 mr-2" />
               New Training Plan
-            </Button>
+            </button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {trainingPlans.map((plan) => (
-              <Card key={plan.id}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+              <div key={plan.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200 animate-on-scroll">
+                <div className="p-4 border-b">
+                  <h4 className="text-lg font-semibold">{plan.name}</h4>
                   <p className="text-sm text-gray-600">{plan.description}</p>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div className="p-4">
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span>Duration:</span>
@@ -78,33 +79,29 @@ const TrainingPlans: React.FC<TrainingPlansProps> = ({ trainingPlans }) => {
                       <strong>Next:</strong> {plan.nextSession}
                     </div>
                     <div className="flex space-x-2 pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
+                      <button
                         onClick={() => handleTrainingPlanAction(plan.id, 'view')}
-                        className="flex-1"
+                        className="flex-1 px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         View
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
+                      </button>
+                      <button
                         onClick={() => handleTrainingPlanAction(plan.id, 'edit')}
-                        className="flex-1"
+                        className="flex-1 px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
                       >
                         <Edit3 className="h-4 w-4 mr-1" />
                         Edit
-                      </Button>
+                      </button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

@@ -1,42 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Switch } from '../../components/ui/switch';
-import { 
-  Server, 
-  Database, 
-  Settings, 
-  Shield, 
-  Activity, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Globe, 
-  Lock,
-  Key,
-  Eye,
-  EyeOff,
-  Save,
-  RefreshCw,
-  Play,
-  Pause,
-  Trash2,
-  Download,
-  Upload,
-  BarChart3,
-  HardDrive,
-  Cpu,
-  MemoryStick,
-  Network,
-  Zap
-} from 'lucide-react';
 
 const SystemManagement = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -98,56 +62,20 @@ const SystemManagement = () => {
   // Mock system health data
   const systemHealth = {
     status: 'healthy',
-    uptime: '99.97%',
-    lastIncident: '2024-02-15 14:30 PM',
-    responseTime: '45ms',
-    errorRate: '0.02%',
-    activeUsers: 1247,
-    databaseConnections: 23,
-    memoryUsage: '67%',
+    uptime: '99.9%',
+    responseTime: '120ms',
     cpuUsage: '45%',
+    memoryUsage: '62%',
     diskUsage: '78%',
-    networkLatency: '12ms'
+    networkLatency: '15ms',
+    activeUsers: 1247,
+    totalRequests: 45678
   };
-
-  const recentSystemEvents = [
-    {
-      id: 1,
-      type: 'Database Backup',
-      status: 'success',
-      timestamp: '2024-03-25 02:00 AM',
-      duration: '15 minutes',
-      details: 'Daily backup completed successfully'
-    },
-    {
-      id: 2,
-      type: 'Security Scan',
-      status: 'success',
-      timestamp: '2024-03-24 22:00 PM',
-      duration: '45 minutes',
-      details: 'Vulnerability scan completed - no issues found'
-    },
-    {
-      id: 3,
-      type: 'Performance Optimization',
-      status: 'success',
-      timestamp: '2024-03-24 18:00 PM',
-      duration: '30 minutes',
-      details: 'Database query optimization completed'
-    },
-    {
-      id: 4,
-      type: 'SSL Certificate',
-      status: 'warning',
-      timestamp: '2024-03-24 12:00 PM',
-      duration: '5 minutes',
-      details: 'SSL certificate expires in 30 days'
-    }
-  ];
 
   const handleSave = () => {
     setSystemConfig(editedConfig);
     setIsEditing(false);
+    // In a real app, this would save to the backend
   };
 
   const handleCancel = () => {
@@ -155,14 +83,8 @@ const SystemManagement = () => {
     setIsEditing(false);
   };
 
-  const handleInputChange = (section: string, field: string, value: any) => {
-    setEditedConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
-        [field]: value
-      }
-    }));
+  const handleReset = () => {
+    setEditedConfig(systemConfig);
   };
 
   const getStatusColor = (status: string) => {
@@ -174,532 +96,545 @@ const SystemManagement = () => {
     }
   };
 
-  const getEventStatusColor = (status: string) => {
-    switch (status) {
-      case 'success': return 'bg-green-100 text-green-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
-      case 'error': return 'bg-red-100 text-red-800';
-      default: return 'bg-blue-100 text-blue-800';
-    }
-  };
-
-  const getEventStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success': return <CheckCircle className="h-4 w-4" />;
-      case 'warning': return <AlertTriangle className="h-4 w-4" />;
-      case 'error': return <AlertTriangle className="h-4 w-4" />;
-      default: return <Activity className="h-4 w-4" />;
-    }
+  const getUsageColor = (usage: string) => {
+    const percentage = parseInt(usage.replace('%', ''));
+    if (percentage < 50) return 'bg-green-100 text-green-800';
+    if (percentage < 80) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">System Management</h1>
-            <p className="text-gray-600">Configure system settings, monitor health, and manage infrastructure</p>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 animate-on-scroll">System Management</h1>
+          <p className="text-gray-600 mb-6 animate-on-scroll">
+            Monitor and configure system settings, performance, and health
+          </p>
           <div className="flex space-x-3">
             {isEditing ? (
               <>
-                <Button onClick={handleSave} className="flex items-center space-x-2">
-                  <Save className="h-4 w-4" />
-                  <span>Save Changes</span>
-                </Button>
-                <Button variant="outline" onClick={handleCancel} className="flex items-center space-x-2">
-                  <RefreshCw className="h-4 w-4" />
-                  <span>Cancel</span>
-                </Button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+                >
+                  <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  Save Changes
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+                >
+                  Cancel
+                </button>
               </>
             ) : (
-              <Button onClick={() => setIsEditing(true)} className="flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
-                <span>Edit Configuration</span>
-              </Button>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+              >
+                <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Settings
+              </button>
             )}
+            <button
+              onClick={handleReset}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors animate-on-scroll"
+            >
+              <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reset
+            </button>
           </div>
         </div>
 
         {/* System Health Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Status</CardTitle>
-              <Server className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <Badge className={`${getStatusColor(systemHealth.status)} text-sm`}>
-                {systemHealth.status.charAt(0).toUpperCase() + systemHealth.status.slice(1)}
-              </Badge>
-              <p className="text-xs text-gray-600 mt-1">Uptime: {systemHealth.uptime}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Response Time</CardTitle>
-              <Activity className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{systemHealth.responseTime}</div>
-              <p className="text-xs text-gray-600">average response</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{systemHealth.errorRate}</div>
-              <p className="text-xs text-gray-600">last 24 hours</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-              <Globe className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{systemHealth.activeUsers}</div>
-              <p className="text-xs text-gray-600">currently online</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* System Configuration */}
-          <div className="space-y-6">
-            {/* General Settings */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="h-5 w-5 text-blue-500" />
-                  <span>General Settings</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="systemName">System Name</Label>
-                    <Input
-                      id="systemName"
-                      value={isEditing ? editedConfig.general.systemName : systemConfig.general.systemName}
-                      onChange={(e) => handleInputChange('general', 'systemName', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="version">Version</Label>
-                    <Input
-                      id="version"
-                      value={isEditing ? editedConfig.general.version : systemConfig.general.version}
-                      disabled
-                      className="bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="environment">Environment</Label>
-                    <Select 
-                      value={isEditing ? editedConfig.general.environment : systemConfig.general.environment} 
-                      onValueChange={(value) => handleInputChange('general', 'environment', value)}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="production">Production</SelectItem>
-                        <SelectItem value="staging">Staging</SelectItem>
-                        <SelectItem value="development">Development</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="timezone">Timezone</Label>
-                    <Select 
-                      value={isEditing ? editedConfig.general.timezone : systemConfig.general.timezone} 
-                      onValueChange={(value) => handleInputChange('general', 'timezone', value)}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="UTC">UTC</SelectItem>
-                        <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                        <SelectItem value="America/Chicago">Central Time</SelectItem>
-                        <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Maintenance Mode</Label>
-                    <p className="text-xs text-gray-600">Temporarily disable system access</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.general.maintenanceMode : systemConfig.general.maintenanceMode}
-                    onCheckedChange={(checked) => handleInputChange('general', 'maintenanceMode', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Debug Mode</Label>
-                    <p className="text-xs text-gray-600">Enable detailed logging and debugging</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.general.debugMode : systemConfig.general.debugMode}
-                    onCheckedChange={(checked) => handleInputChange('general', 'debugMode', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Database Configuration */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Database className="h-5 w-5 text-green-500" />
-                  <span>Database Configuration</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dbHost">Database Host</Label>
-                    <Input
-                      id="dbHost"
-                      value={isEditing ? editedConfig.database.host : systemConfig.database.host}
-                      onChange={(e) => handleInputChange('database', 'host', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dbPort">Port</Label>
-                    <Input
-                      id="dbPort"
-                      type="number"
-                      value={isEditing ? editedConfig.database.port : systemConfig.database.port}
-                      onChange={(e) => handleInputChange('database', 'port', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dbName">Database Name</Label>
-                    <Input
-                      id="dbName"
-                      value={isEditing ? editedConfig.database.name : systemConfig.database.name}
-                      onChange={(e) => handleInputChange('database', 'name', e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="maxConnections">Max Connections</Label>
-                    <Input
-                      id="maxConnections"
-                      type="number"
-                      value={isEditing ? editedConfig.database.maxConnections : systemConfig.database.maxConnections}
-                      onChange={(e) => handleInputChange('database', 'maxConnections', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Backup Enabled</Label>
-                    <p className="text-xs text-gray-600">Automated database backups</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.database.backupEnabled : systemConfig.database.backupEnabled}
-                    onCheckedChange={(checked) => handleInputChange('database', 'backupEnabled', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                {systemConfig.database.backupEnabled && (
-                  <div>
-                    <Label htmlFor="backupFrequency">Backup Frequency</Label>
-                    <Select 
-                      value={isEditing ? editedConfig.database.backupFrequency : systemConfig.database.backupFrequency} 
-                      onValueChange={(value) => handleInputChange('database', 'backupFrequency', value)}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="hourly">Hourly</SelectItem>
-                        <SelectItem value="daily">Daily</SelectItem>
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Last backup: {systemConfig.database.lastBackup}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Security & Performance */}
-          <div className="space-y-6">
-            {/* Security Settings */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Shield className="h-5 w-5 text-red-500" />
-                  <span>Security Settings</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="sessionTimeout">Session Timeout (seconds)</Label>
-                    <Input
-                      id="sessionTimeout"
-                      type="number"
-                      value={isEditing ? editedConfig.security.sessionTimeout : systemConfig.security.sessionTimeout}
-                      onChange={(e) => handleInputChange('security', 'sessionTimeout', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="maxLoginAttempts">Max Login Attempts</Label>
-                    <Input
-                      id="maxLoginAttempts"
-                      type="number"
-                      value={isEditing ? editedConfig.security.maxLoginAttempts : systemConfig.security.maxLoginAttempts}
-                      onChange={(e) => handleInputChange('security', 'maxLoginAttempts', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="passwordMinLength">Min Password Length</Label>
-                    <Input
-                      id="passwordMinLength"
-                      type="number"
-                      value={isEditing ? editedConfig.security.passwordMinLength : systemConfig.security.passwordMinLength}
-                      onChange={(e) => handleInputChange('security', 'passwordMinLength', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="rateLimitRequests">Rate Limit Requests</Label>
-                    <Input
-                      id="rateLimitRequests"
-                      type="number"
-                      value={isEditing ? editedConfig.security.rateLimitRequests : systemConfig.security.rateLimitRequests}
-                      onChange={(e) => handleInputChange('security', 'rateLimitRequests', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Require Two-Factor</Label>
-                    <p className="text-xs text-gray-600">Force 2FA for all users</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.security.requireTwoFactor : systemConfig.security.requireTwoFactor}
-                    onCheckedChange={(checked) => handleInputChange('security', 'requireTwoFactor', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">SSL Enabled</Label>
-                    <p className="text-xs text-gray-600">Secure connections only</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.security.sslEnabled : systemConfig.security.sslEnabled}
-                    onCheckedChange={(checked) => handleInputChange('security', 'sslEnabled', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Rate Limiting</Label>
-                    <p className="text-xs text-gray-600">Protect against abuse</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.security.rateLimitEnabled : systemConfig.security.rateLimitEnabled}
-                    onCheckedChange={(checked) => handleInputChange('security', 'rateLimitEnabled', checked)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Storage Configuration */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <HardDrive className="h-5 w-5 text-purple-500" />
-                  <span>Storage Configuration</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="maxFileSize">Max File Size (bytes)</Label>
-                    <Input
-                      id="maxFileSize"
-                      type="number"
-                      value={isEditing ? editedConfig.storage.maxFileSize : systemConfig.storage.maxFileSize}
-                      onChange={(e) => handleInputChange('storage', 'maxFileSize', parseInt(e.target.value))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="storageProvider">Storage Provider</Label>
-                    <Select 
-                      value={isEditing ? editedConfig.storage.storageProvider : systemConfig.storage.storageProvider} 
-                      onValueChange={(value) => handleInputChange('storage', 'storageProvider', value)}
-                      disabled={!isEditing}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="AWS S3">AWS S3</SelectItem>
-                        <SelectItem value="Google Cloud Storage">Google Cloud Storage</SelectItem>
-                        <SelectItem value="Azure Blob Storage">Azure Blob Storage</SelectItem>
-                        <SelectItem value="Local Storage">Local Storage</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 animate-on-scroll">System Health</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="allowedFileTypes">Allowed File Types</Label>
-                  <Input
-                    id="allowedFileTypes"
-                    value={isEditing ? editedConfig.storage.allowedFileTypes.join(', ') : systemConfig.storage.allowedFileTypes.join(', ')}
-                    onChange={(e) => handleInputChange('storage', 'allowedFileTypes', e.target.value.split(', ').map(t => t.trim()))}
-                    disabled={!isEditing}
-                    placeholder="jpg, jpeg, png, pdf, doc, docx"
-                  />
+                  <p className="text-sm font-medium text-gray-600 animate-on-scroll">Status</p>
+                  <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{systemHealth.status}</p>
                 </div>
+                <div className={`p-2 rounded-full ${getStatusColor(systemHealth.status)} animate-on-scroll`}>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">CDN Enabled</Label>
-                    <p className="text-xs text-gray-600">Content delivery network</p>
-                  </div>
-                  <Switch
-                    checked={isEditing ? editedConfig.storage.cdnEnabled : systemConfig.storage.cdnEnabled}
-                    onCheckedChange={(checked) => handleInputChange('storage', 'cdnEnabled', checked)}
-                    disabled={!isEditing}
-                  />
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 animate-on-scroll">Uptime</p>
+                  <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{systemHealth.uptime}</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="p-2 rounded-full bg-blue-100 text-blue-600 animate-on-scroll">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 animate-on-scroll">Response Time</p>
+                  <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{systemHealth.responseTime}</p>
+                </div>
+                <div className="p-2 rounded-full bg-green-100 text-green-600 animate-on-scroll">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 animate-on-scroll">Active Users</p>
+                  <p className="text-2xl font-bold text-gray-900 animate-on-scroll">{systemHealth.activeUsers}</p>
+                </div>
+                <div className="p-2 rounded-full bg-purple-100 text-purple-600 animate-on-scroll">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* System Health Monitoring */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Activity className="h-5 w-5 text-green-500" />
-              <span>System Health Monitoring</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{systemHealth.memoryUsage}</div>
-                <p className="text-sm text-gray-600">Memory Usage</p>
-                <MemoryStick className="h-8 w-8 text-blue-500 mx-auto mt-2" />
+        {/* Performance Metrics */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 animate-on-scroll">Performance Metrics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">CPU Usage</h3>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
               </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{systemHealth.cpuUsage}</div>
-                <p className="text-sm text-gray-600">CPU Usage</p>
-                <Cpu className="h-8 w-8 text-green-500 mx-auto mt-2" />
-              </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{systemHealth.diskUsage}</div>
-                <p className="text-sm text-gray-600">Disk Usage</p>
-                <HardDrive className="h-8 w-8 text-purple-500 mx-auto mt-2" />
-              </div>
-              
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">{systemHealth.networkLatency}</div>
-                <p className="text-sm text-gray-600">Network Latency</p>
-                <Network className="h-8 w-8 text-orange-500 mx-auto mt-2" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3">Recent System Events</h4>
-                <div className="space-y-3">
-                  {recentSystemEvents.map((event) => (
-                    <div key={event.id} className="flex items-center space-x-3 p-3 border rounded-lg">
-                      <div className={`p-2 rounded-full ${getEventStatusColor(event.status)}`}>
-                        {getEventStatusIcon(event.status)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-medium text-gray-900">{event.type}</h5>
-                          <Badge className={getEventStatusColor(event.status)}>
-                            {event.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600">{event.details}</p>
-                        <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
-                          <span>{event.timestamp}</span>
-                          <span>Duration: {event.duration}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 animate-on-scroll">Current</span>
+                  <span className={`font-medium ${getUsageColor(systemHealth.cpuUsage)} animate-on-scroll`}>
+                    {systemHealth.cpuUsage}
+                  </span>
                 </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-gray-900 mb-3">Quick Actions</h4>
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh System Status
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download System Logs
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    View Performance Metrics
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Run System Diagnostics
-                  </Button>
+                <div className="w-full bg-gray-200 rounded-full h-2 animate-on-scroll">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      parseInt(systemHealth.cpuUsage.replace('%', '')) < 50 ? 'bg-green-500' :
+                      parseInt(systemHealth.cpuUsage.replace('%', '')) < 80 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: systemHealth.cpuUsage }}
+                  />
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">Memory Usage</h3>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 animate-on-scroll">Current</span>
+                  <span className={`font-medium ${getUsageColor(systemHealth.memoryUsage)} animate-on-scroll`}>
+                    {systemHealth.memoryUsage}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 animate-on-scroll">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      parseInt(systemHealth.memoryUsage.replace('%', '')) < 50 ? 'bg-green-500' :
+                      parseInt(systemHealth.memoryUsage.replace('%', '')) < 80 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: systemHealth.memoryUsage }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 animate-on-scroll">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">Disk Usage</h3>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                </svg>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 animate-on-scroll">Current</span>
+                  <span className={`font-medium ${getUsageColor(systemHealth.diskUsage)} animate-on-scroll`}>
+                    {systemHealth.diskUsage}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 animate-on-scroll">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      parseInt(systemHealth.diskUsage.replace('%', '')) < 50 ? 'bg-green-500' :
+                      parseInt(systemHealth.diskUsage.replace('%', '')) < 80 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: systemHealth.diskUsage }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Configuration Sections */}
+        <div className="space-y-8">
+          {/* General Settings */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">General Settings</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    System Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editedConfig.general.systemName}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, systemName: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Version
+                  </label>
+                  <input
+                    type="text"
+                    value={editedConfig.general.version}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, version: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Environment
+                  </label>
+                  <select
+                    value={editedConfig.general.environment}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, environment: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  >
+                    <option value="development">Development</option>
+                    <option value="staging">Staging</option>
+                    <option value="production">Production</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Timezone
+                  </label>
+                  <select
+                    value={editedConfig.general.timezone}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, timezone: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  >
+                    <option value="UTC">UTC</option>
+                    <option value="America/New_York">Eastern Time</option>
+                    <option value="America/Chicago">Central Time</option>
+                    <option value="America/Denver">Mountain Time</option>
+                    <option value="America/Los_Angeles">Pacific Time</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-6 mt-6">
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.general.maintenanceMode}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, maintenanceMode: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">Maintenance Mode</span>
+                </label>
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.general.debugMode}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      general: { ...prev.general, debugMode: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">Debug Mode</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Security Settings */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">Security Settings</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Session Timeout (seconds)
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.security.sessionTimeout}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, sessionTimeout: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Max Login Attempts
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.security.maxLoginAttempts}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, maxLoginAttempts: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Password Min Length
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.security.passwordMinLength}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, passwordMinLength: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Rate Limit Requests
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.security.rateLimitRequests}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, rateLimitRequests: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-6 mt-6">
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.security.requireTwoFactor}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, requireTwoFactor: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">Require Two-Factor</span>
+                </label>
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.security.sslEnabled}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, sslEnabled: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">SSL Enabled</span>
+                </label>
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.security.rateLimitEnabled}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      security: { ...prev.security, rateLimitEnabled: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">Rate Limiting</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Database Settings */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm animate-on-scroll">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 animate-on-scroll">Database Settings</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Host
+                  </label>
+                  <input
+                    type="text"
+                    value={editedConfig.database.host}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, host: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Port
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.database.port}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, port: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Database Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editedConfig.database.name}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, name: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Max Connections
+                  </label>
+                  <input
+                    type="number"
+                    value={editedConfig.database.maxConnections}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, maxConnections: parseInt(e.target.value) }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-6 mt-6">
+                <label className="flex items-center animate-on-scroll">
+                  <input
+                    type="checkbox"
+                    checked={editedConfig.database.backupEnabled}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, backupEnabled: e.target.checked }
+                    }))}
+                    disabled={!isEditing}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 animate-on-scroll">Backup Enabled</span>
+                </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 animate-on-scroll">
+                    Backup Frequency
+                  </label>
+                  <select
+                    value={editedConfig.database.backupFrequency}
+                    onChange={(e) => setEditedConfig(prev => ({
+                      ...prev,
+                      database: { ...prev.database, backupFrequency: e.target.value }
+                    }))}
+                    disabled={!isEditing}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 animate-on-scroll"
+                  >
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 bg-gray-50 rounded-md animate-on-scroll">
+                <p className="text-sm text-gray-600 animate-on-scroll">
+                  <span className="font-medium">Last Backup:</span> {editedConfig.database.lastBackup}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

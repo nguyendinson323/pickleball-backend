@@ -1,7 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
 import { 
   Award, 
   Plus, 
@@ -29,31 +26,34 @@ const Credentials: React.FC<CredentialsProps> = ({ credentials }) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+      <div className="p-6 border-b">
+        <h3 className="text-lg font-semibold flex items-center space-x-2">
           <Award className="h-5 w-5 text-yellow-500" />
           <span>Credentials & Certifications</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Manage Your Coaching Credentials</h3>
-            <Button onClick={() => handleTrainingPlanAction(0, 'add-credential')}>
+            <button 
+              onClick={() => handleTrainingPlanAction(0, 'add-credential')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Credential
-            </Button>
+            </button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {credentials.map((credential) => (
-              <Card key={credential.id}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{credential.name}</CardTitle>
+              <div key={credential.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200 animate-on-scroll">
+                <div className="p-4 border-b">
+                  <h4 className="text-lg font-semibold">{credential.name}</h4>
                   <p className="text-sm text-gray-600">{credential.issuingOrg}</p>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div className="p-4">
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span>Issued:</span>
@@ -65,29 +65,27 @@ const Credentials: React.FC<CredentialsProps> = ({ credentials }) => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Status:</span>
-                      <Badge className="bg-green-100 text-green-800">
+                      <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                         {credential.status}
-                      </Badge>
+                      </span>
                     </div>
                     <div className="pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
+                      <button
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
                         onClick={() => window.open(credential.verificationUrl, '_blank')}
                       >
                         <QrCode className="h-4 w-4 mr-2" />
                         Verify Online
-                      </Button>
+                      </button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

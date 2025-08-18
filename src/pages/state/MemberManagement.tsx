@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { 
   Users, 
   Search, 
@@ -100,11 +93,11 @@ const MemberManagement = () => {
       name: 'Emily W.',
       email: 'emily.w@email.com',
       phone: '(555) 567-8901',
-      type: 'Coach',
-      club: 'Elite Pickleball Club',
+      type: 'Club Manager',
+      club: 'City Park Recreation',
       status: 'Active',
       joinDate: '2023-04-12',
-      lastActivity: '2024-03-22',
+      lastActivity: '2024-03-19',
       membershipLevel: 'Professional',
       skillLevel: 'Advanced',
       photo: null
@@ -117,52 +110,9 @@ const MemberManagement = () => {
     phone: '',
     type: 'Player',
     club: '',
+    status: 'Active',
     membershipLevel: 'Standard',
     skillLevel: 'Beginner'
-  });
-
-  const handleAddMember = () => {
-    if (newMember.name && newMember.email) {
-      const member = {
-        id: members.length + 1,
-        ...newMember,
-        status: 'Active',
-        joinDate: new Date().toISOString().split('T')[0],
-        lastActivity: new Date().toISOString().split('T')[0],
-        photo: null
-      };
-      setMembers([...members, member]);
-      setNewMember({
-        name: '',
-        email: '',
-        phone: '',
-        type: 'Player',
-        club: '',
-        membershipLevel: 'Standard',
-        skillLevel: 'Beginner'
-      });
-      setIsAddingMember(false);
-    }
-  };
-
-  const handleUpdateMember = (id: number, field: string, value: string) => {
-    setMembers(members.map(member =>
-      member.id === id ? { ...member, [field]: value } : member
-    ));
-  };
-
-  const handleDeleteMember = (id: number) => {
-    setMembers(members.filter(member => member.id !== id));
-  };
-
-  const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         member.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || member.type === filterType;
-    const matchesStatus = filterStatus === 'all' || member.status === filterStatus;
-    const matchesClub = filterClub === 'all' || member.club === filterClub;
-
-    return matchesSearch && matchesType && matchesStatus && matchesClub;
   });
 
   const getStatusColor = (status: string) => {
@@ -170,6 +120,7 @@ const MemberManagement = () => {
       case 'Active': return 'bg-green-100 text-green-800';
       case 'Inactive': return 'bg-red-100 text-red-800';
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
+      case 'Suspended': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -178,19 +129,105 @@ const MemberManagement = () => {
     switch (type) {
       case 'Player': return 'bg-blue-100 text-blue-800';
       case 'Coach': return 'bg-purple-100 text-purple-800';
-      case 'Club': return 'bg-green-100 text-green-800';
+      case 'Club Manager': return 'bg-green-100 text-green-800';
+      case 'Tournament Director': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getLevelColor = (level: string) => {
+  const getMembershipColor = (level: string) => {
     switch (level) {
-      case 'Beginner': return 'bg-blue-100 text-blue-800';
-      case 'Intermediate': return 'bg-green-100 text-green-800';
-      case 'Advanced': return 'bg-purple-100 text-purple-800';
-      case 'Elite': return 'bg-yellow-100 text-yellow-800';
+      case 'Standard': return 'bg-gray-100 text-gray-800';
+      case 'Premium': return 'bg-blue-100 text-blue-800';
+      case 'Professional': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getSkillColor = (level: string) => {
+    switch (level) {
+      case 'Beginner': return 'bg-green-100 text-green-800';
+      case 'Intermediate': return 'bg-blue-100 text-blue-800';
+      case 'Advanced': return 'bg-purple-100 text-purple-800';
+      case 'Expert': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const filteredMembers = members.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         member.club.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = filterType === 'all' || member.type === filterType;
+    const matchesStatus = filterStatus === 'all' || member.status === filterStatus;
+    const matchesClub = filterClub === 'all' || member.club === filterClub;
+    return matchesSearch && matchesType && matchesStatus && matchesClub;
+  });
+
+  const handleAddMember = () => {
+    if (newMember.name && newMember.email && newMember.club) {
+      const member = {
+        id: Date.now(),
+        ...newMember,
+        joinDate: new Date().toISOString().split('T')[0],
+        lastActivity: new Date().toISOString().split('T')[0],
+        photo: null
+      };
+      setMembers([member, ...members]);
+      setNewMember({
+        name: '',
+        email: '',
+        phone: '',
+        type: 'Player',
+        club: '',
+        status: 'Active',
+        membershipLevel: 'Standard',
+        skillLevel: 'Beginner'
+      });
+      setIsAddingMember(false);
+    }
+  };
+
+  const handleEditMember = (id: number) => {
+    const member = members.find(m => m.id === id);
+    if (member) {
+      setNewMember({
+        name: member.name,
+        email: member.email,
+        phone: member.phone,
+        type: member.type,
+        club: member.club,
+        status: member.status,
+        membershipLevel: member.membershipLevel,
+        skillLevel: member.skillLevel
+      });
+      setEditingMember(id);
+      setIsAddingMember(true);
+    }
+  };
+
+  const handleUpdateMember = () => {
+    if (editingMember && newMember.name && newMember.email && newMember.club) {
+      setMembers(members.map(m => 
+        m.id === editingMember ? { ...m, ...newMember } : m
+      ));
+      setNewMember({
+        name: '',
+        email: '',
+        phone: '',
+        type: 'Player',
+        club: '',
+        status: 'Active',
+        membershipLevel: 'Standard',
+        skillLevel: 'Beginner'
+      });
+      setEditingMember(null);
+      setIsAddingMember(false);
+    }
+  };
+
+  const handleDeleteMember = (id: number) => {
+    setMembers(members.filter(m => m.id !== id));
   };
 
   const memberStats = {
@@ -198,8 +235,7 @@ const MemberManagement = () => {
     active: members.filter(m => m.status === 'Active').length,
     players: members.filter(m => m.type === 'Player').length,
     coaches: members.filter(m => m.type === 'Coach').length,
-    premium: members.filter(m => m.membershipLevel === 'Premium').length,
-    professional: members.filter(m => m.membershipLevel === 'Professional').length
+    premium: members.filter(m => m.membershipLevel === 'Premium').length
   };
 
   const clubs = Array.from(new Set(members.map(m => m.club))).filter(Boolean);
@@ -208,375 +244,372 @@ const MemberManagement = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Member Management</h1>
-            <p className="text-gray-600">Manage your federation members and their information</p>
+            <p className="text-gray-600">Manage federation members and their information</p>
           </div>
-          <Button onClick={() => setIsAddingMember(true)} className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsAddingMember(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg flex items-center space-x-2"
+          >
             <Plus className="h-4 w-4" />
-            <span>Add New Member</span>
-          </Button>
+            <span>Add Member</span>
+          </button>
         </div>
 
-        {/* Member Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{memberStats.total}</div>
-              <p className="text-xs text-gray-600">registered members</p>
-            </CardContent>
-          </Card>
+        {/* Member Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8 animate-on-scroll">
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-blue-600">{memberStats.total}</p>
+              </div>
+              <Users className="h-8 w-8 text-blue-500" />
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Members</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{memberStats.active}</div>
-              <p className="text-xs text-gray-600">currently active</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Members</p>
+                <p className="text-2xl font-bold text-green-600">{memberStats.active}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-500" />
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Players</CardTitle>
-              <Target className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{memberStats.players}</div>
-              <p className="text-xs text-gray-600">active players</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Players</p>
+                <p className="text-2xl font-bold text-purple-600">{memberStats.players}</p>
+              </div>
+              <Target className="h-8 w-8 text-purple-500" />
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Coaches</CardTitle>
-              <Award className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{memberStats.coaches}</div>
-              <p className="text-xs text-gray-600">certified coaches</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Coaches</p>
+                <p className="text-2xl font-bold text-orange-600">{memberStats.coaches}</p>
+              </div>
+              <BookOpen className="h-8 w-8 text-orange-500" />
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Premium</CardTitle>
-              <Star className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{memberStats.premium}</div>
-              <p className="text-xs text-gray-600">premium members</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Professional</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{memberStats.professional}</div>
-              <p className="text-xs text-gray-600">professional members</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Premium</p>
+                <p className="text-2xl font-bold text-yellow-600">{memberStats.premium}</p>
+              </div>
+              <Star className="h-8 w-8 text-yellow-500" />
+            </div>
+          </div>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-2">
-                <Label htmlFor="search">Search Members</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="search"
-                    placeholder="Search by name or email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="typeFilter">Member Type</Label>
-                <Select value={filterType} onValueChange={setFilterType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="Player">Player</SelectItem>
-                    <SelectItem value="Coach">Coach</SelectItem>
-                    <SelectItem value="Club">Club</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="statusFilter">Status</Label>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                  </SelectContent>
-                </Select>
+        {/* Filters and Search */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 mb-8 animate-on-scroll">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search members..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
             </div>
-            <div className="mt-4">
-              <Label htmlFor="clubFilter">Club</Label>
-              <Select value={filterClub} onValueChange={setFilterClub}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Clubs</SelectItem>
-                  {clubs.map((club) => (
-                    <SelectItem key={club} value={club}>{club}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="Player">Player</option>
+                <option value="Coach">Coach</option>
+                <option value="Club Manager">Club Manager</option>
+                <option value="Tournament Director">Tournament Director</option>
+              </select>
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Pending">Pending</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Club</label>
+              <select
+                value={filterClub}
+                onChange={(e) => setFilterClub(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Clubs</option>
+                {clubs.map((club) => (
+                  <option key={club} value={club}>{club}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
 
-        {/* Add New Member Form */}
+        {/* Add/Edit Member Form */}
         {isAddingMember && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Member</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="memberName">Full Name</Label>
-                  <Input
-                    id="memberName"
-                    value={newMember.name}
-                    onChange={(e) => setNewMember({...newMember, name: e.target.value})}
-                    placeholder="Enter full name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="memberEmail">Email</Label>
-                  <Input
-                    id="memberEmail"
-                    type="email"
-                    value={newMember.email}
-                    onChange={(e) => setNewMember({...newMember, email: e.target.value})}
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="memberPhone">Phone</Label>
-                  <Input
-                    id="memberPhone"
-                    value={newMember.phone}
-                    onChange={(e) => setNewMember({...newMember, phone: e.target.value})}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="memberType">Member Type</Label>
-                  <Select value={newMember.type} onValueChange={(value) => setNewMember({...newMember, type: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Player">Player</SelectItem>
-                      <SelectItem value="Coach">Coach</SelectItem>
-                      <SelectItem value="Club">Club</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="memberClub">Club</Label>
-                  <Input
-                    id="memberClub"
-                    value={newMember.club}
-                    onChange={(e) => setNewMember({...newMember, club: e.target.value})}
-                    placeholder="Enter club name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="membershipLevel">Membership Level</Label>
-                  <Select value={newMember.membershipLevel} onValueChange={(value) => setNewMember({...newMember, membershipLevel: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Standard">Standard</SelectItem>
-                      <SelectItem value="Premium">Premium</SelectItem>
-                      <SelectItem value="Professional">Professional</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="skillLevel">Skill Level</Label>
-                  <Select value={newMember.skillLevel} onValueChange={(value) => setNewMember({...newMember, skillLevel: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                      <SelectItem value="Elite">Elite</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+          <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 mb-8 animate-on-scroll">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold">
+                {editingMember ? 'Edit Member' : 'Add New Member'}
+              </h3>
+              <button
+                onClick={() => {
+                  setIsAddingMember(false);
+                  setEditingMember(null);
+                  setNewMember({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    type: 'Player',
+                    club: '',
+                    status: 'Active',
+                    membershipLevel: 'Standard',
+                    skillLevel: 'Beginner'
+                  });
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <input
+                  type="text"
+                  value={newMember.name}
+                  onChange={(e) => setNewMember({...newMember, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Member name..."
+                />
               </div>
-              <div className="flex space-x-3 mt-4">
-                <Button onClick={handleAddMember}>Add Member</Button>
-                <Button variant="outline" onClick={() => setIsAddingMember(false)}>Cancel</Button>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={newMember.email}
+                  onChange={(e) => setNewMember({...newMember, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="email@example.com"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={newMember.phone}
+                  onChange={(e) => setNewMember({...newMember, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <select
+                  value={newMember.type}
+                  onChange={(e) => setNewMember({...newMember, type: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Player">Player</option>
+                  <option value="Coach">Coach</option>
+                  <option value="Club Manager">Club Manager</option>
+                  <option value="Tournament Director">Tournament Director</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Club</label>
+                <input
+                  type="text"
+                  value={newMember.club}
+                  onChange={(e) => setNewMember({...newMember, club: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Club name..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select
+                  value={newMember.status}
+                  onChange={(e) => setNewMember({...newMember, status: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Suspended">Suspended</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Membership Level</label>
+                <select
+                  value={newMember.membershipLevel}
+                  onChange={(e) => setNewMember({...newMember, membershipLevel: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Standard">Standard</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Professional">Professional</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                <select
+                  value={newMember.skillLevel}
+                  onChange={(e) => setNewMember({...newMember, skillLevel: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                  <option value="Expert">Expert</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setIsAddingMember(false);
+                  setEditingMember(null);
+                  setNewMember({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    type: 'Player',
+                    club: '',
+                    status: 'Active',
+                    membershipLevel: 'Standard',
+                    skillLevel: 'Beginner'
+                  });
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={editingMember ? handleUpdateMember : handleAddMember}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg"
+              >
+                {editingMember ? 'Update' : 'Add'} Member
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Members List */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filteredMembers.map((member) => (
-            <Card key={member.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
+            <div key={member.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={member.photo} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {member.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-semibold text-lg">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{member.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Badge className={getTypeColor(member.type)}>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(member.type)}`}>
                           {member.type}
-                        </Badge>
-                        <Badge className={getStatusColor(member.status)}>
+                        </span>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(member.status)}`}>
                           {member.status}
-                        </Badge>
-                        <Badge className={getLevelColor(member.skillLevel)}>
+                        </span>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getMembershipColor(member.membershipLevel)}`}>
+                          {member.membershipLevel}
+                        </span>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getSkillColor(member.skillLevel)}`}>
                           {member.skillLevel}
-                        </Badge>
+                        </span>
                       </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Club</p>
-                      <p className="font-medium">{member.club}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Membership</p>
-                      <p className="font-medium">{member.membershipLevel}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Joined</p>
-                      <p className="font-medium">{member.joinDate}</p>
-                    </div>
-                  </div>
-
+                  
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingMember(editingMember === member.id ? null : member.id)}
+                    <button
+                      onClick={() => handleEditMember(member.id)}
+                      className="p-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors duration-200"
+                      title="Edit"
                     >
                       <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() => handleDeleteMember(member.id)}
+                      className="p-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors duration-200"
+                      title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
-
-                {/* Contact Information */}
-                <div className="mt-4 pt-4 border-t">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      <span>{member.email}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span>{member.phone}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>Last Activity: {member.lastActivity}</span>
-                    </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Mail className="h-4 w-4" />
+                    <span>{member.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Phone className="h-4 w-4" />
+                    <span>{member.phone}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Users className="h-4 w-4" />
+                    <span>{member.club}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Calendar className="h-4 w-4" />
+                    <span>Joined: {member.joinDate}</span>
                   </div>
                 </div>
-
-                {/* Edit Mode */}
-                {editingMember === member.id && (
-                  <div className="mt-4 pt-4 border-t">
-                    <h4 className="font-medium text-gray-900 mb-3">Edit Member</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label>Status</Label>
-                        <Select value={member.status} onValueChange={(value) => handleUpdateMember(member.id, 'status', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Membership Level</Label>
-                        <Select value={member.membershipLevel} onValueChange={(value) => handleUpdateMember(member.id, 'membershipLevel', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Standard">Standard</SelectItem>
-                            <SelectItem value="Premium">Premium</SelectItem>
-                            <SelectItem value="Professional">Professional</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Skill Level</Label>
-                        <Select value={member.skillLevel} onValueChange={(value) => handleUpdateMember(member.id, 'skillLevel', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Beginner">Beginner</SelectItem>
-                            <SelectItem value="Intermediate">Intermediate</SelectItem>
-                            <SelectItem value="Advanced">Advanced</SelectItem>
-                            <SelectItem value="Elite">Elite</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4" />
+                    <span>Last activity: {member.lastActivity}</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="flex items-center space-x-2">
+                    <MessageCircle className="h-4 w-4" />
+                    <span>Send message</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
+        
+        {filteredMembers.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p>No members found matching your criteria.</p>
+          </div>
+        )}
       </div>
     </div>
   );

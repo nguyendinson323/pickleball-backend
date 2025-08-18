@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { 
   Users, 
   Search,
@@ -192,218 +184,233 @@ const Students = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex justify-between items-center animate-on-scroll">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Students</h1>
             <p className="text-gray-600">Manage your student roster and track their progress</p>
           </div>
-          <Button onClick={() => setIsAddingStudent(true)} className="flex items-center space-x-2">
+          <button 
+            onClick={() => setIsAddingStudent(true)} 
+            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 hover:shadow-lg"
+          >
             <Plus className="h-4 w-4" />
             <span>Add Student</span>
-          </Button>
+          </button>
         </div>
 
         {/* Student Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Students</h3>
               <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-blue-600">{studentStats.total}</div>
               <p className="text-xs text-gray-600">enrolled students</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Active Students</h3>
               <TrendingUp className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-green-600">{studentStats.active}</div>
               <p className="text-xs text-gray-600">currently active</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Beginners</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Beginners</h3>
               <Target className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-blue-600">{studentStats.beginners}</div>
               <p className="text-xs text-gray-600">learning fundamentals</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Advanced</CardTitle>
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Advanced</h3>
               <Award className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="pt-2">
               <div className="text-2xl font-bold text-purple-600">{studentStats.advanced}</div>
               <p className="text-xs text-gray-600">tournament level</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
+        <div className="bg-white rounded-lg shadow-md mb-8 animate-on-scroll">
+          <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
-                <Label htmlFor="search">Search Students</Label>
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">Search Students</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
+                  <input
                     id="search"
+                    type="text"
                     placeholder="Search by name or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="levelFilter">Skill Level</Label>
-                <Select value={filterLevel} onValueChange={setFilterLevel}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                    <SelectItem value="Elite">Elite</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="levelFilter" className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                <select 
+                  value={filterLevel} 
+                  onChange={(e) => setFilterLevel(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Levels</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                  <option value="Elite">Elite</option>
+                </select>
               </div>
               <div>
-                <Label htmlFor="statusFilter">Status</Label>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select 
+                  value={filterStatus} 
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Pending">Pending</option>
+                </select>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Add New Student Form */}
         {isAddingStudent && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Student</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-lg shadow-md mb-8 animate-on-scroll">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Add New Student</h3>
+            </div>
+            <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="studentName">Full Name</Label>
-                  <Input
+                  <label htmlFor="studentName" className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <input
                     id="studentName"
+                    type="text"
                     value={newStudent.name}
                     onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
                     placeholder="Enter full name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="studentEmail">Email</Label>
-                  <Input
+                  <label htmlFor="studentEmail" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input
                     id="studentEmail"
                     type="email"
                     value={newStudent.email}
                     onChange={(e) => setNewStudent({...newStudent, email: e.target.value})}
                     placeholder="Enter email address"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="studentPhone">Phone</Label>
-                  <Input
+                  <label htmlFor="studentPhone" className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <input
                     id="studentPhone"
+                    type="tel"
                     value={newStudent.phone}
                     onChange={(e) => setNewStudent({...newStudent, phone: e.target.value})}
                     placeholder="Enter phone number"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="studentLevel">Skill Level</Label>
-                  <Select value={newStudent.skillLevel} onValueChange={(value) => setNewStudent({...newStudent, skillLevel: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                      <SelectItem value="Elite">Elite</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label htmlFor="studentLevel" className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                  <select 
+                    value={newStudent.skillLevel} 
+                    onChange={(e) => setNewStudent({...newStudent, skillLevel: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Elite">Elite</option>
+                  </select>
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="studentGoals">Goals</Label>
-                  <Textarea
+                  <label htmlFor="studentGoals" className="block text-sm font-medium text-gray-700 mb-2">Goals</label>
+                  <textarea
                     id="studentGoals"
                     value={newStudent.goals}
                     onChange={(e) => setNewStudent({...newStudent, goals: e.target.value})}
                     placeholder="What does this student want to achieve?"
                     rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="studentNotes">Notes</Label>
-                  <Textarea
+                  <label htmlFor="studentNotes" className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                  <textarea
                     id="studentNotes"
                     value={newStudent.notes}
                     onChange={(e) => setNewStudent({...newStudent, notes: e.target.value})}
                     placeholder="Any additional notes about the student..."
                     rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
               <div className="flex space-x-3 mt-4">
-                <Button onClick={handleAddStudent}>Add Student</Button>
-                <Button variant="outline" onClick={() => setIsAddingStudent(false)}>Cancel</Button>
+                <button 
+                  onClick={handleAddStudent}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:shadow-lg"
+                >
+                  Add Student
+                </button>
+                <button 
+                  onClick={() => setIsAddingStudent(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Students List */}
         <div className="space-y-4">
           {filteredStudents.map((student) => (
-            <Card key={student.id}>
-              <CardContent className="pt-6">
+            <div key={student.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 animate-on-scroll">
+              <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={student.photo} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {student.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-semibold text-lg">
+                      {student.name.split(' ').map(n => n[0]).join('')}
+                    </div>
                     <div>
                       <h3 className="font-medium text-gray-900">{student.name}</h3>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Badge className={getStatusColor(student.status)}>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(student.status)}`}>
                           {student.status}
-                        </Badge>
-                        <Badge className={getLevelColor(student.skillLevel)}>
+                        </span>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getLevelColor(student.skillLevel)}`}>
                           {student.skillLevel}
-                        </Badge>
-                        <Badge className={getProgressColor(student.progress)}>
+                        </span>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getProgressColor(student.progress)}`}>
                           {student.progress}
-                        </Badge>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -424,20 +431,18 @@ const Students = () => {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => setEditingStudent(editingStudent === student.id ? null : student.id)}
+                      className="p-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() => handleDeleteStudent(student.id)}
+                      className="p-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
 
@@ -445,11 +450,11 @@ const Students = () => {
                 <div className="mt-4 pt-4 border-t">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-gray-500">Goals</Label>
+                      <label className="text-sm font-medium text-gray-500">Goals</label>
                       <p className="text-gray-700 mt-1">{student.goals}</p>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-gray-500">Notes</Label>
+                      <label className="text-sm font-medium text-gray-500">Notes</label>
                       <p className="text-gray-700 mt-1">{student.notes}</p>
                     </div>
                   </div>
@@ -479,70 +484,69 @@ const Students = () => {
                     <h4 className="font-medium text-gray-900 mb-3">Edit Student</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <Label>Status</Label>
-                        <Select value={student.status} onValueChange={(value) => handleUpdateStudent(student.id, 'status', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select 
+                          value={student.status} 
+                          onChange={(e) => handleUpdateStudent(student.id, 'status', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                          <option value="Pending">Pending</option>
+                        </select>
                       </div>
                       <div>
-                        <Label>Skill Level</Label>
-                        <Select value={student.skillLevel} onValueChange={(value) => handleUpdateStudent(student.id, 'skillLevel', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Beginner">Beginner</SelectItem>
-                            <SelectItem value="Intermediate">Intermediate</SelectItem>
-                            <SelectItem value="Advanced">Advanced</SelectItem>
-                            <SelectItem value="Elite">Elite</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                        <select 
+                          value={student.skillLevel} 
+                          onChange={(e) => handleUpdateStudent(student.id, 'skillLevel', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="Beginner">Beginner</option>
+                          <option value="Intermediate">Intermediate</option>
+                          <option value="Advanced">Advanced</option>
+                          <option value="Elite">Elite</option>
+                        </select>
                       </div>
                       <div>
-                        <Label>Progress</Label>
-                        <Select value={student.progress} onValueChange={(value) => handleUpdateStudent(student.id, 'progress', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="New">New</SelectItem>
-                            <SelectItem value="Fair">Fair</SelectItem>
-                            <SelectItem value="Good">Good</SelectItem>
-                            <SelectItem value="Excellent">Excellent</SelectItem>
-                            <SelectItem value="Outstanding">Outstanding</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Progress</label>
+                        <select 
+                          value={student.progress} 
+                          onChange={(e) => handleUpdateStudent(student.id, 'progress', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="New">New</option>
+                          <option value="Fair">Fair</option>
+                          <option value="Good">Good</option>
+                          <option value="Excellent">Excellent</option>
+                          <option value="Outstanding">Outstanding</option>
+                        </select>
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div>
-                        <Label>Goals</Label>
-                        <Textarea
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Goals</label>
+                        <textarea
                           value={student.goals}
                           onChange={(e) => handleUpdateStudent(student.id, 'goals', e.target.value)}
                           rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
-                        <Label>Notes</Label>
-                        <Textarea
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                        <textarea
                           value={student.notes}
                           onChange={(e) => handleUpdateStudent(student.id, 'notes', e.target.value)}
                           rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>
