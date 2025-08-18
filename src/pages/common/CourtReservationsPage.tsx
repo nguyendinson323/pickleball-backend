@@ -1208,4 +1208,3 @@ const CourtReservationsPage: React.FC = () => {
 };
 
 export default CourtReservationsPage; 
-export default CourtReservationsPage; 

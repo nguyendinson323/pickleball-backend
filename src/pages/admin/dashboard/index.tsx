@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Mock data for all components
+  // Mock data for system overview
   const systemStats = {
     totalUsers: 15420,
     activeUsers: 14230,
@@ -91,6 +91,25 @@ const AdminDashboard = () => {
       priority: 'Medium'
     }
   ];
+
+
+
+  // Mock data for messaging (will be handled by dedicated messaging page)
+  const messageData = {
+    subject: '',
+    message: '',
+    recipients: {
+      players: false,
+      coaches: false,
+      clubs: false,
+      partners: false,
+      stateCommittees: false,
+      admins: false
+    },
+    priority: 'normal' as 'low' | 'normal' | 'high' | 'urgent',
+    sendImmediately: true,
+    scheduledTime: ''
+  };
 
   // Rankings management data
   const rankingIssues = [
@@ -300,24 +319,6 @@ const AdminDashboard = () => {
     }
   ];
 
-  // State for messaging modal
-  const [showMessaging, setShowMessaging] = useState(false);
-  const [messageData, setMessageData] = useState({
-    subject: '',
-    message: '',
-    recipients: {
-      players: false,
-      coaches: false,
-      clubs: false,
-      partners: false,
-      stateCommittees: false,
-      admins: false
-    },
-    priority: 'normal' as 'low' | 'normal' | 'high' | 'urgent',
-    sendImmediately: true,
-    scheduledTime: ''
-  });
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -329,18 +330,18 @@ const AdminDashboard = () => {
           <p className="text-gray-600 animate-on-scroll">System-wide overview and performance metrics</p>
         </div>
 
-        {/* Main Content Tabs */}
+                {/* Main Content Tabs */}
         <div className="mb-8">
           <div className="w-full">
             {/* Tab Navigation */}
-            <div className="grid w-full grid-cols-6 bg-white rounded-lg shadow-sm border border-gray-200 mb-6 animate-on-scroll">
+            <div className="grid w-full grid-cols-6 bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
               <button
                 onClick={() => setActiveTab('overview')}
                 className={`px-4 py-3 text-sm font-medium rounded-l-lg transition-colors ${
                   activeTab === 'overview'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Overview
               </button>
@@ -350,7 +351,7 @@ const AdminDashboard = () => {
                   activeTab === 'rankings'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Rankings
               </button>
@@ -360,7 +361,7 @@ const AdminDashboard = () => {
                   activeTab === 'microsites'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Microsites
               </button>
@@ -370,7 +371,7 @@ const AdminDashboard = () => {
                   activeTab === 'court-monitor'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Court Monitor
               </button>
@@ -380,7 +381,7 @@ const AdminDashboard = () => {
                   activeTab === 'affiliations'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Affiliations
               </button>
@@ -390,59 +391,83 @@ const AdminDashboard = () => {
                   activeTab === 'messaging'
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
-                } animate-on-scroll`}
+                }`}
               >
                 Messaging
               </button>
             </div>
 
             {/* Tab Content */}
-            <div className="mt-6">
+            <div className="mt-4">
               {activeTab === 'overview' && (
-                <div className="animate-on-scroll">
+                <div>
                   <Overview
                     systemStats={systemStats}
                     recentSystemEvents={recentSystemEvents}
                     pendingActions={pendingActions}
                     timeRange="30"
                     setTimeRange={() => {}}
-                    showMessaging={showMessaging}
-                    setShowMessaging={setShowMessaging}
+                    showMessaging={false}
+                    setShowMessaging={() => {}}
                     messageData={messageData}
-                    setMessageData={setMessageData}
+                    setMessageData={() => {}}
                   />
                 </div>
               )}
 
               {activeTab === 'rankings' && (
-                <div className="animate-on-scroll">
+                <div>
                   <Rankings rankingIssues={rankingIssues} />
                 </div>
               )}
 
               {activeTab === 'microsites' && (
-                <div className="animate-on-scroll">
+                <div>
                   <Microsites microsites={microsites} />
                 </div>
               )}
 
               {activeTab === 'court-monitor' && (
-                <div className="animate-on-scroll">
+                <div>
                   <CourtMonitor courtPerformance={courtPerformance} />
                 </div>
               )}
 
               {activeTab === 'affiliations' && (
-                <div className="animate-on-scroll">
-                  <Affiliations affiliations={affiliations} />
+                <div>
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <Affiliations affiliations={affiliations} />
+                  </div>
                 </div>
               )}
 
               {activeTab === 'messaging' && (
-                <div className="animate-on-scroll">
-                  <Messaging messages={messages} />
+                <div>
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <Messaging messages={messages} />
+                  </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* System Overview */}
+        <div className="mb-8">
+          <div className="w-full">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">System Overview</h2>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <Overview
+                    systemStats={systemStats}
+                    recentSystemEvents={recentSystemEvents}
+                    pendingActions={pendingActions}
+                    timeRange="30"
+                    setTimeRange={() => {}}
+                showMessaging={false}
+                setShowMessaging={() => {}}
+                    messageData={messageData}
+                setMessageData={() => {}}
+              />
             </div>
           </div>
         </div>

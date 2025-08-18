@@ -87,12 +87,11 @@ export const adminPrivateTabs: NavigationItem[] = [
   { name: 'User Management', href: '/admin/users', public: false },
   { name: 'System Management', href: '/admin/system', public: false },
   { name: 'Analytics', href: '/admin/analytics', public: false },
+  { name: 'Banner Management', href: '/admin/banners', public: false },
 ]
 
-// Admin additional admin tabs
+// Admin additional admin tabs (removed duplicate dashboard and non-existent pages)
 export const adminAdminTabs: NavigationItem[] = [
-  { name: 'Admin Dashboard', href: '/admin', public: false },
-  { name: 'Banner Management', href: '/admin/banners', public: false },
   { name: 'Global Settings', href: '/admin/settings', public: false },
   { name: 'Payment Management', href: '/admin/payments', public: false },
   { name: 'Content Management', href: '/admin/content', public: false },

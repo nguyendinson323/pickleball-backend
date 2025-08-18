@@ -369,12 +369,12 @@ const ClubDashboard = () => {
         {/* Main Dashboard Content */}
         <div className="animate-on-scroll bg-white rounded-lg shadow-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-8 overflow-x-auto pb-2 min-h-[60px]">
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'overview'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('overview')}
               >
@@ -384,10 +384,10 @@ const ClubDashboard = () => {
                 Overview
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'courts'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('courts')}
               >
@@ -398,10 +398,10 @@ const ClubDashboard = () => {
                 Courts
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'tournaments'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('tournaments')}
               >
@@ -411,10 +411,10 @@ const ClubDashboard = () => {
                 Tournaments
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'invoices'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('invoices')}
               >
@@ -424,10 +424,10 @@ const ClubDashboard = () => {
                 Invoices
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'microsite'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('microsite')}
               >
@@ -437,10 +437,10 @@ const ClubDashboard = () => {
                 Microsite
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'reports'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('reports')}
               >
@@ -450,10 +450,10 @@ const ClubDashboard = () => {
                 Reports
               </button>
               <button
-                className={`animate-on-scroll px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   activeTab === 'members'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
                 onClick={() => setActiveTab('members')}
               >
@@ -465,7 +465,7 @@ const ClubDashboard = () => {
             </div>
           </div>
 
-          <div className="px-6 py-4">
+          <div className="px-6 py-6 min-h-[400px]">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <Overview clubStats={clubStats} courtStatus={courtStatus} />
