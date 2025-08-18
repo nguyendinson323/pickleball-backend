@@ -2,12 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchTournaments, registerForTournament } from '../../store/slices/tournamentsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Badge } from '../../components/ui/badge';
-import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, Star, CalendarDays, Eye, Heart, Share2, Award, Target, Users2, MapPinOff, Phone, Mail, Globe } from 'lucide-react';
 import { Tournament } from '../../types/api';
 import { toast } from 'sonner';
 
@@ -717,77 +711,76 @@ const TournamentsPage = () => {
         <div className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div className="flex gap-2">
-              <Input
-                placeholder="Search tournaments..."
-                value={filters.search}
+              <input
+                type="text"
+              placeholder="Search tournaments..."
+              value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="flex-1"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <Button 
+              <button 
                 onClick={() => applyFilters(filters)}
-                className="px-4"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 Search
-              </Button>
+              </button>
             </div>
-            <Select value={filters.tournament_type} onValueChange={(value) => handleFilterChange('tournament_type', value)}>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Tournament Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="local">Local</SelectItem>
-                <SelectItem value="state">State</SelectItem>
-                <SelectItem value="national">National</SelectItem>
-                <SelectItem value="international">International</SelectItem>
-                <SelectItem value="exhibition">Exhibition</SelectItem>
-                <SelectItem value="league">League</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="singles">Singles</SelectItem>
-                <SelectItem value="doubles">Doubles</SelectItem>
-                <SelectItem value="mixed_doubles">Mixed Doubles</SelectItem>
-                <SelectItem value="team">Team</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="registration_open">Registration Open</SelectItem>
-                <SelectItem value="registration_closed">Registration Closed</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+            <select 
+              value={filters.tournament_type} 
+              onChange={(e) => handleFilterChange('tournament_type', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Types</option>
+              <option value="local">Local</option>
+              <option value="state">State</option>
+              <option value="national">National</option>
+              <option value="international">International</option>
+              <option value="exhibition">Exhibition</option>
+              <option value="league">League</option>
+            </select>
+            <select 
+              value={filters.category} 
+              onChange={(e) => handleFilterChange('category', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Categories</option>
+              <option value="singles">Singles</option>
+              <option value="doubles">Doubles</option>
+              <option value="mixed_doubles">Mixed Doubles</option>
+              <option value="team">Team</option>
+            </select>
+            <select 
+              value={filters.status} 
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Statuses</option>
+              <option value="registration_open">Registration Open</option>
+              <option value="registration_closed">Registration Closed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
+            <input
+              type="text"
               placeholder="City"
               value={filters.city}
               onChange={(e) => handleFilterChange('city', e.target.value)}
-              className=""
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <Input
+            <input
+              type="text"
               placeholder="State"
               value={filters.state}
               onChange={(e) => handleFilterChange('state', e.target.value)}
-              className=""
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div className="flex justify-end mt-4">
-            <Button 
-              variant="outline" 
+            <button 
               onClick={() => {
                 setFilters({
                   page: 1,
@@ -802,30 +795,32 @@ const TournamentsPage = () => {
                 setFilteredTournaments(mockTournaments);
                 toast.success('Filters cleared!');
               }}
-              className="flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
             >
               <span>Clear Filters</span>
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Tournament Statistics */}
         <div className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-6">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+              <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-100 text-sm font-medium">Total Tournaments</p>
                     <p className="text-3xl font-bold drop-shadow-sm">{tournaments.length}</p>
                   </div>
-                  <Trophy className="w-8 h-8 text-blue-200" />
+                  <svg className="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-6">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+              <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-100 text-sm font-medium">Registration Open</p>
@@ -833,13 +828,15 @@ const TournamentsPage = () => {
                       {tournaments.filter(t => t.status === 'registration_open').length}
                     </p>
                   </div>
-                  <Users className="w-8 h-8 text-green-200" />
+                  <svg className="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-6">
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+              <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100 text-sm font-medium">Total Participants</p>
@@ -847,13 +844,15 @@ const TournamentsPage = () => {
                       {tournaments.reduce((sum, t) => sum + t.current_participants, 0)}
                     </p>
                   </div>
-                  <Users2 className="w-8 h-8 text-purple-200" />
+                  <svg className="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardContent className="p-6">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
+              <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-orange-100 text-sm font-medium">Total Matches</p>
@@ -861,88 +860,98 @@ const TournamentsPage = () => {
                       {tournaments.reduce((sum, t) => sum + t.total_matches, 0)}
                     </p>
                   </div>
-                  <Target className="w-8 h-8 text-orange-200" />
+                  <svg className="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <Card>
-            <CardContent className="p-6">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Actions</h3>
                   <p className="text-gray-600">Get started with tournament activities</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
+                  <button 
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
                     onClick={() => handleQuickAction('my-tournaments')}
                   >
-                    <Calendar className="w-4 h-4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     My Tournaments
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
+                  </button>
+                  <button 
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
                     onClick={() => handleQuickAction('my-results')}
                   >
-                    <Award className="w-4 h-4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
                     My Results
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
+                  </button>
+                  <button 
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
                     onClick={() => handleQuickAction('find-partners')}
                   >
-                    <Users className="w-4 h-4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                    </svg>
                     Find Partners
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
+                  </button>
+                  <button 
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center gap-2"
                     onClick={() => handleQuickAction('nearby-events')}
                   >
-                    <MapPin className="w-4 h-4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                     Nearby Events
-                  </Button>
+                  </button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Featured Tournaments */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Featured Tournaments</h2>
-            <Button variant="outline" size="sm" onClick={handleViewAllFeatured}>
+            <button 
+              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              onClick={handleViewAllFeatured}
+            >
               View All Featured
-            </Button>
+            </button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {tournaments
               .filter(t => t.tournament_type === 'state' || t.tournament_type === 'national' || t.tournament_type === 'international')
               .slice(0, 2)
               .map((tournament) => (
-                <Card key={tournament.id} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 bg-white border border-gray-200 shadow-md" style={{ opacity: 1, visibility: 'visible', zIndex: 1 }}>
+                <div key={tournament.id} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 bg-white border border-gray-200 shadow-md rounded-lg" style={{ opacity: 1, visibility: 'visible', zIndex: 1 }}>
                   <div className="relative h-64 bg-gradient-to-br from-purple-600 to-blue-600">
                     <div className="absolute inset-0 bg-black bg-opacity-25"></div>
                     <div className="absolute top-4 left-4">
-                      <Badge className="bg-yellow-500 text-white border-0 font-semibold">
+                      <span className="bg-yellow-500 text-white border-0 font-semibold px-2 py-1 rounded-md text-sm">
                         Featured
-                      </Badge>
+                      </span>
                     </div>
                     <div className="absolute bottom-4 left-4 right-4">
                       <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">{tournament.name}</h3>
                       <p className="text-white text-sm opacity-95 overflow-hidden text-ellipsis display-webkit-box -webkit-line-clamp-2 -webkit-box-orient-vertical">{tournament.description}</p>
                     </div>
                   </div>
-                  <CardContent className="p-6 bg-white" style={{ opacity: 1, visibility: 'visible' }}>
+                  <div className="p-6 bg-white" style={{ opacity: 1, visibility: 'visible' }}>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <p className="text-2xl font-bold text-blue-900">{formatDate(tournament.start_date)}</p>
@@ -955,35 +964,41 @@ const TournamentsPage = () => {
                     </div>
                     <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-blue-600" />
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                         <span className="text-sm text-blue-800 font-medium">{tournament.city}, {tournament.state}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-green-600" />
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
                         <span className="text-sm text-green-800 font-medium">{tournament.current_participants}/{tournament.max_participants}</span>
                       </div>
                     </div>
                     <div className="flex gap-2">
                       {isRegistrationOpen(tournament) ? (
-                        <Button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold" onClick={() => handleRegister(tournament.id)}>
+                        <button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-4 py-2 rounded-md transition-colors" onClick={() => handleRegister(tournament.id)}>
                           Register Now
-                        </Button>
+                        </button>
                       ) : (
-                        <Button variant="outline" className="flex-1 bg-gray-100 text-gray-400 border-gray-300" disabled>
+                        <button className="flex-1 bg-gray-100 text-gray-400 border border-gray-300 px-4 py-2 rounded-md cursor-not-allowed" disabled>
                           Registration Closed
-                        </Button>
+                        </button>
                       )}
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                      <button 
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         onClick={() => handleViewTournament(tournament.id)}
                       >
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </Button>
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
           </div>
         </div>
@@ -1010,7 +1025,9 @@ const TournamentsPage = () => {
           </div>
         ) : tournaments.length === 0 ? (
           <div className="text-center py-16">
-            <CalendarDays className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No tournaments found</h3>
             <p className="text-gray-600">Try adjusting your filters or check back later for new tournaments.</p>
           </div>
@@ -1018,21 +1035,21 @@ const TournamentsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {tournaments.map((tournament, index) => (
               <div key={tournament.id}>
-                <Card className="h-full hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden bg-white border border-gray-200 shadow-md" style={{ opacity: 1, visibility: 'visible', zIndex: 1 }}>
+                <div className="h-full hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden bg-white border border-gray-200 shadow-md rounded-lg" style={{ opacity: 1, visibility: 'visible', zIndex: 1 }}>
                   {/* Tournament Banner Image */}
                   <div className="relative h-48 bg-gradient-to-br from-blue-600 to-indigo-700 overflow-hidden">
                     <div className="absolute inset-0 bg-black bg-opacity-30"></div>
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <Badge className={getTournamentTypeColor(tournament.tournament_type)}>
+                      <span className={getTournamentTypeColor(tournament.tournament_type)}>
                         {tournament.tournament_type}
-                      </Badge>
-                      <Badge className={getStatusColor(tournament.status)}>
+                      </span>
+                      <span className={getStatusColor(tournament.status)}>
                         {tournament.status.replace('_', ' ')}
-                      </Badge>
+                      </span>
                     </div>
                     <div className="absolute bottom-4 left-4 right-4">
                       <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
-                        {tournament.name}
+                      {tournament.name}
                       </h3>
                       <p className="text-white text-sm opacity-95 overflow-hidden text-ellipsis display-webkit-box -webkit-line-clamp-2 -webkit-box-orient-vertical">
                         {tournament.description}
@@ -1040,11 +1057,13 @@ const TournamentsPage = () => {
                     </div>
                   </div>
 
-                  <CardHeader className="pb-3 bg-gray-50">
+                  <div className="pb-3 bg-gray-50 px-6 pt-6">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Trophy className="w-5 h-5 text-blue-600" />
+                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg>
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-gray-900">{tournament.organizer_name}</p>
@@ -1056,20 +1075,25 @@ const TournamentsPage = () => {
                         <p className="text-xs text-gray-600 font-medium">Entry Fee</p>
                       </div>
                     </div>
-                  </CardHeader>
+                  </div>
 
-                  <CardContent className="space-y-4 bg-white" style={{ opacity: 1, visibility: 'visible' }}>
+                  <div className="space-y-4 bg-white px-6 pb-6" style={{ opacity: 1, visibility: 'visible' }}>
                     {/* Key Information */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
-                        <Calendar className="w-4 h-4 text-blue-600" />
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                         <div>
                           <p className="font-semibold text-gray-900">{formatDate(tournament.start_date)}</p>
                           <p className="text-xs text-blue-600 font-medium">Start Date</p>
-                        </div>
+                      </div>
                       </div>
                       <div className="flex items-center space-x-2 p-3 bg-green-50 rounded-lg">
-                        <MapPin className="w-4 h-4 text-green-600" />
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                         <div>
                           <p className="font-semibold text-gray-900">{tournament.city}</p>
                           <p className="text-xs text-green-600 font-medium">{tournament.state}</p>
@@ -1081,9 +1105,9 @@ const TournamentsPage = () => {
                     <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-700 font-medium">Category:</span>
-                        <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                        <span className="text-xs bg-blue-100 text-blue-800 border border-blue-300 px-2 py-1 rounded-md">
                           {tournament.category.replace('_', ' ')}
-                        </Badge>
+                        </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-700 font-medium">Format:</span>
@@ -1093,19 +1117,19 @@ const TournamentsPage = () => {
                         <span className="text-gray-700 font-medium">Skill Levels:</span>
                         <div className="flex gap-1">
                           {tournament.skill_levels?.slice(0, 3).map((level, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                            <span key={idx} className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-md">
                               {level}
-                            </Badge>
+                            </span>
                           ))}
                           {tournament.skill_levels && tournament.skill_levels.length > 3 && (
-                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                            <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-md">
                               +{tournament.skill_levels.length - 3}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       </div>
                     </div>
-
+                    
                     {/* Registration Status */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
                       <div className="flex items-center justify-between mb-3">
@@ -1128,52 +1152,54 @@ const TournamentsPage = () => {
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       {isRegistrationOpen(tournament) ? (
-                        <Button 
+                        <button 
                           onClick={() => handleRegister(tournament.id)}
-                          className="flex-1 hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold"
+                          className="flex-1 hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-4 py-2 rounded-md"
                         >
                           Register Now
-                        </Button>
+                        </button>
                       ) : (
-                        <Button 
-                          variant="outline" 
+                        <button 
                           disabled 
-                          className="flex-1 bg-gray-100 text-gray-400 border-gray-300"
+                          className="flex-1 bg-gray-100 text-gray-400 border border-gray-300 px-4 py-2 rounded-md cursor-not-allowed"
                         >
                           Registration Closed
-                        </Button>
+                        </button>
                       )}
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="px-3 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                      <button 
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         onClick={() => handleViewTournament(tournament.id)}
                       >
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="px-3 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                      <button 
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         onClick={() => handleFavoriteTournament(tournament.id)}
                       >
-                        <Heart className="w-4 h-4 text-gray-600" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="px-3 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                      <button 
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         onClick={() => handleShareTournament(tournament.id)}
                       >
-                        <Share2 className="w-4 h-4 text-gray-600" />
-                      </Button>
+                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                        </svg>
+                      </button>
                     </div>
 
                     {/* Quick Info */}
                     <div className="pt-4 border-t border-gray-200 bg-gray-50 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center space-x-2">
-                          <Clock className="w-3 h-3 text-gray-500" />
+                          <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
                           <span className={`font-medium ${getUrgencyColor(tournament.registration_deadline)}`}>
                             {getUrgencyText(tournament.registration_deadline)}
                           </span>
@@ -1181,8 +1207,8 @@ const TournamentsPage = () => {
                         <span className="text-gray-600 font-medium">{tournament.total_matches} matches</span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -1191,31 +1217,29 @@ const TournamentsPage = () => {
         {/* Pagination */}
         {mockPagination && mockPagination.pages > 1 && (
           <div className="flex justify-center items-center space-x-2">
-            <Button
-              variant="outline"
+            <button
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => handlePageChange(filters.page - 1)}
               disabled={filters.page === 1}
-              className="hover:scale-105 transition-transform duration-300"
             >
               Previous
-            </Button>
+            </button>
             <span className="px-4 py-2 text-gray-600">
               Page {filters.page} of {mockPagination.pages}
             </span>
-            <Button
-              variant="outline"
+            <button
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => handlePageChange(filters.page + 1)}
               disabled={filters.page === mockPagination.pages}
-              className="hover:scale-105 transition-transform duration-300"
             >
               Next
-            </Button>
+            </button>
           </div>
         )}
 
         {/* Call to Action */}
         <div className="mt-16 text-center">
-          <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg">
             <div className="max-w-2xl mx-auto">
               <h3 className="text-3xl font-bold mb-4">Ready to Compete?</h3>
               <p className="text-xl text-blue-100 mb-6">
@@ -1223,36 +1247,36 @@ const TournamentsPage = () => {
                 Find your next challenge and showcase your skills!
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  size="lg" 
-                  variant="secondary" 
-                  className="bg-white text-blue-600 hover:bg-gray-100"
+                <button 
+                  className="px-6 py-3 text-lg font-medium bg-white text-blue-600 hover:bg-gray-100 rounded-md transition-colors flex items-center"
                   onClick={handleBrowseAllTournaments}
                 >
-                  <Trophy className="w-5 h-5 mr-2" />
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
                   Browse All Tournaments
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-blue-600"
+                </button>
+                <button 
+                  className="px-6 py-3 text-lg font-medium border border-white text-white hover:bg-white hover:text-blue-600 rounded-md transition-colors flex items-center"
                   onClick={handleFindPartnersCTA}
                 >
-                  <Users className="w-5 h-5 mr-2" />
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
                   Find Partners
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-blue-600"
+                </button>
+                <button 
+                  className="px-6 py-3 text-lg font-medium border border-white text-white hover:bg-white hover:text-blue-600 rounded-md transition-colors flex items-center"
                   onClick={handleTournamentCalendar}
                 >
-                  <Calendar className="w-5 h-5 mr-2" />
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                   Tournament Calendar
-                </Button>
+                </button>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

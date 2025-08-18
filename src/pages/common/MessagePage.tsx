@@ -1,28 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Badge } from '../../components/ui/badge';
-import { 
-  MessageSquare, 
-  Send, 
-  Search, 
-  Filter,
-  MoreVertical,
-  Reply,
-  Forward,
-  Trash2,
-  Archive,
-  Star,
-  Mail,
-  Inbox,
-  Send as SendIcon
-} from 'lucide-react';
-import { useAnimation } from '../../hooks/useAnimation';
 
 interface Message {
   id: string;
@@ -52,7 +30,6 @@ interface Message {
 
 const MessagePage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const { elementRef: headerRef } = useAnimation();
   
   const [selectedTab, setSelectedTab] = useState<'inbox' | 'sent' | 'drafts' | 'archived'>('inbox');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -234,17 +211,19 @@ const MessagePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200" ref={headerRef}>
+      <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Messages</h1>
               <p className="text-gray-600">Stay connected with your pickleball community</p>
             </div>
-            <Button onClick={() => setShowCompose(true)} className="flex items-center space-x-2">
-              <Send className="h-4 w-4" />
+            <button onClick={() => setShowCompose(true)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
               <span>Compose</span>
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -254,8 +233,8 @@ const MessagePage = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Navigation Tabs */}
-            <Card>
-              <CardContent className="p-0">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="p-0">
                 <div className="flex flex-col">
                   <button
                     onClick={() => setSelectedTab('inbox')}
@@ -263,7 +242,9 @@ const MessagePage = () => {
                       selectedTab === 'inbox' ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                   >
-                    <Inbox className="h-5 w-5 text-gray-500" />
+                    <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
                     <div>
                       <div className="font-medium">Inbox</div>
                       <div className="text-sm text-gray-500">
@@ -277,7 +258,9 @@ const MessagePage = () => {
                       selectedTab === 'sent' ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                   >
-                    <SendIcon className="h-5 w-5 text-gray-500" />
+                    <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
                     <div>
                       <div className="font-medium">Sent</div>
                       <div className="text-sm text-gray-500">Messages sent</div>
@@ -289,7 +272,9 @@ const MessagePage = () => {
                       selectedTab === 'drafts' ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                   >
-                    <Mail className="h-5 w-5 text-gray-500" />
+                    <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                     <div>
                       <div className="font-medium">Drafts</div>
                       <div className="text-sm text-gray-500">0 saved</div>
@@ -301,7 +286,9 @@ const MessagePage = () => {
                       selectedTab === 'archived' ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                   >
-                    <Archive className="h-5 w-5 text-gray-500" />
+                    <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
                     <div>
                       <div className="font-medium">Archived</div>
                       <div className="text-sm text-gray-500">
@@ -310,15 +297,15 @@ const MessagePage = () => {
                     </div>
                   </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Filters */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Filters</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+              </div>
+              <div className="p-6 space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Category</label>
                   <select
@@ -334,30 +321,32 @@ const MessagePage = () => {
                     <option value="support">Support</option>
                   </select>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Message List */}
           <div className="lg:col-span-3">
-            <Card>
-              <CardHeader>
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Messages</CardTitle>
+                  <h3 className="text-lg font-semibold text-gray-900">Messages</h3>
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
+                      <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
                         placeholder="Search messages..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 w-64"
+                        className="pl-10 w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-0">
+              </div>
+              <div className="p-0">
                 <div className="divide-y divide-gray-200">
                   {filteredMessages.map((message) => (
                     <div
@@ -368,27 +357,28 @@ const MessagePage = () => {
                       } ${selectedMessage?.id === message.id ? 'bg-blue-100' : ''}`}
                     >
                       <div className="flex items-start space-x-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={message.sender.avatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {message.sender.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-semibold">
+                          {message.sender.avatar ? (
+                            <img src={message.sender.avatar} alt={message.sender.name} className="h-10 w-10 rounded-full" />
+                          ) : (
+                            message.sender.name.charAt(0)
+                          )}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <span className={`font-medium ${!message.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
                                 {message.sender.name}
                               </span>
-                              <Badge variant="outline" className="text-xs">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300">
                                 {message.sender.role}
-                              </Badge>
-                              <Badge className={`text-xs ${getPriorityColor(message.priority)}`}>
+                              </span>
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
                                 {message.priority}
-                              </Badge>
-                              <Badge className={`text-xs ${getCategoryColor(message.category)}`}>
+                              </span>
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(message.category)}`}>
                                 {message.category}
-                              </Badge>
+                              </span>
                             </div>
                             <div className="flex items-center space-x-1">
                               <span className="text-sm text-gray-500">
@@ -404,7 +394,9 @@ const MessagePage = () => {
                                     message.isStarred ? 'text-yellow-500' : 'text-gray-400'
                                   }`}
                                 >
-                                  <Star className="h-4 w-4" />
+                                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                  </svg>
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -413,7 +405,9 @@ const MessagePage = () => {
                                   }}
                                   className="p-1 rounded hover:bg-gray-200 transition-colors text-gray-400"
                                 >
-                                  <Archive className="h-4 w-4" />
+                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                  </svg>
                                 </button>
                               </div>
                             </div>
@@ -429,8 +423,8 @@ const MessagePage = () => {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -441,60 +435,63 @@ const MessagePage = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Compose Message</h3>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
                 onClick={() => setShowCompose(false)}
               >
                 ×
-              </Button>
+              </button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   To
                 </label>
-                <Input
+                <input
                   placeholder="Recipient name or email"
                   value={composeData.recipient}
                   onChange={(e) => setComposeData(prev => ({ ...prev, recipient: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Subject
                 </label>
-                <Input
+                <input
                   placeholder="Message subject"
                   value={composeData.subject}
                   onChange={(e) => setComposeData(prev => ({ ...prev, subject: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Message
                 </label>
-                <Textarea
+                <textarea
                   placeholder="Type your message here..."
                   value={composeData.content}
                   onChange={(e) => setComposeData(prev => ({ ...prev, content: e.target.value }))}
                   rows={6}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">
-              <Button
-                variant="outline"
+              <button
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 onClick={() => setShowCompose(false)}
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSendMessage}
                 disabled={!composeData.recipient || !composeData.subject || !composeData.content}
               >
                 Send Message
-              </Button>
+              </button>
             </div>
           </div>
         </div>

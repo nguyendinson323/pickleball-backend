@@ -2,18 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchRankings, fetchTopPlayers } from '../../store/slices/rankingsSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Badge } from '../../components/ui/badge';
-import { Trophy, Medal, Star, TrendingUp, TrendingDown, Minus, Target, Users, Award } from 'lucide-react';
 import { Ranking } from '../../types/api';
-import { useAnimation } from '../../hooks/useAnimation';
 
 const RankingsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { rankings, topPlayers, loading, error, pagination } = useSelector((state: RootState) => state.rankings);
-  const { elementRef: headerRef } = useAnimation();
   
   const [filters, setFilters] = useState<{
     page: number;
@@ -51,18 +44,46 @@ const RankingsPage = () => {
 
   const getPositionIcon = (position: number) => {
     switch (position) {
-      case 1: return <Trophy className="w-5 h-5 text-yellow-500" />;
-      case 2: return <Medal className="w-5 h-5 text-gray-400" />;
-      case 3: return <Medal className="w-5 h-5 text-amber-600" />;
+      case 1: return (
+        <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+        </svg>
+      );
+      case 2: return (
+        <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+        </svg>
+      );
+      case 3: return (
+        <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+        </svg>
+      );
       default: return <span className="text-lg font-bold text-gray-600">{position}</span>;
     }
   };
 
   const getPositionChange = (current: number, previous?: number) => {
-    if (!previous) return <Minus className="w-4 h-4 text-gray-400" />;
-    if (current < previous) return <TrendingUp className="w-4 h-4 text-green-500" />;
-    if (current > previous) return <TrendingDown className="w-4 h-4 text-red-500" />;
-    return <Minus className="w-4 h-4 text-gray-400" />;
+    if (!previous) return (
+      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+      </svg>
+    );
+    if (current < previous) return (
+      <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 14l5-5 5 5" />
+      </svg>
+    );
+    if (current > previous) return (
+      <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 10l-5 5-5-5" />
+      </svg>
+    );
+    return (
+      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+      </svg>
+    );
   };
 
   const getSkillLevelColor = (level: string) => {
@@ -98,7 +119,7 @@ const RankingsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section ref={headerRef} className="animate-on-scroll bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
+      <section className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -116,33 +137,31 @@ const RankingsPage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
-                <SelectTrigger className="animate-on-scroll">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="singles">Singles</SelectItem>
-                  <SelectItem value="doubles">Doubles</SelectItem>
-                  <SelectItem value="mixed_doubles">Mixed Doubles</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={filters.category} 
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="singles">Singles</option>
+                <option value="doubles">Doubles</option>
+                <option value="mixed_doubles">Mixed Doubles</option>
+              </select>
             </div>
             <div>
-              <Select value={filters.skill_level} onValueChange={(value) => handleFilterChange('skill_level', value)}>
-                <SelectTrigger className="animate-on-scroll">
-                  <SelectValue placeholder="Skill Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Levels</SelectItem>
-                  <SelectItem value="2.5">2.5</SelectItem>
-                  <SelectItem value="3.0">3.0</SelectItem>
-                  <SelectItem value="3.5">3.5</SelectItem>
-                  <SelectItem value="4.0">4.0</SelectItem>
-                  <SelectItem value="4.5">4.5</SelectItem>
-                  <SelectItem value="5.0">5.0</SelectItem>
-                  <SelectItem value="5.5">5.5</SelectItem>
-                </SelectContent>
-              </Select>
+              <select 
+                value={filters.skill_level} 
+                onChange={(e) => handleFilterChange('skill_level', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Levels</option>
+                <option value="2.5">2.5</option>
+                <option value="3.0">3.0</option>
+                <option value="3.5">3.5</option>
+                <option value="4.0">4.0</option>
+                <option value="4.5">4.5</option>
+                <option value="5.0">5.0</option>
+                <option value="5.5">5.5</option>
+              </select>
             </div>
             <div>
               <input
@@ -150,7 +169,7 @@ const RankingsPage = () => {
                 placeholder="Search players..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -159,7 +178,7 @@ const RankingsPage = () => {
                 placeholder="State"
                 value={filters.state}
                 onChange={(e) => handleFilterChange('state', e.target.value)}
-                className="animate-on-scroll w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -170,10 +189,10 @@ const RankingsPage = () => {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="animate-on-scroll text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Top 10 Players
             </h2>
-            <p className="animate-on-scroll text-gray-600">
+            <p className="text-gray-600">
               The highest-ranked players in {filters.category.replace('_', ' ')} category
             </p>
           </div>
@@ -181,24 +200,24 @@ const RankingsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {topPlayers.map((player, index) => (
               <div key={player.id}>
-                <Card className="animate-on-scroll card hover:shadow-lg hover:scale-105 transition-all duration-300">
-                  <CardHeader className="text-center">
+                <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300">
+                  <div className="p-6 text-center">
                     <div className="flex justify-center mb-4">
                       {getPositionIcon(index + 1)}
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
+                    <h3 className="text-xl font-bold text-gray-900">
                       {player.user_name}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600">
+                    </h3>
+                    <p className="text-gray-600">
                       {player.state || 'Unknown State'}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
+                    </p>
+                  </div>
+                  <div className="px-6 pb-6 space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Skill Level:</span>
-                      <Badge className={getSkillLevelColor(player.skill_level)}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSkillLevelColor(player.skill_level)}`}>
                         {player.skill_level}
-                      </Badge>
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Points:</span>
@@ -214,8 +233,8 @@ const RankingsPage = () => {
                       <span className="text-sm text-gray-600">Tournaments:</span>
                       <span className="font-semibold">{player.tournaments_played}</span>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -234,14 +253,19 @@ const RankingsPage = () => {
           {rankings.length === 0 && !loading ? (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No rankings found</h3>
                 <p className="text-gray-600 mb-6">
                   Try adjusting your search criteria or check back later for new rankings.
                 </p>
-                <Button onClick={() => setFilters({ page: 1, limit: 20, category: 'singles', skill_level: '', state: '', search: '' })}>
+                <button 
+                  onClick={() => setFilters({ page: 1, limit: 20, category: 'singles', skill_level: '', state: '', search: '' })}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
                   Clear Filters
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
@@ -295,9 +319,9 @@ const RankingsPage = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <Badge className={getSkillLevelColor(ranking.skill_level)}>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSkillLevelColor(ranking.skill_level)}`}>
                               {ranking.skill_level}
-                            </Badge>
+                            </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {ranking.current_points}
@@ -330,40 +354,38 @@ const RankingsPage = () => {
               {pagination && pagination.pages > 1 && (
                 <div className="flex justify-center mt-12">
                   <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page <= 1}
-                      className="hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300"
                     >
                       Previous
-                    </Button>
+                    </button>
                     
                     {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
                       const page = i + 1;
                       return (
-                        <Button
+                        <button
                           key={page}
-                          variant={pagination.page === page ? "default" : "outline"}
-                          size="sm"
                           onClick={() => handlePageChange(page)}
-                          className="hover:scale-105 transition-transform duration-300"
+                          className={`px-3 py-2 text-sm font-medium rounded-md hover:scale-105 transition-transform duration-300 ${
+                            pagination.page === page 
+                              ? 'bg-blue-600 text-white' 
+                              : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                          } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                         >
                           {page}
-                        </Button>
+                        </button>
                       );
                     })}
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page >= pagination.pages}
-                      className="hover:scale-105 transition-transform duration-300"
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-300"
                     >
                       Next
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}
