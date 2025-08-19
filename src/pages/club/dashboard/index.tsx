@@ -113,6 +113,70 @@ const ClubDashboard = () => {
     }
   ];
 
+  // Tournament management data
+  const tournaments = [
+    {
+      id: 1,
+      name: 'Spring Championship Tournament',
+      date: '2024-04-20',
+      startTime: '9:00 AM',
+      endTime: '6:00 PM',
+      participants: 48,
+      maxParticipants: 64,
+      entryFee: 75,
+      totalRevenue: 3600,
+      expenses: 1200,
+      profit: 2400,
+      status: 'Registration Open',
+      description: 'Annual spring championship tournament with multiple divisions',
+      location: 'Elite Pickleball Club - Main Courts',
+      tournamentType: 'doubles' as const,
+      skillLevel: 'all',
+      prizes: 'Cash prizes for winners, trophies for top 3',
+      rules: 'USAPA rules apply, double elimination format'
+    },
+    {
+      id: 2,
+      name: 'Summer League Finals',
+      date: '2024-06-15',
+      startTime: '10:00 AM',
+      endTime: '4:00 PM',
+      participants: 32,
+      maxParticipants: 32,
+      entryFee: 50,
+      totalRevenue: 1600,
+      expenses: 800,
+      profit: 800,
+      status: 'Full',
+      description: 'Summer league championship finals',
+      location: 'Elite Pickleball Club - All Courts',
+      tournamentType: 'singles' as const,
+      skillLevel: 'intermediate',
+      prizes: 'League championship trophies and medals',
+      rules: 'Round robin format, top 4 advance to playoffs'
+    },
+    {
+      id: 3,
+      name: 'Fall Classic',
+      date: '2024-09-28',
+      startTime: '9:00 AM',
+      endTime: '5:00 PM',
+      participants: 0,
+      maxParticipants: 48,
+      entryFee: 60,
+      totalRevenue: 0,
+      expenses: 0,
+      profit: 0,
+      status: 'Planning',
+      description: 'Fall season tournament for all skill levels',
+      location: 'Elite Pickleball Club - Main Courts',
+      tournamentType: 'mixed' as const,
+      skillLevel: 'all',
+      prizes: 'Trophies and gift certificates for winners',
+      rules: 'Mixed doubles format, skill-based divisions'
+    }
+  ];
+
   // Court rental data
   const timeSlots = [
     '6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
@@ -120,86 +184,53 @@ const ClubDashboard = () => {
     '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM'
   ];
 
-  const courtBookings = {
+  const courtBookings: Record<string, Record<string, {
+    status: 'available' | 'booked' | 'maintenance' | 'reserved';
+    price: number;
+    player?: string;
+    startTime: string;
+    endTime: string;
+    bookingId?: string;
+  }>> = {
     'Court 1': {
-      '6:00 AM': { status: 'available', price: 25 },
-      '7:00 AM': { status: 'booked', price: 25, player: 'John D.' },
-      '8:00 AM': { status: 'available', price: 25 },
-      '9:00 AM': { status: 'booked', price: 30, player: 'Sarah M.' },
-      '10:00 AM': { status: 'available', price: 30 },
-      '11:00 AM': { status: 'available', price: 30 },
-      '12:00 PM': { status: 'booked', price: 35, player: 'Mike R.' },
-      '1:00 PM': { status: 'available', price: 35 },
-      '2:00 PM': { status: 'available', price: 35 },
-      '3:00 PM': { status: 'booked', price: 30, player: 'Lisa K.' },
-      '4:00 PM': { status: 'available', price: 30 },
-      '5:00 PM': { status: 'available', price: 30 },
-      '6:00 PM': { status: 'booked', price: 35, player: 'Carlos R.' },
-      '7:00 PM': { status: 'booked', price: 35, player: 'Ana M.' },
-      '8:00 PM': { status: 'available', price: 30 },
-      '9:00 PM': { status: 'available', price: 25 },
-      '10:00 PM': { status: 'available', price: 20 }
+      '6:00 AM': { status: 'available', price: 25, startTime: '6:00 AM', endTime: '7:00 AM' },
+      '7:00 AM': { status: 'booked', price: 25, player: 'John D.', startTime: '7:00 AM', endTime: '8:00 AM', bookingId: 'BK001' },
+      '8:00 AM': { status: 'available', price: 25, startTime: '8:00 AM', endTime: '9:00 AM' },
+      '9:00 AM': { status: 'booked', price: 30, player: 'Sarah M.', startTime: '9:00 AM', endTime: '10:00 AM', bookingId: 'BK002' },
+      '10:00 AM': { status: 'available', price: 30, startTime: '10:00 AM', endTime: '11:00 AM' },
+      '11:00 AM': { status: 'available', price: 30, startTime: '11:00 AM', endTime: '12:00 PM' },
+      '12:00 PM': { status: 'booked', price: 35, player: 'Mike R.', startTime: '12:00 PM', endTime: '1:00 PM', bookingId: 'BK003' },
+      '1:00 PM': { status: 'available', price: 35, startTime: '1:00 PM', endTime: '2:00 PM' },
+      '2:00 PM': { status: 'available', price: 35, startTime: '2:00 PM', endTime: '3:00 PM' },
+      '3:00 PM': { status: 'booked', price: 30, player: 'Lisa K.', startTime: '3:00 PM', endTime: '4:00 PM', bookingId: 'BK004' },
+      '4:00 PM': { status: 'available', price: 30, startTime: '4:00 PM', endTime: '5:00 PM' },
+      '5:00 PM': { status: 'available', price: 30, startTime: '5:00 PM', endTime: '6:00 PM' },
+      '6:00 PM': { status: 'booked', price: 35, player: 'Carlos R.', startTime: '6:00 PM', endTime: '7:00 PM', bookingId: 'BK005' },
+      '7:00 PM': { status: 'booked', price: 35, player: 'Ana M.', startTime: '7:00 PM', endTime: '8:00 PM', bookingId: 'BK006' },
+      '8:00 PM': { status: 'available', price: 30, startTime: '8:00 PM', endTime: '9:00 PM' },
+      '9:00 PM': { status: 'available', price: 25, startTime: '9:00 PM', endTime: '10:00 PM' },
+      '10:00 PM': { status: 'available', price: 20, startTime: '10:00 PM', endTime: '11:00 PM' }
     },
     'Court 2': {
-      '6:00 AM': { status: 'available', price: 25 },
-      '7:00 AM': { status: 'available', price: 25 },
-      '8:00 AM': { status: 'booked', price: 25, player: 'David L.' },
-      '9:00 AM': { status: 'available', price: 30 },
-      '10:00 AM': { status: 'booked', price: 30, player: 'Emma S.' },
-      '11:00 AM': { status: 'available', price: 30 },
-      '12:00 PM': { status: 'available', price: 35 },
-      '1:00 PM': { status: 'booked', price: 35, player: 'Robert K.' },
-      '2:00 PM': { status: 'booked', price: 35, player: 'Maria G.' },
-      '3:00 PM': { status: 'available', price: 30 },
-      '4:00 PM': { status: 'available', price: 30 },
-      '5:00 PM': { status: 'booked', price: 30, player: 'Tom H.' },
-      '6:00 PM': { status: 'available', price: 35 },
-      '7:00 PM': { status: 'available', price: 35 },
-      '8:00 PM': { status: 'available', price: 30 },
-      '9:00 PM': { status: 'available', price: 25 },
-      '10:00 PM': { status: 'available', price: 20 }
+      '6:00 AM': { status: 'available', price: 25, startTime: '6:00 AM', endTime: '7:00 AM' },
+      '7:00 AM': { status: 'available', price: 25, startTime: '7:00 AM', endTime: '8:00 AM' },
+      '8:00 AM': { status: 'booked', price: 25, player: 'David L.', startTime: '8:00 AM', endTime: '9:00 AM', bookingId: 'BK007' },
+      '9:00 AM': { status: 'available', price: 30, startTime: '9:00 AM', endTime: '10:00 AM' },
+      '10:00 AM': { status: 'booked', price: 30, player: 'Emma S.', startTime: '10:00 AM', endTime: '11:00 AM', bookingId: 'BK008' },
+      '11:00 AM': { status: 'available', price: 30, startTime: '11:00 AM', endTime: '12:00 PM' },
+      '12:00 PM': { status: 'available', price: 35, startTime: '12:00 PM', endTime: '1:00 PM' },
+      '1:00 PM': { status: 'booked', price: 35, player: 'Robert K.', startTime: '1:00 PM', endTime: '2:00 PM', bookingId: 'BK009' },
+      '2:00 PM': { status: 'booked', price: 35, player: 'Maria G.', startTime: '2:00 PM', endTime: '3:00 PM', bookingId: 'BK010' },
+      '3:00 PM': { status: 'available', price: 30, startTime: '3:00 PM', endTime: '4:00 PM' },
+      '4:00 PM': { status: 'available', price: 30, startTime: '4:00 PM', endTime: '5:00 PM' },
+      '5:00 PM': { status: 'booked', price: 30, player: 'Tom H.', startTime: '5:00 PM', endTime: '6:00 PM', bookingId: 'BK011' },
+      '6:00 PM': { status: 'available', price: 35, startTime: '6:00 PM', endTime: '7:00 PM' },
+      '7:00 PM': { status: 'available', price: 35, startTime: '7:00 PM', endTime: '8:00 PM' },
+      '8:00 PM': { status: 'available', price: 30, startTime: '8:00 PM', endTime: '9:00 PM' },
+      '9:00 PM': { status: 'available', price: 25, startTime: '9:00 PM', endTime: '10:00 PM' },
+      '10:00 PM': { status: 'available', price: 20, startTime: '10:00 PM', endTime: '11:00 PM' }
     }
   };
-
-  // Tournament management data
-  const tournaments = [
-    {
-      id: 1,
-      name: 'Spring Championship Tournament',
-      date: '2024-04-20',
-      participants: 48,
-      maxParticipants: 64,
-      entryFee: 75,
-      totalRevenue: 3600,
-      expenses: 1200,
-      profit: 2400,
-      status: 'Registration Open'
-    },
-    {
-      id: 2,
-      name: 'Summer League Finals',
-      date: '2024-06-15',
-      participants: 32,
-      maxParticipants: 32,
-      entryFee: 50,
-      totalRevenue: 1600,
-      expenses: 800,
-      profit: 800,
-      status: 'Full'
-    },
-    {
-      id: 3,
-      name: 'Fall Classic',
-      date: '2024-09-28',
-      participants: 0,
-      maxParticipants: 48,
-      entryFee: 60,
-      totalRevenue: 0,
-      expenses: 0,
-      profit: 0,
-      status: 'Planning'
-    }
-  ];
 
   // Invoice and payment data
   const invoices = [
@@ -619,26 +650,38 @@ const ClubDashboard = () => {
             </div>
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                <button 
+                  onClick={() => setActiveTab('members')}
+                  className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2"
+                >
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
                   <span>Manage Members</span>
                 </button>
-                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                <button 
+                  onClick={() => setActiveTab('courts')}
+                  className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2"
+                >
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span>Court Management</span>
                 </button>
-                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                <button 
+                  onClick={() => setActiveTab('tournaments')}
+                  className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2"
+                >
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span>Schedule Events</span>
                 </button>
-                <button className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2">
+                <button 
+                  onClick={() => setActiveTab('microsite')}
+                  className="animate-on-scroll inline-flex flex-col items-center justify-center h-20 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 space-y-2"
+                >
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
