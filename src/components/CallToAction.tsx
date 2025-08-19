@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import ctaBackgroundImg from "/img/cta-background.jpg";
 
 const CallToAction = () => {
@@ -23,12 +22,12 @@ const CallToAction = () => {
             Join a national platform built to serve players, clubs, and the future of Pickleball in your country.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="accent" className="text-lg px-8 py-6 hover:scale-105 transition-transform duration-200">
+            <button className="text-lg px-8 py-6 bg-accent text-white rounded-lg hover:scale-105 transition-transform duration-200 font-medium">
               Get Started Free
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-200">
+            </button>
+            <button className="text-lg px-8 py-6 border-2 border-white text-white rounded-lg hover:bg-white hover:text-primary hover:scale-105 transition-all duration-200 font-medium">
               Request Demo
-            </Button>
+            </button>
           </div>
         </div>
       </div>

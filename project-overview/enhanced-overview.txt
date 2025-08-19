@@ -283,3 +283,5 @@ Tab: Management
 Administrative state functions: create tournaments and events, register courts, schedule maintenance and incidents, and send announcements to clubs, players, and partners in the state. Also includes ranking management.
 Tab: Member Management
 Register players, assign roles within the organization (administrator, coordinator, etc.), and view participation history.
+
+You should use raw HTML tags with TailWindCSS instead of imported UI components

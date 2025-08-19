@@ -5,3 +5,5 @@ However, we have noticed that there hasn’t yet been significant progress on th
 We would like you to make progress on the site’s key functionalities since these represent the true utility of the platform we want to develop.
 
 but it still lacks any of the core features we are truly interested in, such as the court reservation platform, tournament creation platform, player search system within the same area with notifications, or the digital ID card.
+
+You should use raw HTML tags with TailWindCSS instead of imported UI components

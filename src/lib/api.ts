@@ -1,5 +1,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { baseURL } from './const';
+import { 
+  DigitalCredential,
+  CreateDigitalCredentialResponse,
+  GetDigitalCredentialResponse,
+  VerifyDigitalCredentialResponse,
+  UpdateDigitalCredentialResponse,
+  RegenerateQRCodeResponse,
+  GetAllDigitalCredentialsResponse
+} from '../types/api';
 
 const apiClient = axios.create({
   baseURL,
@@ -78,9 +87,32 @@ export async function del<T>(url: string, config?: AxiosRequestConfig): Promise<
     });
 }
 
+// Digital Credential API functions
+export const digitalCredentialApi = {
+  // Create a new digital credential
+  create: () => post<CreateDigitalCredentialResponse>('/digital-credentials', {}),
+  
+  // Get the authenticated user's digital credential
+  getMyCredential: () => get<GetDigitalCredentialResponse>('/digital-credentials/my-credential'),
+  
+  // Verify a digital credential by verification code (public)
+  verify: (verificationCode: string) => get<VerifyDigitalCredentialResponse>(`/digital-credentials/verify/${verificationCode}`),
+  
+  // Update a digital credential
+  update: (id: string, data: Partial<DigitalCredential>) => put<UpdateDigitalCredentialResponse>(`/digital-credentials/${id}`, data),
+  
+  // Regenerate QR code for a digital credential
+  regenerateQR: (id: string) => post<RegenerateQRCodeResponse>(`/digital-credentials/${id}/regenerate-qr`, {}),
+  
+  // Get all digital credentials (admin only)
+  getAll: (params?: { page?: number; limit?: number; affiliation_status?: string; state_affiliation?: string; is_verified?: boolean }) => 
+    get<GetAllDigitalCredentialsResponse>('/digital-credentials', { params })
+};
+
 export const api = {
   get,
   post,
   put,
   delete: del,
+  digitalCredentials: digitalCredentialApi,
 };

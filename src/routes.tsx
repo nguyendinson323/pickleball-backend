@@ -4,15 +4,17 @@ import RequiredFieldsPage from "./pages/auth/RequiredFieldsPage";
 import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import VerifyCredential from "./pages/VerifyCredential";
 import { Navigate } from "react-router-dom";
 
   // Admin pages
   import AdminProfile from "./pages/admin/AdminProfile";
-  import Analytics from "./pages/admin/Analytics";
-  import SystemManagement from "./pages/admin/SystemManagement";
-  import UserManagement from "./pages/admin/UserManagement";
-  import BannersPage from "./pages/admin/BannersPage";
-  import AdminDashboard from "./pages/admin/dashboard";
+import Analytics from "./pages/admin/Analytics";
+import SystemManagement from "./pages/admin/SystemManagement";
+import UserManagement from "./pages/admin/UserManagement";
+import BannersPage from "./pages/admin/BannersPage";
+import AdminDashboard from "./pages/admin/dashboard";
+import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManagement";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -36,6 +38,7 @@ import PrivacyPolicy from "./pages/home/PrivacyPolicy";
 // Player pages
 import PlayerDashboard from "./pages/player/dashboard";
 import PlayerProfile from "./pages/player/PlayerProfile";
+import PlayerCredentials from "./pages/player/dashboard/Credentials";
 
 // Coach pages
 import CoachDashboard from "./pages/coach/dashboard";
@@ -136,6 +139,12 @@ const routes = [
     element: <OptionalFieldsPage />,
     public: true
   },
+  {
+    key: 'verify-credential',
+    path: '/verify-credential/:verificationCode',
+    element: <VerifyCredential />,
+    public: true
+  },
 
   // Common functionality routes (accessible to all logged-in users)
   {
@@ -195,6 +204,12 @@ const routes = [
 
   // Player-specific routes
   {
+    key: 'player',
+    path: '/player',
+    element: <PlayerDashboard />,
+    public: false
+  },
+  {
     key: 'player-dashboard',
     path: '/player/dashboard',
     element: <PlayerDashboard />,
@@ -206,8 +221,20 @@ const routes = [
     element: <PlayerProfile />,
     public: false
   },
+  {
+    key: 'player-credentials',
+    path: '/player/credentials',
+    element: <PlayerCredentials />,
+    public: false
+  },
 
   // Coach-specific routes
+  {
+    key: 'coach',
+    path: '/coach',
+    element: <CoachDashboard />,
+    public: false
+  },
   {
     key: 'coach-dashboard',
     path: '/coach/dashboard',
@@ -247,6 +274,12 @@ const routes = [
 
   // Club-specific routes
   {
+    key: 'club',
+    path: '/club',
+    element: <ClubDashboard />,
+    public: false
+  },
+  {
     key: 'club-dashboard',
     path: '/club/dashboard',
     element: <ClubDashboard />,
@@ -279,6 +312,12 @@ const routes = [
 
   // Partner-specific routes
   {
+    key: 'partner',
+    path: '/partner',
+    element: <PartnerDashboard />,
+    public: false
+  },
+  {
     key: 'partner-dashboard',
     path: '/partner/dashboard',
     element: <PartnerDashboard />,
@@ -310,6 +349,12 @@ const routes = [
   },
 
   // State-specific routes
+  {
+    key: 'state',
+    path: '/state',
+    element: <StateDashboard />,
+    public: false
+  },
   {
     key: 'state-dashboard',
     path: '/state/dashboard',
@@ -396,6 +441,12 @@ const routes = [
     key: 'banners',
     path: '/admin/banners',
     element: <BannersPage />,
+    public: false
+  },
+  {
+    key: 'admin-digital-credentials',
+    path: '/admin/digital-credentials',
+    element: <DigitalCredentialsManagement />,
     public: false
   },
   {

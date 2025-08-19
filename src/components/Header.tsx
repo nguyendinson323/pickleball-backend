@@ -1,30 +1,18 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
 import { logout } from '../store/slices/authSlice'
-import { Button } from './ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Badge } from './ui/badge'
-import ProfilePhoto from './ui/ProfilePhoto'
 import { 
   Menu, 
   X, 
   Bell, 
-  Search, 
   Settings,
   User,
-  LogOut
+  LogOut,
+  ChevronDown
 } from 'lucide-react'
-import { getUserNavigation, basePublicNavigation, commonLoggedInTabs } from '../lib/navigation'
+import { getUserNavigation } from '../lib/navigation'
 import { imageBaseURL } from '../lib/const'
 
 const Header = () => {
@@ -32,9 +20,13 @@ const Header = () => {
   const navigate = useNavigate()
   const { user, token } = useSelector((state: RootState) => state.auth)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [commonMenuOpen, setCommonMenuOpen] = useState(false)
+  
+  // Timeout references for hover effects
+  const userMenuTimeoutRef = useRef(null)
+  const commonMenuTimeoutRef = useRef(null)
   const location = useLocation()
 
   // Check if user is authenticated
@@ -49,12 +41,16 @@ const Header = () => {
 
   // Get dynamic navigation based on user type and role
   const userNavigation = getUserNavigation(user)
-  
-  // Use navigation.ts as single source of truth
-  const baseNavigation = basePublicNavigation
-  const allCommonFeatures = commonLoggedInTabs
-  
-  const adminNavigation = userNavigation.admin || []
+
+  // Home pages - always visible
+  const homePages = [
+    { name: 'Home', href: '/', public: true },
+    { name: 'About', href: '/about', public: true },
+    { name: 'Events', href: '/events', public: true },
+    { name: 'News', href: '/news', public: true },
+    { name: 'Contact', href: '/contact', public: true },
+    { name: 'Privacy Policy', href: '/privacy-policy', public: true },
+  ]
 
   // Get user display name
   const getUserDisplayName = () => {
@@ -92,329 +88,333 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center space-x-1">
-            {/* Base Navigation Tabs */}
-            {baseNavigation.map((item) => (
+          {/* Desktop Navigation - Home Pages Always Visible */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {homePages.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  isActive(item.href)
-                    ? 'text-blue-600 bg-blue-50 border border-blue-200'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  isActive(item.href) ? 'bg-blue-100 text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 {item.name}
               </Link>
             ))}
 
-            {/* Services Mega Menu */}
+            {/* Common Features Dropdown for Logged-in Users */}
             {isAuthenticated && (
-              <div className="relative group">
+              <div 
+                className="relative"
+                onMouseEnter={() => {
+                  if (commonMenuTimeoutRef.current) {
+                    clearTimeout(commonMenuTimeoutRef.current)
+                  }
+                  setCommonMenuOpen(true)
+                }}
+                onMouseLeave={() => {
+                  commonMenuTimeoutRef.current = setTimeout(() => {
+                    setCommonMenuOpen(false)
+                  }, 150)
+                }}
+              >
                 <button
-                  className="flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 text-gray-700 hover:text-blue-600"
+                  className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-all duration-200"
                 >
-                  <span>Services</span>
-                  <div className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
+                  <span>Features</span>
+                  <ChevronDown className="h-4 w-4" />
                 </button>
-                
-                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="grid grid-cols-1 gap-2">
-                    {allCommonFeatures.map((item) => (
+
+                {/* Common Features Dropdown Menu */}
+                {commonMenuOpen && (
+                  <div 
+                    className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50"
+                    onMouseEnter={() => {
+                      if (commonMenuTimeoutRef.current) {
+                        clearTimeout(commonMenuTimeoutRef.current)
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      commonMenuTimeoutRef.current = setTimeout(() => {
+                        setCommonMenuOpen(false)
+                      }, 150)
+                    }}
+                  >
+                    {userNavigation.main?.slice(5).map((item) => (
                       <Link
                         key={item.name}
                         to={item.href}
-                        className={`flex items-center p-3 rounded-md transition-all duration-200 hover:bg-gray-50 group ${
-                          isActive(item.href) ? 'bg-blue-50 border border-blue-200' : ''
-                        }`}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        onClick={() => setCommonMenuOpen(false)}
                       >
-                        <div className={`font-medium ${isActive(item.href) ? 'text-blue-600' : 'text-gray-900'}`}>
-                          {item.name}
-                        </div>
+                        {item.name}
                       </Link>
                     ))}
                   </div>
-                </div>
+                )}
               </div>
             )}
           </nav>
 
-          {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-3">
-            {isAuthenticated && (
-              <>
-                {/* Search Button */}
-                <Button variant="ghost" size="sm" className="relative p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                  <Search className="h-4 w-4 text-gray-600" />
-                </Button>
-                
-                {/* Notifications */}
-                <Button variant="ghost" size="sm" className="relative p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                  <Bell className="h-4 w-4 text-gray-600" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500 hover:bg-red-600">
-                    3
-                  </Badge>
-                </Button>
-              </>
-            )}
-            
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <button
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all duration-200"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            </button>
+
+            {/* User Menu */}
             {isAuthenticated ? (
-              <div className="relative">
-                <DropdownMenu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
-                  <DropdownMenuTrigger asChild>
-                    <div className="flex items-center space-x-3 hover:bg-gray-100 rounded-lg p-2 transition-all duration-200 cursor-pointer">
-                      <div className="relative">
-                        <Avatar className="h-10 w-10 ring-2 ring-transparent group-hover:ring-blue-200 transition-all duration-200">
-                          <AvatarImage 
-                            src={user?.profile_photo ? `${imageBaseURL}${user.profile_photo}` : undefined} 
-                            alt={getUserDisplayName()}
-                            onLoad={() => console.log('✅ Profile photo loaded successfully:', `${imageBaseURL}${user.profile_photo}`)}
-                            onError={(e) => console.log('❌ Profile photo failed to load:', `${imageBaseURL}${user.profile_photo}`, e)}
-                          />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-medium">
-                            {getUserInitials()}
-                          </AvatarFallback>
-                        </Avatar>
-                        {/* Show a small indicator when profile photo is available */}
-                        {user?.profile_photo && (
-                          <div 
-                            className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm cursor-help"
-                            title="Profile photo uploaded"
-                          />
-                        )}
-                      </div>
-                      {/* Show user name when profile photo is available */}
-                      {user?.profile_photo && (
-                        <div className="hidden lg:block">
-                          <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
-                          <p className="text-xs text-gray-500">{user?.user_type}</p>
-                          {/* Debug info - remove in production */}
-                        </div>
-                      )}
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-64 p-4" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal p-0 mb-3">
-                      <div className="flex flex-col space-y-3">
-                        {/* Profile Photo Display */}
-                        <div className="flex justify-center">
-                          <ProfilePhoto 
-                            profilePhoto={user?.profile_photo}
-                            alt={getUserDisplayName()}
-                            size="lg"
-                            className="ring-2 ring-gray-200"
-                          />
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm font-semibold leading-none text-gray-900">
-                            {getUserDisplayName()}
-                          </p>
-                          <p className="text-xs leading-none text-gray-500 mt-1">
-                            {user?.email}
-                          </p>
-                          <div className="flex items-center justify-center mt-2">
-                            <Badge variant="secondary" className="text-xs capitalize">
-                              {user?.user_type}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator className="my-3" />
-                    <div className="space-y-1">
-                      {userNavigation.user.filter(item => !item.public).map((item) => (
-                        <DropdownMenuItem key={item.name} asChild className="p-2 rounded-lg hover:bg-gray-50">
-                          <Link to={item.href} className="flex items-center space-x-2">
-                            <User className="h-4 w-4 text-gray-500" />
-                            <span>{item.name}</span>
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </div>
-                    {adminNavigation.length > 0 && (
-                      <>
-                        <DropdownMenuSeparator className="my-3" />
-                        <div className="space-y-1">
-                          {adminNavigation.filter(item => !item.public).map((item) => (
-                            <DropdownMenuItem key={item.name} asChild className="p-2 rounded-lg hover:bg-gray-50">
-                              <Link to={item.href} className="flex items-center space-x-2">
-                                <Settings className="h-4 w-4 text-gray-500" />
-                                <span>{item.name}</span>
-                              </Link>
-                            </DropdownMenuItem>
-                          ))}
-                        </div>
-                      </>
+              <div 
+                className="relative"
+                onMouseEnter={() => {
+                  if (userMenuTimeoutRef.current) {
+                    clearTimeout(userMenuTimeoutRef.current)
+                  }
+                  setUserMenuOpen(true)
+                }}
+                onMouseLeave={() => {
+                  userMenuTimeoutRef.current = setTimeout(() => {
+                    setUserMenuOpen(false)
+                  }, 150)
+                }}
+              >
+                <button
+                  className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 transition-all duration-200"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
+                    {user?.profile_photo ? (
+                      <img 
+                        src={`${imageBaseURL}${user.profile_photo}`} 
+                        alt={getUserDisplayName()} 
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      getUserInitials()
                     )}
-                    <DropdownMenuSeparator className="my-3" />
-                    <DropdownMenuItem 
-                      onClick={handleLogout} 
-                      className="p-2 rounded-lg hover:bg-red-50 text-red-600 focus:text-red-600 focus:bg-red-50"
+                  </div>
+                  <span className="hidden lg:block text-sm font-medium text-gray-700">
+                    {getUserDisplayName()}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                </button>
+
+                {/* User Dropdown Menu */}
+                {userMenuOpen && (
+                  <div 
+                    className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50"
+                    onMouseEnter={() => {
+                      if (userMenuTimeoutRef.current) {
+                        clearTimeout(userMenuTimeoutRef.current)
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      userMenuTimeoutRef.current = setTimeout(() => {
+                        setUserMenuOpen(false)
+                      }, 150)
+                    }}
+                  >
+                    {/* User Info Header */}
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg font-semibold">
+                          {user?.profile_photo ? (
+                            <img 
+                              src={`${imageBaseURL}${user.profile_photo}`} 
+                              alt={getUserDisplayName()} 
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                          ) : (
+                            getUserInitials()
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{getUserDisplayName()}</p>
+                          <span className="text-xs capitalize bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                            {user?.user_type}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Profile Link */}
+                    <Link
+                      to="/profile"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+
+                    {/* User-specific Navigation in Dropdown */}
+                    <div className="border-t border-gray-200 my-2"></div>
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      My Account
+                    </div>
+                    {userNavigation.user?.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+
+                    {/* Admin Navigation in Dropdown */}
+                    {user?.user_type === 'admin' && userNavigation.admin?.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+
+                    <div className="border-t border-gray-200 my-2"></div>
+
+                    {/* Logout */}
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="flex space-x-3">
-                <Button variant="ghost" asChild className="hover:text-blue-600 transition-colors duration-200">
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
-                  <Link to="/register/select-type">Join Now</Link>
-                </Button>
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register/select-type"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md font-medium transition-all duration-200 hover:shadow-lg"
+                >
+                  Get Started
+                </Link>
               </div>
             )}
-          </div>
 
-          {/* Mobile menu button */}
-          <div className="xl:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
+            {/* Mobile Menu Button */}
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all duration-200"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="xl:hidden border-t border-gray-100">
-            <div className="py-4 space-y-2">
-              {/* Base Navigation */}
-              <div className="px-4 pb-2">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Main</h3>
-                <div className="space-y-1">
-                  {baseNavigation.map((item) => (
+          <div className="lg:hidden border-t border-gray-200 py-4">
+            {/* Mobile Navigation */}
+            <div className="space-y-1">
+              {/* Home Pages */}
+              {homePages.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`block px-3 py-2 text-base font-medium rounded-md transition-all duration-200 ${
+                    isActive(item.href) ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {/* Common Features for Mobile */}
+              {isAuthenticated && (
+                <>
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Features
+                    </div>
+                  </div>
+                  {userNavigation.main?.slice(5).map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
-                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        isActive(item.href)
-                          ? 'text-blue-600 bg-blue-50 border border-blue-200'
-                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      className={`block px-3 py-2 text-base font-medium rounded-md transition-all duration-200 ${
+                        isActive(item.href) ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <span>{item.name}</span>
+                      {item.name}
                     </Link>
                   ))}
-                </div>
-              </div>
-
-              {/* Services Section */}
-              {isAuthenticated && (
-                <div className="px-4 pb-2">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Services</h3>
-                  <div className="space-y-1">
-                    {allCommonFeatures.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                          isActive(item.href)
-                            ? 'text-blue-600 bg-blue-50 border border-blue-200'
-                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Admin Navigation */}
-              {isAuthenticated && adminNavigation.length > 0 && (
-                <div className="px-4 pb-2">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Admin</h3>
-                  <div className="space-y-1">
-                    {adminNavigation.filter(item => !item.public).map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                          isActive(item.href)
-                            ? 'text-red-600 bg-red-50 border border-red-200'
-                            : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {isAuthenticated ? (
-                <>
-                  <div className="px-4 py-3 border-t border-gray-100">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage 
-                          src={user?.profile_photo ? `${imageBaseURL}${user.profile_photo}` : undefined} 
-                          alt={getUserDisplayName()} 
-                        />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-medium">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      {userNavigation.user.filter(item => !item.public).map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.href}
-                          className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-all duration-200"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <span>{item.name}</span>
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <button
-                        onClick={() => {
-                          handleLogout()
-                          setMobileMenuOpen(false)
-                        }}
-                        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
-                      >
-                        <span>Log out</span>
-                      </button>
-                    </div>
-                  </div>
                 </>
-              ) : (
-                <div className="px-4 pt-4 border-t border-gray-100">
-                  <div className="flex space-x-3">
-                    <Button variant="ghost" asChild className="flex-1">
-                      <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                        Login
-                      </Link>
-                    </Button>
-                    <Button asChild className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                      <Link to="/register/select-type" onClick={() => setMobileMenuOpen(false)}>
-                        Join Now
-                      </Link>
-                    </Button>
+              )}
+
+              {/* User-specific Navigation for Mobile */}
+              {isAuthenticated && (
+                <>
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      My Account
+                    </div>
                   </div>
+                  {userNavigation.user?.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`block px-3 py-2 text-base font-medium rounded-md transition-all duration-200 ${
+                        isActive(item.href) ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </>
+              )}
+
+              {/* Admin Navigation for Mobile */}
+              {isAuthenticated && user?.user_type === 'admin' && userNavigation.admin?.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`block px-3 py-2 text-base font-medium rounded-md transition-all duration-200 ${
+                    isActive(item.href) ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {/* Auth Buttons for Non-authenticated Users */}
+              {!isAuthenticated && (
+                <div className="pt-4 border-t border-gray-200 space-y-3">
+                  <Link
+                    to="/login"
+                    className="block w-full text-center px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/register/select-type"
+                    className="block w-full text-center px-3 py-2 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-md transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
                 </div>
               )}
             </div>

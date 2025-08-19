@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import heroImage from "/img/9.jpg";
 import { useNavigate } from "react-router-dom";
 
@@ -22,9 +21,9 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll">
-              <Button size="lg" onClick={() => navigate('/register/select-type')} className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 animate-on-scroll hero cta">
+              <button onClick={() => navigate('/register/select-type')} className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 animate-on-scroll hero cta text-white rounded-lg font-medium transition-colors duration-200">
                 Join the Federation
-              </Button>
+              </button>
             </div>
           </div>
 

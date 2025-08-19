@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { UserPlus, FileCheck, LayoutDashboard, TrendingUp } from "lucide-react";
 
 const HowItWorks = () => {
@@ -72,21 +71,14 @@ const HowItWorks = () => {
 
         <div className="text-center space-x-4 animate-on-scroll">
           <div className="inline-block mb-4 lg:mb-0">
-            <Button 
-              size="lg" 
-              className="w-full lg:w-auto hover:scale-105 active:scale-95 transition-transform duration-300 animate-on-scroll"
-            >
+            <button className="w-full lg:w-auto hover:scale-105 active:scale-95 transition-transform duration-300 animate-on-scroll bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium">
               Get Started Free
-            </Button>
+            </button>
           </div>
           <div className="inline-block">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="w-full lg:w-auto hover:scale-105 active:scale-95 transition-transform duration-300 animate-on-scroll"
-            >
+            <button className="w-full lg:w-auto hover:scale-105 active:scale-95 transition-transform duration-300 animate-on-scroll border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200">
               Request Demo
-            </Button>
+            </button>
           </div>
         </div>
       </div>

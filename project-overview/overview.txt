@@ -490,3 +490,5 @@ The only thing I didn’t see is the ability to create or manage tournaments. Th
 I like react+tailwind+vite+redux/slice for frontend, node/express+postgreSQL/sequelize+Sendgrid(email sending)
 frontend and backend individually.
 you can write the hole project structure.
+
+You should use raw HTML tags with TailWindCSS instead of imported UI components

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 
 const PrivacyPolicy = () => {
   return (
@@ -14,11 +13,11 @@ const PrivacyPolicy = () => {
           </p>
         </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>1. Information We Collect</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">1. Information We Collect</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               We collect information you provide directly to us, such as when you create an account, 
               complete your profile, or communicate with us. This may include:
@@ -30,14 +29,14 @@ const PrivacyPolicy = () => {
               <li>Profile photos and other media you choose to upload</li>
               <li>Communication preferences and settings</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>2. How We Use Your Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">2. How We Use Your Information</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               We use the information we collect to:
             </p>
@@ -49,14 +48,14 @@ const PrivacyPolicy = () => {
               <li>Ensure platform security and prevent fraud</li>
               <li>Comply with legal obligations</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>3. Player Finder Feature</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">3. Player Finder Feature</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               Our player finder feature allows registered players to discover and connect with other players 
               in their area. When you enable this feature:
@@ -71,14 +70,14 @@ const PrivacyPolicy = () => {
               <strong>Note:</strong> You have full control over your privacy settings and can change them 
               at any time through your profile settings.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>4. Information Sharing</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">4. Information Sharing</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               We do not sell, trade, or otherwise transfer your personal information to third parties 
               except in the following circumstances:
@@ -89,64 +88,60 @@ const PrivacyPolicy = () => {
               <li>To protect our rights and safety</li>
               <li>With service providers who assist in operating our platform (under strict confidentiality agreements)</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>5. Data Security</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">5. Data Security</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               We implement appropriate security measures to protect your personal information, including:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Encryption of sensitive data</li>
-              <li>Secure authentication systems</li>
-              <li>Regular security audits and updates</li>
-              <li>Limited access to personal information on a need-to-know basis</li>
+              <li>Encryption of sensitive data in transit and at rest</li>
+              <li>Regular security assessments and updates</li>
+              <li>Access controls and authentication measures</li>
+              <li>Secure data storage and backup procedures</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>6. Your Rights</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">6. Your Rights</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
               You have the right to:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
               <li>Access and review your personal information</li>
               <li>Update or correct inaccurate information</li>
-              <li>Delete your account and associated data</li>
-              <li>Control your privacy settings and visibility</li>
+              <li>Request deletion of your personal data</li>
               <li>Opt out of certain communications</li>
-              <li>Request a copy of your data</li>
+              <li>Control your privacy settings</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>7. Contact Us</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">7. Contact Us</h2>
+          </div>
+          <div className="p-6 space-y-4">
             <p className="text-gray-700">
-              If you have any questions about this Privacy Policy or our data practices, 
-              please contact us at{' '}
-              <a href="mailto:privacy@pickleballfederation.com" className="text-blue-600 hover:text-blue-800">
-                privacy@pickleballfederation.com
-              </a>
+              If you have any questions about this Privacy Policy or our data practices, please contact us:
             </p>
-          </CardContent>
-        </Card>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-500">
-            By using our platform, you acknowledge that you have read and understood this Privacy Policy.
-          </p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-700">
+                <strong>Email:</strong> privacy@pickleball-federation.com<br />
+                <strong>Address:</strong> National Pickleball Federation<br />
+                <strong>Phone:</strong> +1 (555) 123-4567
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

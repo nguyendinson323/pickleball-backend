@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import ProfilePhoto from '../../components/ui/ProfilePhoto';
+
 import { imageBaseURL } from '../../lib/const';
 import { toast } from 'sonner';
 
@@ -590,12 +590,19 @@ const AdminProfile = () => {
               </div>
               <div className="p-6 text-center">
                 <div className="relative">
-                  <ProfilePhoto
-                    profilePhoto={user?.profile_photo}
-                    alt={user?.full_name || user?.username || 'Admin User'}
-                    size="xl"
-                    className="mx-auto ring-4 ring-white shadow-lg"
-                  />
+                  <div className="mx-auto ring-4 ring-white shadow-lg">
+                    {user?.profile_photo ? (
+                      <img
+                        src={`${imageBaseURL}${user.profile_photo}`}
+                        alt={user?.full_name || user?.username || 'Admin User'}
+                        className="w-32 h-32 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                        {user?.full_name ? user.full_name.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'A'}
+                      </div>
+                    )}
+                  </div>
                   {isEditing && (
                     <button 
                       className="absolute bottom-2 right-2 rounded-full w-10 h-10 p-0 hover:scale-110 transition-transform duration-300 bg-white shadow-md border border-gray-300 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 animate-on-scroll"

@@ -873,3 +873,43 @@ export interface UserStatsResponse extends ApiResponse<{
   users_by_type: Record<string, number>;
   users_by_state: Record<string, number>;
 }> {} 
+
+// Digital Credential Types
+export interface DigitalCredential {
+  id: string;
+  user_id: string;
+  credential_number: string;
+  verification_code: string;
+  federation_name: string;
+  federation_logo?: string;
+  player_name: string;
+  nrtp_level?: '2.5' | '3.0' | '3.5' | '4.0' | '4.5' | '5.0' | '5.5';
+  state_affiliation?: string;
+  nationality: string;
+  affiliation_status: 'active' | 'inactive' | 'suspended' | 'expired';
+  ranking_position?: number;
+  club_status: 'club_member' | 'independent';
+  club_name?: string;
+  qr_code_url: string;
+  qr_code_data: string;
+  issued_date: string;
+  expiry_date?: string;
+  last_verified?: string;
+  verification_count: number;
+  is_verified: boolean;
+  verification_notes?: string;
+  metadata?: object;
+  created_at: string;
+  updated_at: string;
+}
+
+// Digital Credential API Responses
+export interface CreateDigitalCredentialResponse extends ApiResponse<DigitalCredential> {}
+export interface GetDigitalCredentialResponse extends ApiResponse<DigitalCredential> {}
+export interface VerifyDigitalCredentialResponse extends ApiResponse<DigitalCredential> {}
+export interface UpdateDigitalCredentialResponse extends ApiResponse<DigitalCredential> {}
+export interface GetAllDigitalCredentialsResponse extends PaginatedResponse<DigitalCredential> {}
+export interface RegenerateQRCodeResponse extends ApiResponse<{
+  qr_code_url: string;
+  qr_code_data: string;
+}> {} 

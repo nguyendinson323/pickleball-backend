@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, BarChart3, MapPin, Search, Shield, Globe } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
 import tournamentManagementImg from "/img/tournament-management.jpg";
@@ -64,7 +63,7 @@ const Features = () => {
             const animationClass = componentAnimations.features[index % componentAnimations.features.length];
             return (
               <div key={index} className={animationClass}>
-                <Card className="group hover:shadow-medium transition-all duration-300 overflow-hidden">
+                <div className="group hover:shadow-medium transition-all duration-300 overflow-hidden bg-white rounded-lg border border-gray-200">
                 <div className="relative h-48 overflow-hidden">
                   <img 
                     src={feature.image} 
@@ -73,7 +72,7 @@ const Features = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>
-                <CardContent className="p-6 relative">
+                <div className="p-6 relative">
                   {/* <div className="absolute top-2 right-4 w-10 h-10 bg-primary/90 rounded-lg flex items-center justify-center">
                     <Icon className="w-5 h-5 text-white" />
                   </div> */}
@@ -81,8 +80,8 @@ const Features = () => {
                     <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
               </div>
             );
           })}

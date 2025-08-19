@@ -37,3 +37,5 @@ Likewise, add the section for configuring their club microsite, where they can d
 This section looks quite complete; you just need to advance a bit more in the functionalities so we can see how each feature works.
 As with clubs, it is also missing the part for managing the state committee microsite, where they can display their information, logos, courts, banners, tournaments, etc.
 The only thing I didn’t see is the ability to create or manage tournaments. This part is very important because they organize tournaments throughout the entire state or region.
+
+You should use raw HTML tags with TailWindCSS instead of imported UI components

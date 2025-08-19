@@ -1,6 +1,4 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building, Handshake, GraduationCap, MapPin } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
 import playersImg from "/img/players-community.jpg";
@@ -109,13 +107,13 @@ const RoleBenefits = () => {
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl">
+                      <div className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl font-semibold">
                         <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
                           <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                         </div>
                         <span className="hidden sm:inline">Benefits for {role.label}</span>
                         <span className="sm:hidden">{role.label}</span>
-                      </CardTitle>
+                      </div>
                     </div>
                     <div className={`flex-1 p-4 lg:p-6 flex flex-col justify-center ${contentAnimation}`}>
                       <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-primary">Key Benefits</h3>
@@ -149,13 +147,13 @@ const RoleBenefits = () => {
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <CardTitle className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl">
+                      <div className="absolute bottom-4 left-6 text-white flex items-center gap-3 text-xl lg:text-2xl font-semibold">
                         <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
                           <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                         </div>
                         <span className="hidden sm:inline">Benefits for {role.label}</span>
                         <span className="sm:hidden">{role.label}</span>
-                      </CardTitle>
+                      </div>
                     </div>
                   </>
                 )}

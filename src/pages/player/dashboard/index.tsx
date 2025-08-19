@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import Overview from './Overview';
-import Credentials from './Credentials';
+import DigitalIDCard from '../../../components/DigitalIDCard';
 import Matches from './Matches';
 import Tournaments from './Tournaments';
 import Activity from './Activity';
@@ -29,18 +29,6 @@ const PlayerDashboard = () => {
       'Ranking Improvement - Top 50',
       'Perfect Match - 11-0 Victory'
     ]
-  };
-
-  // Digital credential data
-  const digitalCredential = {
-    playerId: 'PLAYER123456',
-    fullName: user?.full_name || 'John Smith',
-    skillLevel: user?.skill_level || '3.5',
-    membershipStatus: user?.membership_status || 'premium',
-    membershipExpires: '2025-12-31',
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PLAYER123456',
-    verified: true,
-    lastVerified: '2024-01-15'
   };
 
   // Profile completion status
@@ -173,7 +161,7 @@ const PlayerDashboard = () => {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                Credentials
+                Digital ID
               </button>
               <button
                 onClick={() => setActiveTab('matches')}
@@ -230,10 +218,10 @@ const PlayerDashboard = () => {
                 </div>
               )}
 
-              {/* Credentials Tab */}
+              {/* Digital ID Tab */}
               {activeTab === 'credentials' && (
                 <div className="animate-on-scroll">
-                  <Credentials digitalCredential={digitalCredential} />
+                  <DigitalIDCard />
                 </div>
               )}
 
