@@ -301,19 +301,19 @@ const getRankingHistory = async (req, res) => {
 
     const whereClause = {};
     
-    if (user_id) {
+    if (user_id && user_id !== 'undefined' && user_id !== 'null') {
       whereClause.user_id = user_id;
     }
     
-    if (category) {
+    if (category && category !== 'undefined' && category !== 'null') {
       whereClause.category = category;
     }
     
-    if (skill_level) {
+    if (skill_level && skill_level !== 'undefined' && skill_level !== 'null') {
       whereClause.skill_level = skill_level;
     }
     
-    if (state) {
+    if (state && state !== 'undefined' && state !== 'null') {
       whereClause.state = state;
     }
 

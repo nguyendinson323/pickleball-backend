@@ -24,6 +24,7 @@ const adminRoutes = require('./admin');
 const statsRoutes = require('./stats');
 const bannerRoutes = require('./banners');
 const playerFinderRoutes = require('./playerFinder');
+const digitalCredentialRoutes = require('./digitalCredentials');
 
 // Define route prefixes
 const API_PREFIX = '/api/v1';
@@ -41,6 +42,7 @@ router.use(`${API_PREFIX}/admin`, adminRoutes);
 router.use(`${API_PREFIX}/stats`, statsRoutes);
 router.use(`${API_PREFIX}/banners`, bannerRoutes);
 router.use(`${API_PREFIX}/player-finder`, playerFinderRoutes);
+router.use(`${API_PREFIX}/digital-credentials`, digitalCredentialRoutes);
 
 // Health check endpoint
 router.get(`${API_PREFIX}/health`, (req, res) => {
@@ -204,6 +206,17 @@ router.get(`${API_PREFIX}/docs`, (req, res) => {
             'GET /clubs - Get club statistics',
             'GET /analytics - Get detailed analytics',
             'GET /reports - Generate reports'
+          ]
+        },
+        digitalCredentials: {
+          base: '/digital-credentials',
+          routes: [
+            'GET /verify/:code - Verify digital credential (public)',
+            'POST / - Create digital credential (player)',
+            'GET /my-credential - Get my digital credential (player)',
+            'PUT /:id - Update digital credential (player)',
+            'POST /:id/regenerate-qr - Regenerate QR code (player)',
+            'GET / - Get all digital credentials (admin)'
           ]
         }
       }

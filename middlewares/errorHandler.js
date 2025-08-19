@@ -44,6 +44,10 @@ const errorHandler = (err, req, res, next) => {
     statusCode = HTTP_STATUS.BAD_REQUEST;
     message = 'Database error';
     error = 'Invalid database operation';
+  } else if (err.message && err.message.includes('WHERE parameter') && err.message.includes('invalid "undefined" value')) {
+    statusCode = HTTP_STATUS.BAD_REQUEST;
+    message = 'Invalid query parameter';
+    error = 'One or more query parameters have invalid values';
   } else if (err.name === 'JsonWebTokenError') {
     statusCode = HTTP_STATUS.UNAUTHORIZED;
     message = API_MESSAGES.ERROR.UNAUTHORIZED;

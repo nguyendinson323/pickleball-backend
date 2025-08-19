@@ -43,15 +43,15 @@ const getPayments = async (req, res) => {
       whereClause.user_id = user.id;
     }
     
-    if (payment_type) {
+    if (payment_type && payment_type !== 'undefined' && payment_type !== 'null') {
       whereClause.payment_type = payment_type;
     }
     
-    if (status) {
+    if (status && status !== 'undefined' && status !== 'null') {
       whereClause.status = status;
     }
     
-    if (user_id && ['admin', 'super_admin'].includes(user.role)) {
+    if (user_id && user_id !== 'undefined' && user_id !== 'null' && ['admin', 'super_admin'].includes(user.role)) {
       whereClause.user_id = user_id;
     }
     

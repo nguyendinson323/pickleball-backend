@@ -25,6 +25,7 @@ const FileUpload = require('./FileUpload');
 const Banner = require('./Banner');
 const PlayerFinder = require('./PlayerFinder');
 const CourtReservation = require('./CourtReservation');
+const DigitalCredential = require('./DigitalCredential');
 
 // Define associations
 
@@ -261,6 +262,12 @@ User.hasMany(CourtReservation, {
   as: 'reservations'
 });
 
+// User has one digital credential
+User.hasOne(DigitalCredential, {
+  foreignKey: 'user_id',
+  as: 'digitalCredential'
+});
+
 // Club has many reservations
 Club.hasMany(CourtReservation, {
   foreignKey: 'club_id',
@@ -304,6 +311,12 @@ Tournament.belongsTo(Club, {
   scope: { organizer_type: 'club' }
 });
 
+// DigitalCredential belongs to User
+DigitalCredential.belongsTo(User, {
+  foreignKey: 'user_id',
+  as: 'user'
+});
+
 // Export all models
 module.exports = {
   sequelize,
@@ -320,5 +333,6 @@ module.exports = {
   FileUpload,
   Banner,
   PlayerFinder,
-  CourtReservation
+  CourtReservation,
+  DigitalCredential
 }; 

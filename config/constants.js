@@ -247,7 +247,13 @@ const API_MESSAGES = {
     COURT_BOOKED: 'Court booked successfully',
     COURT_RESERVATION_CANCELLED: 'Court reservation cancelled successfully',
     PLAYER_MATCH_FOUND: 'Player match found successfully',
-    PLAYER_FINDER_UPDATED: 'Player finder preferences updated successfully'
+    PLAYER_FINDER_UPDATED: 'Player finder preferences updated successfully',
+    DIGITAL_CREDENTIAL_CREATED: 'Digital credential created successfully',
+    DIGITAL_CREDENTIAL_RETRIEVED: 'Digital credential retrieved successfully',
+    DIGITAL_CREDENTIAL_VERIFIED: 'Digital credential verified successfully',
+    DIGITAL_CREDENTIAL_UPDATED: 'Digital credential updated successfully',
+    DIGITAL_CREDENTIALS_RETRIEVED: 'Digital credentials retrieved successfully',
+    QR_CODE_REGENERATED: 'QR code regenerated successfully'
   }
 };
 
