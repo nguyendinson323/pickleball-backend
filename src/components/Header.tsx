@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
-import { logout } from '../store/slices/authSlice'
+import { logoutUser } from '../store/slices/authSlice'
 import { 
   Menu, 
   X, 
@@ -32,8 +32,8 @@ const Header = () => {
   // Check if user is authenticated
   const isAuthenticated = !!token && !!user
 
-  const handleLogout = () => {
-    dispatch(logout())
+  const handleLogout = async () => {
+    await dispatch(logoutUser())
     navigate('/')
   }
 

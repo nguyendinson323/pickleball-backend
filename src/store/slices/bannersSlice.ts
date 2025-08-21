@@ -77,7 +77,7 @@ export const deleteBanner = createAsyncThunk(
 export const toggleBannerStatus = createAsyncThunk(
   'banners/toggleBannerStatus',
   async (id: string) => {
-    return await api.put(`/banners/${id}/toggle-status`, {});
+    return await api.put(`/banners/${id}/toggle`, {});
   }
 );
 
@@ -91,7 +91,7 @@ export const updateBannerPosition = createAsyncThunk(
 export const trackBannerView = createAsyncThunk(
   'banners/trackBannerView',
   async (id: string) => {
-    await api.post(`/banners/${id}/track-view`, {});
+    await api.post(`/banners/${id}/view`, {});
     return id;
   }
 );
@@ -99,7 +99,7 @@ export const trackBannerView = createAsyncThunk(
 export const trackBannerClick = createAsyncThunk(
   'banners/trackBannerClick',
   async (id: string) => {
-    await api.post(`/banners/${id}/track-click`, {});
+    await api.post(`/banners/${id}/click`, {});
     return id;
   }
 );

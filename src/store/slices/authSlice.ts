@@ -57,6 +57,22 @@ export const restoreAuthState = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async () => {
+    try {
+      await api.post('/auth/logout', {});
+    } catch (error) {
+      // Even if the API call fails, we still want to clear local state
+      console.error('Logout API call failed:', error);
+    }
+    // Clear tokens from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    return null;
+  }
+);
+
 // Initial state
 const initialState = {
   user: null as any,
@@ -237,6 +253,15 @@ const authSlice = createSlice({
       .addCase(refreshUserData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error?.message || 'Failed to refresh user data';
+      })
+      // Logout User
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.refresh_token = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
       });
   },
 });

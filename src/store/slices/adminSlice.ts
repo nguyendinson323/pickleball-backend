@@ -37,7 +37,7 @@ const initialState: AdminState = {
 export const fetchDashboardStats = createAsyncThunk(
   'admin/fetchDashboardStats',
   async () => {
-    return await api.get('/admin/dashboard-stats');
+    return await api.get('/admin/dashboard');
   }
 );
 
