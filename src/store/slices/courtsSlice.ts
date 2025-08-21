@@ -121,8 +121,8 @@ const courtsSlice = createSlice({
       .addCase(fetchCourts.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.courts = payload?.data || [];
-        state.pagination = payload?.pagination || null;
+        state.courts = payload?.data?.courts || payload?.data || [];
+        state.pagination = payload?.data?.pagination || payload?.pagination || null;
       })
       .addCase(fetchCourts.rejected, (state, action) => {
         state.loading = false;

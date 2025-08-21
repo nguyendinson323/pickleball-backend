@@ -15,6 +15,7 @@ import UserManagement from "./pages/admin/UserManagement";
 import BannersPage from "./pages/admin/BannersPage";
 import AdminDashboard from "./pages/admin/dashboard";
 import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManagement";
+import CourtReservationDashboard from "./pages/admin/CourtReservationDashboard";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -447,6 +448,12 @@ const routes = [
     key: 'admin-digital-credentials',
     path: '/admin/digital-credentials',
     element: <DigitalCredentialsManagement />,
+    public: false
+  },
+  {
+    key: 'admin-court-reservations',
+    path: '/admin/court-reservations',
+    element: <CourtReservationDashboard />,
     public: false
   },
   {

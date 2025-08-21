@@ -146,8 +146,8 @@ const courtReservationsSlice = createSlice({
       .addCase(fetchCourtReservations.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.reservations = payload?.data || [];
-        state.pagination = payload?.pagination || null;
+        state.reservations = payload?.data?.reservations || payload?.data || [];
+        state.pagination = payload?.data?.pagination || payload?.pagination || null;
       })
       .addCase(fetchCourtReservations.rejected, (state, action) => {
         state.loading = false;
@@ -161,7 +161,7 @@ const courtReservationsSlice = createSlice({
       .addCase(getCourtAvailability.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.courtAvailability = payload?.availability || [];
+        state.courtAvailability = payload?.data || payload?.availability || [];
       })
       .addCase(getCourtAvailability.rejected, (state, action) => {
         state.loading = false;
@@ -175,7 +175,7 @@ const courtReservationsSlice = createSlice({
       .addCase(getCourtBookings.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.courtBookings = payload?.bookings || [];
+        state.courtBookings = payload?.data?.bookings || payload?.bookings || [];
       })
       .addCase(getCourtBookings.rejected, (state, action) => {
         state.loading = false;
