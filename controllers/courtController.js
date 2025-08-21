@@ -302,20 +302,22 @@ const getCourtAvailability = async (req, res) => {
       throw createError.notFound('Court not found');
     }
 
-    // TODO: Implement availability logic based on bookings and operating hours
-    // For now, return basic availability
-    const availability = {
-      court_id: id,
-      date: date || new Date().toISOString().split('T')[0],
-      is_available: court.is_available && !court.is_maintenance,
-      operating_hours: court.operating_hours || {},
-      bookings: []
-    };
+    const queryDate = date || new Date().toISOString().split('T')[0];
+    
+    // Get available time slots using the model method
+    const availableSlots = await CourtReservation.getAvailableSlots(id, queryDate, 1);
+    
+    // Format availability data
+    const availability = availableSlots.map(slot => ({
+      start_time: slot.start_time.toISOString(),
+      end_time: slot.end_time.toISOString(),
+      available: slot.available
+    }));
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_AVAILABILITY_RETRIEVED,
-      data: { availability }
+      data: availability
     });
   } catch (error) {
     logger.error('Error in getCourtAvailability:', error);
@@ -352,14 +354,30 @@ const getCourtBookings = async (req, res) => {
       throw createError.forbidden('Access denied');
     }
 
-    // TODO: Implement booking retrieval logic
-    // For now, return empty bookings
-    const bookings = [];
+    const { date } = req.query;
+    const queryDate = date || new Date().toISOString().split('T')[0];
+    
+    // Get actual bookings for the court
+    const bookings = await CourtReservation.getCourtReservations(id, queryDate);
+    
+    // Calculate pagination
+    const offset = (page - 1) * limit;
+    const totalBookings = bookings.length;
+    const paginatedBookings = bookings.slice(offset, offset + parseInt(limit));
+    const totalPages = Math.ceil(totalBookings / limit);
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_BOOKINGS_RETRIEVED,
-      data: { bookings }
+      data: {
+        bookings: paginatedBookings,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: totalBookings,
+          pages: totalPages
+        }
+      }
     });
   } catch (error) {
     logger.error('Error in getCourtBookings:', error);
