@@ -68,7 +68,7 @@ const authenticateToken = async (req, res, next) => {
     req.user = user;
     req.userId = user.id;
     req.userType = user.user_type;
-    req.userRole = user.role;
+    req.userRole = user.user_type; // Use user_type as role since no separate role field exists
 
     next();
   } catch (error) {

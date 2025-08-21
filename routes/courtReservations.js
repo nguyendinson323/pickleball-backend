@@ -13,7 +13,7 @@ const router = express.Router();
 const { query } = require('express-validator');
 
 // Import controllers and middleware
-const { authenticateToken, requireRole } = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 const { asyncHandler } = require('../middlewares/errorHandler');
 
 // Import controller methods

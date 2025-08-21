@@ -38,6 +38,7 @@ const createUserResponse = (user) => {
   return {
     id: user.id,
     user_type: user.user_type,
+    role: user.user_type, // Use user_type as role since no separate role field exists
     username: user.username,
     email: user.email,
     first_name: user.first_name,
