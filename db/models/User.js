@@ -248,6 +248,108 @@ const User = sequelize.define('User', {
     defaultValue: true,
     allowNull: false,
     comment: 'Whether player can be found in player search (privacy setting)'
+  },
+
+  // Coach-specific fields
+  is_findable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    allowNull: false,
+    comment: 'Whether coach can be found in coach search (privacy setting)'
+  },
+
+  coaching_experience: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    comment: 'Years of coaching experience'
+  },
+
+  specializations: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Array of coaching specializations (serve, volley, strategy, etc.)'
+  },
+
+  hourly_rate: {
+    type: DataTypes.DECIMAL(8, 2),
+    allowNull: true,
+    comment: 'Hourly coaching rate'
+  },
+
+  available_for_lessons: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    allowNull: false,
+    comment: 'Whether coach is currently accepting new students'
+  },
+
+  coaching_languages: {
+    type: DataTypes.JSON,
+    defaultValue: ['English'],
+    allowNull: false,
+    comment: 'Languages coach can teach in'
+  },
+
+  coaching_locations: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Preferred coaching locations or travel radius'
+  },
+
+  lesson_types_offered: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Types of lessons offered (individual, group, clinic, etc.)'
+  },
+
+  coaching_schedule: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Available days and times for coaching'
+  },
+
+  coaching_bio: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'Coach biography and teaching philosophy'
+  },
+
+  certifications: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Array of coaching certifications and credentials'
+  },
+
+  rating: {
+    type: DataTypes.DECIMAL(3, 2),
+    allowNull: true,
+    validate: {
+      min: 0.0,
+      max: 5.0
+    },
+    comment: 'Average rating from students (0.0 to 5.0)'
+  },
+
+  reviews_count: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    comment: 'Total number of reviews received'
+  },
+
+  total_students: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    comment: 'Total number of students coached'
+  },
+
+  active_students: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    comment: 'Current number of active students'
   }
 
 }, {

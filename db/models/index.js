@@ -26,6 +26,7 @@ const Banner = require('./Banner');
 const PlayerFinder = require('./PlayerFinder');
 const CourtReservation = require('./CourtReservation');
 const DigitalCredential = require('./DigitalCredential');
+const CoachFinder = require('./CoachFinder');
 
 // Define associations
 
@@ -251,6 +252,17 @@ PlayerFinder.belongsTo(User, {
   as: 'searcher'
 });
 
+// CoachFinder associations
+CoachFinder.belongsTo(User, {
+  foreignKey: 'searcher_id',
+  as: 'searcher'
+});
+
+User.hasMany(CoachFinder, {
+  foreignKey: 'searcher_id',
+  as: 'coachSearches'
+});
+
 // CourtReservation associations
 CourtReservation.belongsTo(User, {
   foreignKey: 'user_id',
@@ -356,5 +368,6 @@ module.exports = {
   Banner,
   PlayerFinder,
   CourtReservation,
-  DigitalCredential
+  DigitalCredential,
+  CoachFinder
 }; 

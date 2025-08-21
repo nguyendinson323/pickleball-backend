@@ -26,6 +26,7 @@ const bannerRoutes = require('./banners');
 const playerFinderRoutes = require('./playerFinder');
 const digitalCredentialRoutes = require('./digitalCredentials');
 const courtReservationRoutes = require('./courtReservations');
+const coachRoutes = require('./coaches');
 
 // Define route prefixes
 const API_PREFIX = '/api/v1';
@@ -45,6 +46,7 @@ router.use(`${API_PREFIX}/banners`, bannerRoutes);
 router.use(`${API_PREFIX}/player-finder`, playerFinderRoutes);
 router.use(`${API_PREFIX}/digital-credentials`, digitalCredentialRoutes);
 router.use(`${API_PREFIX}/court-reservations`, courtReservationRoutes);
+router.use(`${API_PREFIX}/coaches`, coachRoutes);
 
 // Health check endpoint
 router.get(`${API_PREFIX}/health`, (req, res) => {
@@ -226,6 +228,18 @@ router.get(`${API_PREFIX}/docs`, (req, res) => {
           routes: [
             'GET / - Get court reservations (filtered by user)',
             'PUT /:id/cancel - Cancel court reservation'
+          ]
+        },
+        coaches: {
+          base: '/coaches',
+          routes: [
+            'GET /search - Search coaches with filters (public)',
+            'GET /:coachId/profile - Get coach profile by ID (public)',
+            'POST /search/create - Create or update coach search preferences',
+            'GET /search/my-searches - Get user coach searches',
+            'POST /search/:searchId/perform - Perform search with existing criteria',
+            'GET /search/stats - Get coach search statistics',
+            'POST /:coachId/contact - Contact a coach'
           ]
         }
       }
