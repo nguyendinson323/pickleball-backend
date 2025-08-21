@@ -73,6 +73,19 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const refreshToken = createAsyncThunk(
+  'auth/refreshToken',
+  async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('No refresh token found');
+    }
+    
+    const response = await api.post('/auth/refresh-token', { refreshToken });
+    return response;
+  }
+);
+
 // Initial state
 const initialState = {
   user: null as any,
@@ -219,8 +232,18 @@ const authSlice = createSlice({
         if (payload?.data) {
           state.user = payload.data;
           state.isAuthenticated = true;
+          
+          // Ensure tokens are set in Redux state from localStorage
+          const storedToken = localStorage.getItem('token');
+          const storedRefreshToken = localStorage.getItem('refresh_token');
+          
+          if (storedToken) state.token = storedToken;
+          if (storedRefreshToken) state.refresh_token = storedRefreshToken;
+          
           console.log('Auth state restored successfully:', {
             user: payload.data,
+            hasToken: !!storedToken,
+            hasRefreshToken: !!storedRefreshToken,
             profilePhoto: payload.data.profile_photo,
             verificationDocuments: payload.data.verification_documents
           });
@@ -262,6 +285,37 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.loading = false;
         state.error = null;
+      })
+      // Refresh Token
+      .addCase(refreshToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.loading = false;
+        const payload = action.payload as any;
+        
+        if (payload?.data?.tokens) {
+          state.token = payload.data.tokens.accessToken;
+          state.refresh_token = payload.data.tokens.refreshToken;
+          
+          // Store tokens in localStorage
+          localStorage.setItem('token', payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
+          
+          console.log('Token refreshed successfully');
+        }
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Token refresh failed';
+        state.isAuthenticated = false;
+        
+        // Clear tokens on refresh failure
+        state.token = null;
+        state.refresh_token = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
       });
   },
 });

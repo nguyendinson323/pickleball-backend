@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { baseURL } from './const';
 import { 
   DigitalCredential,
@@ -35,56 +35,104 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor for token refresh
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (refreshToken) {
+        try {
+          const response = await apiClient.post('/auth/refresh-token', { 
+            refreshToken 
+          });
+          
+          if (response.data?.success && response.data?.data?.tokens) {
+            const { accessToken, refreshToken: newRefreshToken } = response.data.data.tokens;
+            
+            // Update tokens in localStorage
+            localStorage.setItem('token', accessToken);
+            localStorage.setItem('refresh_token', newRefreshToken);
+            
+            // Update the authorization header
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            
+            // Retry the original request
+            return apiClient(originalRequest);
+          }
+        } catch (refreshError) {
+          // Refresh failed, clear tokens and redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('refresh_token');
+          
+          // Dispatch logout action to Redux store
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
+          
+          throw refreshError;
+        }
+      }
+    }
+    
+    throw error;
+  }
+);
+
 /**
  * GET request
  */
 export async function get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-  return apiClient
-    .get<T>(url, config)
-    .then((res: AxiosResponse<T>) => res.data)
-    .catch((err) => {
-      console.error(`GET ${url} failed`, err);
-      return err;
-    });
+  try {
+    const response = await apiClient.get<T>(url, config);
+    return response.data;
+  } catch (error) {
+    console.error(`GET ${url} failed`, error);
+    throw error;
+  }
 }
 
 /**
  * POST request
  */
 export async function post<T, U = unknown>(url: string, data: U, config?: AxiosRequestConfig): Promise<T> {
-  return apiClient
-    .post<T>(url, data, config)
-    .then((res: AxiosResponse<T>) => res.data)
-    .catch((err) => {
-      console.error(`POST ${url} failed`, err);
-      return err
-    });
+  try {
+    const response = await apiClient.post<T>(url, data, config);
+    return response.data;
+  } catch (error) {
+    console.error(`POST ${url} failed`, error);
+    throw error;
+  }
 }
 
 /**
  * PUT request
  */
 export async function put<T, U = unknown>(url: string, data: U, config?: AxiosRequestConfig): Promise<T> {
-  return apiClient
-    .put<T>(url, data, config)
-    .then((res: AxiosResponse<T>) => res.data)
-    .catch((err) => {
-      console.error(`PUT ${url} failed`, err);
-      return err;
-    });
+  try {
+    const response = await apiClient.put<T>(url, data, config);
+    return response.data;
+  } catch (error) {
+    console.error(`PUT ${url} failed`, error);
+    throw error;
+  }
 }
 
 /**
  * DELETE request
  */
 export async function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-  return apiClient
-    .delete<T>(url, config)
-    .then((res: AxiosResponse<T>) => res.data)
-    .catch((err) => {
-      console.error(`DELETE ${url} failed`, err);
-      return err;
-    });
+  try {
+    const response = await apiClient.delete<T>(url, config);
+    return response.data;
+  } catch (error) {
+    console.error(`DELETE ${url} failed`, error);
+    throw error;
+  }
 }
 
 // Digital Credential API functions

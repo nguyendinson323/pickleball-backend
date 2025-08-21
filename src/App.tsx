@@ -16,11 +16,14 @@ function App() {
   const { token, isAuthenticated } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    // Check if user is authenticated on app load
-    if (token && !isAuthenticated) {
+    // Restore auth state on app load if tokens exist
+    const storedToken = localStorage.getItem('token')
+    const storedRefreshToken = localStorage.getItem('refresh_token')
+    
+    if (storedToken && storedRefreshToken && !isAuthenticated) {
       dispatch(restoreAuthState())
     }
-  }, [dispatch, token, isAuthenticated])
+  }, [dispatch, isAuthenticated])
 
   return (
     <div className="min-h-screen bg-background">
