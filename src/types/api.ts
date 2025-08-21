@@ -155,6 +155,13 @@ export interface Tournament {
   registration_notes?: string;
   total_matches: number;
   completed_matches: number;
+  // Referee fields
+  head_referee_id?: string;
+  assistant_referees?: string[];
+  referee_requirements?: object;
+  referee_compensation?: number;
+  // Associations
+  headReferee?: User;
   settings?: object;
   notes?: string;
   created_at: string;
@@ -572,6 +579,76 @@ export interface TournamentRegistrationResponse extends ApiResponse<{
   payment_required: boolean;
   payment_amount?: number;
 }> {}
+
+// Referee Types
+export interface RefereeStats {
+  tournaments_as_head_referee: number;
+  tournaments_as_assistant: number;
+  total_tournaments: number;
+  total_matches_refereed: number;
+  completed_matches: number;
+  completion_rate: number;
+  total_compensation: number;
+  recent_matches: Match[];
+}
+
+export interface AssignRefereeRequest {
+  head_referee_id?: string;
+  assistant_referees?: string[];
+  referee_compensation?: number;
+}
+
+export interface AssignMatchRefereeRequest {
+  referee_id: string;
+}
+
+export interface RefereeStatsResponse extends ApiResponse<{
+  referee: User;
+  stats: RefereeStats;
+}> {}
+
+export interface AvailableRefereesResponse extends ApiResponse<{
+  referees: User[];
+}> {}
+
+// Match Types
+export interface Match {
+  id: string;
+  tournament_id: string;
+  court_id?: string;
+  player1_id: string;
+  player2_id: string;
+  match_number: number;
+  round: number;
+  match_type: 'singles' | 'doubles' | 'mixed_doubles';
+  category?: string;
+  scheduled_time?: string;
+  actual_start_time?: string;
+  actual_end_time?: string;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'postponed';
+  player1_score: number;
+  player2_score: number;
+  game_scores?: object;
+  winner_id?: string;
+  winner_score?: number;
+  loser_id?: string;
+  loser_score?: number;
+  duration_minutes?: number;
+  points_to_win: number;
+  win_by: number;
+  // Referee fields
+  referee_id?: string;
+  line_judges?: string[];
+  match_notes?: string;
+  // Associations
+  player1?: User;
+  player2?: User;
+  referee?: User;
+  tournament?: Tournament;
+  court?: Court;
+  created_at: string;
+  updated_at: string;
+}
 
 // Request/Response Types for Courts
 export interface CourtsQueryParams {

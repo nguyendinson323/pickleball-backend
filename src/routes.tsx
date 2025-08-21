@@ -16,6 +16,8 @@ import BannersPage from "./pages/admin/BannersPage";
 import AdminDashboard from "./pages/admin/dashboard";
 import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManagement";
 import CourtReservationDashboard from "./pages/admin/CourtReservationDashboard";
+import TournamentsManagementPage from "./pages/admin/TournamentsManagementPage";
+import CoachRefereeProfile from "./pages/coach/CoachRefereeProfile";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -249,6 +251,12 @@ const routes = [
     public: false
   },
   {
+    key: 'coach-referee',
+    path: '/coach/referee',
+    element: <CoachRefereeProfile />,
+    public: false
+  },
+  {
     key: 'coach-credentials',
     path: '/coach/credentials',
     element: <Credentials />,
@@ -454,6 +462,12 @@ const routes = [
     key: 'admin-court-reservations',
     path: '/admin/court-reservations',
     element: <CourtReservationDashboard />,
+    public: false
+  },
+  {
+    key: 'admin-tournaments',
+    path: '/admin/tournaments',
+    element: <TournamentsManagementPage />,
     public: false
   },
   {
