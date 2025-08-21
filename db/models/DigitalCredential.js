@@ -162,6 +162,25 @@ const DigitalCredential = sequelize.define('DigitalCredential', {
     comment: 'Notes from verification process'
   },
 
+  // Enhanced QR Security Features
+  qr_jwt_token: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'JWT token for secure QR code verification'
+  },
+
+  digital_signature: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    comment: 'Digital signature for tamper-proof verification'
+  },
+
+  verification_methods: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'History of verification methods and timestamps'
+  },
+
   // Metadata
   metadata: {
     type: DataTypes.JSON,
