@@ -898,6 +898,12 @@ export interface DigitalCredential {
   verification_count: number;
   is_verified: boolean;
   verification_notes?: string;
+  // Enhanced QR Security Features
+  qr_jwt_token?: string;
+  digital_signature?: string;
+  verification_methods?: object[];
+  security_level?: 'high' | 'standard';
+  verification_source?: 'qr_code' | 'direct';
   metadata?: object;
   created_at: string;
   updated_at: string;

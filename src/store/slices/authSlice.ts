@@ -73,6 +73,14 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (profileData: any) => {
+    const response = await api.put('/auth/profile', profileData);
+    return response;
+  }
+);
+
 export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async () => {
@@ -285,6 +293,23 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.loading = false;
         state.error = null;
+      })
+      // Update Profile
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        const payload = action.payload;
+        if (payload?.data) {
+          state.user = { ...state.user, ...payload.data };
+          console.log('Profile updated successfully:', payload.data);
+        }
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Failed to update profile';
       })
       // Refresh Token
       .addCase(refreshToken.pending, (state) => {

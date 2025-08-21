@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 import { 
   Shield, 
   FileText, 
@@ -9,6 +11,8 @@ import {
   AlertCircle,
   Settings as SettingsIcon
 } from 'lucide-react';
+import { RootState, AppDispatch } from '../../../store';
+import { updateProfile } from '../../../store/slices/authSlice';
 
 interface PrivacySettings {
   canBeFound: boolean;
@@ -24,27 +28,44 @@ interface ProfileCompletion {
   completed: number;
 }
 
-interface SettingsProps {
-  privacySettings: PrivacySettings;
-  profileCompletion: ProfileCompletion;
-}
-
-const Settings: React.FC<SettingsProps> = ({ privacySettings, profileCompletion }) => {
+const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const [canBeFound, setCanBeFound] = useState(privacySettings.canBeFound);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user, loading } = useSelector((state: RootState) => state.auth);
+  const [canBeFound, setCanBeFound] = useState(user?.can_be_found ?? true);
+
+  useEffect(() => {
+    if (user) {
+      setCanBeFound(user.can_be_found ?? true);
+    }
+  }, [user]);
+
+  const profileCompletion = {
+    photo: !!user?.profile_photo,
+    idDocument: !!user?.verification_documents,
+    bio: !!user?.bio,
+    contactInfo: !!(user?.phone || user?.email),
+    location: !!(user?.city && user?.state),
+    total: 5,
+    completed: [
+      !!user?.profile_photo,
+      !!user?.verification_documents,
+      !!user?.bio,
+      !!(user?.phone || user?.email),
+      !!(user?.city && user?.state)
+    ].filter(Boolean).length
+  };
 
   // Handle privacy setting change
   const handlePrivacyChange = async (checked: boolean) => {
     try {
-      // In a real app, this would make an API call to update the user's privacy setting
-      // await api.put(`/users/${user?.id}/privacy`, { can_be_found: checked });
+      await dispatch(updateProfile({ can_be_found: checked })).unwrap();
       setCanBeFound(checked);
-      // Show success message
-      console.log('Privacy setting updated:', checked);
+      toast.success(`Player visibility ${checked ? 'enabled' : 'disabled'} successfully`);
     } catch (error) {
       console.error('Failed to update privacy setting:', error);
-      // Revert the change if the API call fails
       setCanBeFound(!checked);
+      toast.error('Failed to update privacy setting');
     }
   };
 

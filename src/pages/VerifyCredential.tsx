@@ -359,11 +359,25 @@ const VerifyCredential: React.FC = () => {
               <div className="flex items-start space-x-3">
                 <Shield className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-blue-800">Security Information</h4>
+                  <h4 className="font-medium text-blue-800">Security Verification</h4>
                   <p className="text-sm text-blue-700 mt-1">
                     This verification confirms that the credential is currently active and valid. 
                     The information displayed is publicly available and has been verified by the Pickleball Federation system.
                   </p>
+                  {credential.security_level && (
+                    <div className="mt-2 flex items-center space-x-2">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        credential.security_level === 'high' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {credential.security_level === 'high' ? 'High Security' : 'Standard Security'}
+                      </span>
+                      <span className="text-xs text-blue-600">
+                        Verified via {credential.verification_source === 'qr_code' ? 'QR Scan' : 'Direct Link'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

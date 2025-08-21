@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
+import { AppDispatch } from '../store';
 import { 
   selectMyDigitalCredential, 
   selectDigitalCredentialsLoading,
@@ -369,6 +369,31 @@ const DigitalIDCard: React.FC<DigitalIDCardProps> = ({ className = '' }) => {
             </button>
           </div>
 
+          {/* Security Features */}
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md print:bg-green-50 print:border-green-200">
+            <div className="flex items-start space-x-2">
+              <Shield className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-green-700">
+                <p className="font-medium">Enhanced Security Features</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {credential.digital_signature && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Digital Signature ✓
+                    </span>
+                  )}
+                  {credential.qr_jwt_token && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      JWT Protected ✓
+                    </span>
+                  )}
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Tamper-Proof ✓
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Verification Info */}
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md print:bg-blue-50 print:border-blue-200">
             <div className="flex items-start space-x-2">
@@ -415,9 +440,15 @@ const DigitalIDCard: React.FC<DigitalIDCardProps> = ({ className = '' }) => {
                 </div>
                 
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                  <p className="text-xs text-blue-700">
-                    <strong>Note:</strong> This QR code can be scanned by tournament officials and club staff for quick verification.
+                  <p className="text-xs text-blue-700 mb-2">
+                    <strong>Security Features:</strong>
                   </p>
+                  <ul className="text-xs text-blue-700 space-y-1">
+                    <li>• JWT token with digital signature</li>
+                    <li>• Tamper-proof verification URL</li>
+                    <li>• Real-time federation validation</li>
+                    <li>• Scan tracking for security</li>
+                  </ul>
                 </div>
               </div>
               
