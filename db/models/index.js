@@ -118,6 +118,23 @@ Tournament.hasMany(FileUpload, {
   as: 'fileUploads'
 });
 
+// Tournament referee associations
+Tournament.belongsTo(User, {
+  foreignKey: 'head_referee_id',
+  as: 'headReferee'
+});
+
+// User referee associations
+User.hasMany(Tournament, {
+  foreignKey: 'head_referee_id',
+  as: 'refereeTournaments'
+});
+
+User.hasMany(Match, {
+  foreignKey: 'referee_id',
+  as: 'refereeMatches'
+});
+
 // TournamentRegistration associations
 TournamentRegistration.belongsTo(User, {
   foreignKey: 'user_id',
@@ -166,6 +183,11 @@ Match.belongsTo(Tournament, {
 Match.belongsTo(Court, {
   foreignKey: 'court_id',
   as: 'court'
+});
+
+Match.belongsTo(User, {
+  foreignKey: 'referee_id',
+  as: 'referee'
 });
 
 // Ranking associations

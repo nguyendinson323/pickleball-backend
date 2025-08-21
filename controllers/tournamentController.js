@@ -527,6 +527,306 @@ const getTournamentStats = async (req, res) => {
   }
 };
 
+/**
+ * Assign referee to tournament
+ * @route PUT /api/v1/tournaments/:id/assign-referee
+ * @access Private (Admin/Organizer)
+ */
+const assignRefereeToTournament = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { head_referee_id, assistant_referees = [], referee_compensation = 0 } = req.body;
+    const { user } = req;
+
+    const tournament = await Tournament.findByPk(id);
+    if (!tournament) {
+      throw createError.notFound('Tournament not found');
+    }
+
+    // Check permissions
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+    const isOrganizer = tournament.organizer_id === user.id;
+    if (!isAdmin && !isOrganizer) {
+      throw createError.forbidden('Access denied');
+    }
+
+    // Verify head referee is a coach
+    if (head_referee_id) {
+      const referee = await User.findByPk(head_referee_id);
+      if (!referee || referee.user_type !== 'coach') {
+        throw createError.badRequest('Head referee must be a registered coach');
+      }
+    }
+
+    // Verify assistant referees are coaches
+    if (assistant_referees.length > 0) {
+      const assistantRefs = await User.findAll({
+        where: { id: assistant_referees, user_type: 'coach' }
+      });
+      if (assistantRefs.length !== assistant_referees.length) {
+        throw createError.badRequest('All assistant referees must be registered coaches');
+      }
+    }
+
+    // Update tournament with referee assignments
+    await tournament.update({
+      head_referee_id,
+      assistant_referees,
+      referee_compensation
+    });
+
+    const updatedTournament = await Tournament.findByPk(id, {
+      include: [
+        {
+          model: User,
+          as: 'headReferee',
+          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name']
+        }
+      ]
+    });
+
+    logger.info(`Referee assigned to tournament ${id} by user ${user.id}`);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Referee assigned successfully',
+      data: { tournament: updatedTournament }
+    });
+  } catch (error) {
+    logger.error('Error in assignRefereeToTournament:', error);
+    throw error;
+  }
+};
+
+/**
+ * Assign referee to specific match
+ * @route PUT /api/v1/tournaments/:tournamentId/matches/:matchId/assign-referee
+ * @access Private (Admin/Organizer)
+ */
+const assignRefereeToMatch = async (req, res) => {
+  try {
+    const { tournamentId, matchId } = req.params;
+    const { referee_id } = req.body;
+    const { user } = req;
+
+    const tournament = await Tournament.findByPk(tournamentId);
+    if (!tournament) {
+      throw createError.notFound('Tournament not found');
+    }
+
+    const match = await Match.findOne({
+      where: { id: matchId, tournament_id: tournamentId }
+    });
+    if (!match) {
+      throw createError.notFound('Match not found');
+    }
+
+    // Check permissions
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+    const isOrganizer = tournament.organizer_id === user.id;
+    if (!isAdmin && !isOrganizer) {
+      throw createError.forbidden('Access denied');
+    }
+
+    // Verify referee is a coach
+    if (referee_id) {
+      const referee = await User.findByPk(referee_id);
+      if (!referee || referee.user_type !== 'coach') {
+        throw createError.badRequest('Referee must be a registered coach');
+      }
+    }
+
+    // Update match with referee
+    await match.update({ referee_id });
+
+    const updatedMatch = await Match.findByPk(matchId, {
+      include: [
+        {
+          model: User,
+          as: 'referee',
+          attributes: ['id', 'username', 'first_name', 'last_name', 'full_name']
+        },
+        {
+          model: User,
+          as: 'player1',
+          attributes: ['id', 'username', 'first_name', 'last_name']
+        },
+        {
+          model: User,
+          as: 'player2',
+          attributes: ['id', 'username', 'first_name', 'last_name']
+        }
+      ]
+    });
+
+    logger.info(`Referee ${referee_id} assigned to match ${matchId} by user ${user.id}`);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Referee assigned to match successfully',
+      data: { match: updatedMatch }
+    });
+  } catch (error) {
+    logger.error('Error in assignRefereeToMatch:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get referee statistics
+ * @route GET /api/v1/tournaments/referee-stats/:refereeId
+ * @access Private
+ */
+const getRefereeStats = async (req, res) => {
+  try {
+    const { refereeId } = req.params;
+    const { user } = req;
+
+    // Check if requesting own stats or if admin
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+    const isOwnStats = user.id === refereeId;
+    if (!isAdmin && !isOwnStats) {
+      throw createError.forbidden('Access denied');
+    }
+
+    const referee = await User.findByPk(refereeId);
+    if (!referee || referee.user_type !== 'coach') {
+      throw createError.notFound('Referee not found');
+    }
+
+    // Get tournament statistics
+    const tournamentsAsHead = await Tournament.count({
+      where: { head_referee_id: refereeId }
+    });
+
+    const tournamentsAsAssistant = await Tournament.count({
+      where: {
+        assistant_referees: {
+          [require('sequelize').Op.contains]: [refereeId]
+        }
+      }
+    });
+
+    // Get match statistics
+    const matchesRefereed = await Match.findAll({
+      where: { referee_id: refereeId },
+      include: [
+        {
+          model: Tournament,
+          as: 'tournament',
+          attributes: ['id', 'name', 'tournament_type', 'start_date', 'end_date']
+        }
+      ],
+      order: [['actual_start_time', 'DESC']]
+    });
+
+    const totalMatches = matchesRefereed.length;
+    const completedMatches = matchesRefereed.filter(m => m.status === 'completed').length;
+    
+    // Calculate total compensation
+    const totalCompensation = await Tournament.sum('referee_compensation', {
+      where: {
+        [require('sequelize').Op.or]: [
+          { head_referee_id: refereeId },
+          {
+            assistant_referees: {
+              [require('sequelize').Op.contains]: [refereeId]
+            }
+          }
+        ]
+      }
+    });
+
+    const stats = {
+      tournaments_as_head_referee: tournamentsAsHead,
+      tournaments_as_assistant: tournamentsAsAssistant,
+      total_tournaments: tournamentsAsHead + tournamentsAsAssistant,
+      total_matches_refereed: totalMatches,
+      completed_matches: completedMatches,
+      completion_rate: totalMatches > 0 ? (completedMatches / totalMatches) * 100 : 0,
+      total_compensation: totalCompensation || 0,
+      recent_matches: matchesRefereed.slice(0, 10)
+    };
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Referee statistics retrieved successfully',
+      data: { referee, stats }
+    });
+  } catch (error) {
+    logger.error('Error in getRefereeStats:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get available referees for tournament
+ * @route GET /api/v1/tournaments/:id/available-referees
+ * @access Private (Admin/Organizer)
+ */
+const getAvailableReferees = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date } = req.query;
+    const { user } = req;
+
+    const tournament = await Tournament.findByPk(id);
+    if (!tournament) {
+      throw createError.notFound('Tournament not found');
+    }
+
+    // Check permissions
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+    const isOrganizer = tournament.organizer_id === user.id;
+    if (!isAdmin && !isOrganizer) {
+      throw createError.forbidden('Access denied');
+    }
+
+    // Get all coaches (potential referees)
+    const allReferees = await User.findAll({
+      where: { user_type: 'coach' },
+      attributes: ['id', 'username', 'first_name', 'last_name', 'full_name', 'state', 'city'],
+      include: [
+        {
+          model: Match,
+          as: 'refereeMatches',
+          attributes: ['id', 'scheduled_time', 'status'],
+          required: false
+        },
+        {
+          model: Tournament,
+          as: 'refereeTournaments',
+          attributes: ['id', 'name', 'start_date', 'end_date'],
+          required: false
+        }
+      ]
+    });
+
+    // Filter based on availability if date provided
+    let availableReferees = allReferees;
+    if (date) {
+      const tournamentDate = new Date(date);
+      availableReferees = allReferees.filter(referee => {
+        const hasConflict = referee.refereeMatches.some(match => {
+          if (match.status === 'cancelled') return false;
+          const matchDate = new Date(match.scheduled_time);
+          return matchDate.toDateString() === tournamentDate.toDateString();
+        });
+        return !hasConflict;
+      });
+    }
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Available referees retrieved successfully',
+      data: { referees: availableReferees }
+    });
+  } catch (error) {
+    logger.error('Error in getAvailableReferees:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getTournaments,
   getTournamentById,
@@ -537,5 +837,9 @@ module.exports = {
   getTournamentParticipants,
   getTournamentMatches,
   getUpcomingTournaments,
-  getTournamentStats
+  getTournamentStats,
+  assignRefereeToTournament,
+  assignRefereeToMatch,
+  getRefereeStats,
+  getAvailableReferees
 }; 

@@ -164,4 +164,49 @@ router.get('/:id/stats',
   asyncHandler(tournamentController.getTournamentStats)
 );
 
+/**
+ * @route   PUT /tournaments/:id/assign-referee
+ * @desc    Assign referee to tournament
+ * @access  Private (Admin/Organizer)
+ */
+router.put('/:id/assign-referee', 
+  authenticateToken,
+  body('head_referee_id').optional().isUUID().withMessage('Invalid referee ID'),
+  body('assistant_referees').optional().isArray().withMessage('Assistant referees must be an array'),
+  body('referee_compensation').optional().isFloat({ min: 0 }).withMessage('Compensation must be a positive number'),
+  asyncHandler(tournamentController.assignRefereeToTournament)
+);
+
+/**
+ * @route   PUT /tournaments/:tournamentId/matches/:matchId/assign-referee
+ * @desc    Assign referee to specific match
+ * @access  Private (Admin/Organizer)
+ */
+router.put('/:tournamentId/matches/:matchId/assign-referee', 
+  authenticateToken,
+  body('referee_id').isUUID().withMessage('Valid referee ID is required'),
+  asyncHandler(tournamentController.assignRefereeToMatch)
+);
+
+/**
+ * @route   GET /tournaments/:id/available-referees
+ * @desc    Get available referees for tournament
+ * @access  Private (Admin/Organizer)
+ */
+router.get('/:id/available-referees', 
+  authenticateToken,
+  query('date').optional().isISO8601().withMessage('Valid date is required'),
+  asyncHandler(tournamentController.getAvailableReferees)
+);
+
+/**
+ * @route   GET /tournaments/referee-stats/:refereeId
+ * @desc    Get referee statistics
+ * @access  Private
+ */
+router.get('/referee-stats/:refereeId', 
+  authenticateToken,
+  asyncHandler(tournamentController.getRefereeStats)
+);
+
 module.exports = router; 

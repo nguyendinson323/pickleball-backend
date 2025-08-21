@@ -321,6 +321,32 @@ const Tournament = sequelize.define('Tournament', {
     comment: 'Tournament settings and configuration'
   },
 
+  // Officials and refereeing
+  head_referee_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    comment: 'ID of the head referee for the tournament'
+  },
+
+  assistant_referees: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Array of assistant referee user IDs'
+  },
+
+  referee_requirements: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Referee requirements and qualifications needed'
+  },
+
+  referee_compensation: {
+    type: DataTypes.DECIMAL(8, 2),
+    defaultValue: 0.00,
+    allowNull: false,
+    comment: 'Referee compensation per match or tournament'
+  },
+
   // Admin notes
   notes: {
     type: DataTypes.TEXT,
