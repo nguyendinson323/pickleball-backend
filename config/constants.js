@@ -245,6 +245,7 @@ const API_MESSAGES = {
     BANNER_UPDATED: 'Banner updated successfully',
     BANNER_DELETED: 'Banner deleted successfully',
     COURT_BOOKED: 'Court booked successfully',
+    COURT_RESERVATIONS_RETRIEVED: 'Court reservations retrieved successfully',
     COURT_RESERVATION_CANCELLED: 'Court reservation cancelled successfully',
     PLAYER_MATCH_FOUND: 'Player match found successfully',
     PLAYER_FINDER_UPDATED: 'Player finder preferences updated successfully',

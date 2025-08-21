@@ -70,4 +70,16 @@ router.get('/stats', authenticateToken, asyncHandler(playerFinderController.getF
 // Match request routes
 router.post('/match-request/:targetUserId', authenticateToken, userIdValidation, matchRequestValidation, asyncHandler(playerFinderController.sendMatchRequest));
 
+// Coach finding routes
+router.get('/coaches', searchPlayersValidation, asyncHandler(playerFinderController.findCoaches));
+
+// Visibility settings
+router.patch('/visibility', authenticateToken, 
+  body('can_be_found').isBoolean().withMessage('can_be_found must be a boolean'),
+  asyncHandler(playerFinderController.updateVisibility)
+);
+
+// Create finder request with automatic matching
+router.post('/request', authenticateToken, finderPreferencesValidation, asyncHandler(playerFinderController.createFinderRequest));
+
 module.exports = router; 

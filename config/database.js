@@ -14,12 +14,8 @@ require('dotenv').config()
 // Database configuration based on environment
 const config = {
   development: {
-    username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'pickleball',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
+    dialect: 'sqlite',
+    storage: './database.sqlite',
     logging: (msg) => logger.debug(msg),
     pool: {
       max: 5,
@@ -86,20 +82,31 @@ const env = process.env.NODE_ENV || 'development';
 const currentConfig = config[env];
 
 // Create Sequelize instance
-const sequelize = new Sequelize(
-  currentConfig.database,
-  currentConfig.username,
-  currentConfig.password,
-  {
-    host: currentConfig.host,
-    port: currentConfig.port,
-    dialect: currentConfig.dialect,
+let sequelize;
+if (currentConfig.dialect === 'sqlite') {
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: currentConfig.storage,
     logging: currentConfig.logging,
     pool: currentConfig.pool,
-    define: currentConfig.define,
-    dialectOptions: currentConfig.dialectOptions
-  }
-);
+    define: currentConfig.define
+  });
+} else {
+  sequelize = new Sequelize(
+    currentConfig.database,
+    currentConfig.username,
+    currentConfig.password,
+    {
+      host: currentConfig.host,
+      port: currentConfig.port,
+      dialect: currentConfig.dialect,
+      logging: currentConfig.logging,
+      pool: currentConfig.pool,
+      define: currentConfig.define,
+      dialectOptions: currentConfig.dialectOptions
+    }
+  );
+}
 
 // Test database connection
 const testConnection = async () => {

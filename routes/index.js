@@ -25,6 +25,7 @@ const statsRoutes = require('./stats');
 const bannerRoutes = require('./banners');
 const playerFinderRoutes = require('./playerFinder');
 const digitalCredentialRoutes = require('./digitalCredentials');
+const courtReservationRoutes = require('./courtReservations');
 
 // Define route prefixes
 const API_PREFIX = '/api/v1';
@@ -43,6 +44,7 @@ router.use(`${API_PREFIX}/stats`, statsRoutes);
 router.use(`${API_PREFIX}/banners`, bannerRoutes);
 router.use(`${API_PREFIX}/player-finder`, playerFinderRoutes);
 router.use(`${API_PREFIX}/digital-credentials`, digitalCredentialRoutes);
+router.use(`${API_PREFIX}/court-reservations`, courtReservationRoutes);
 
 // Health check endpoint
 router.get(`${API_PREFIX}/health`, (req, res) => {
@@ -217,6 +219,13 @@ router.get(`${API_PREFIX}/docs`, (req, res) => {
             'PUT /:id - Update digital credential (player)',
             'POST /:id/regenerate-qr - Regenerate QR code (player)',
             'GET / - Get all digital credentials (admin)'
+          ]
+        },
+        courtReservations: {
+          base: '/court-reservations',
+          routes: [
+            'GET / - Get court reservations (filtered by user)',
+            'PUT /:id/cancel - Cancel court reservation'
           ]
         }
       }

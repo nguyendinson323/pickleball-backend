@@ -538,6 +538,170 @@ const getCourtStats = async (req, res) => {
   }
 };
 
+/**
+ * Get paginated list of court reservations
+ * @route GET /api/v1/court-reservations
+ * @access Private
+ */
+const getCourtReservations = async (req, res) => {
+  try {
+    const user = req.user;
+    const {
+      page = 1,
+      limit = PAGINATION.DEFAULT_LIMIT,
+      user_id,
+      court_id,
+      club_id,
+      status,
+      start_date,
+      end_date
+    } = req.query;
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    // Build where clause
+    const whereClause = {};
+    
+    // Filter by user if not admin
+    if (!['admin', 'super_admin'].includes(user.role)) {
+      whereClause.user_id = user.id;
+    } else if (user_id) {
+      whereClause.user_id = user_id;
+    }
+    
+    if (court_id) {
+      whereClause.court_id = court_id;
+    }
+    
+    if (status) {
+      whereClause.status = status;
+    }
+    
+    // Date range filter
+    if (start_date && end_date) {
+      whereClause.start_time = {
+        [Op.between]: [new Date(start_date), new Date(end_date)]
+      };
+    } else if (start_date) {
+      whereClause.start_time = {
+        [Op.gte]: new Date(start_date)
+      };
+    } else if (end_date) {
+      whereClause.start_time = {
+        [Op.lte]: new Date(end_date)
+      };
+    }
+
+    // Include court and club information
+    const include = [
+      {
+        model: Court,
+        as: 'court',
+        attributes: ['id', 'name', 'court_type', 'surface', 'club_id'],
+        include: [
+          {
+            model: Club,
+            as: 'club',
+            attributes: ['id', 'name', 'city', 'state'],
+            where: club_id ? { id: club_id } : undefined
+          }
+        ]
+      }
+    ];
+
+    const { count, rows: reservations } = await CourtReservation.findAndCountAll({
+      where: whereClause,
+      include,
+      limit: parseInt(limit),
+      offset,
+      order: [['start_time', 'DESC']],
+      distinct: true
+    });
+
+    const pagination = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total: count,
+      pages: Math.ceil(count / parseInt(limit))
+    };
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: API_MESSAGES.SUCCESS.COURT_RESERVATIONS_RETRIEVED,
+      data: { reservations },
+      pagination
+    });
+  } catch (error) {
+    logger.error('Error in getCourtReservations:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel a court reservation
+ * @route PUT /api/v1/court-reservations/:id/cancel
+ * @access Private (Owner/Admin)
+ */
+const cancelCourtReservation = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id: reservationId } = req.params;
+
+    // Find the reservation
+    const reservation = await CourtReservation.findByPk(reservationId, {
+      include: [
+        {
+          model: Court,
+          as: 'court',
+          include: [
+            {
+              model: Club,
+              as: 'club'
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!reservation) {
+      throw createError.notFound('Reservation not found');
+    }
+
+    // Check if user can cancel this reservation
+    const isOwner = reservation.user_id === user.id;
+    const isClubOwner = reservation.court?.club?.owner_id === user.id;
+    const isAdmin = ['admin', 'super_admin'].includes(user.role);
+
+    if (!isOwner && !isClubOwner && !isAdmin) {
+      throw createError.forbidden('You can only cancel your own reservations');
+    }
+
+    // Check if reservation can be cancelled
+    if (reservation.status === 'cancelled') {
+      throw createError.badRequest('Reservation is already cancelled');
+    }
+
+    if (reservation.status === 'completed') {
+      throw createError.badRequest('Cannot cancel completed reservation');
+    }
+
+    // Update reservation status
+    await reservation.update({
+      status: 'cancelled',
+      updated_at: new Date()
+    });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: API_MESSAGES.SUCCESS.COURT_RESERVATION_CANCELLED,
+      data: { reservation }
+    });
+  } catch (error) {
+    logger.error('Error in cancelCourtReservation:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getCourts,
   getCourtById,
@@ -547,5 +711,7 @@ module.exports = {
   getCourtAvailability,
   getCourtBookings,
   bookCourt,
-  getCourtStats
+  getCourtStats,
+  getCourtReservations,
+  cancelCourtReservation
 }; 

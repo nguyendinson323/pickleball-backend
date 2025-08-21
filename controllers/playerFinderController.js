@@ -15,6 +15,7 @@ const User = require('../db/models/User');
 const { HTTP_STATUS, API_MESSAGES } = require('../config/constants');
 const logger = require('../config/logger');
 const { asyncHandler } = require('../middlewares/errorHandler');
+const playerFinderService = require('../services/playerFinderService');
 
 /**
  * Search for players based on location and criteria
@@ -502,6 +503,116 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return distance;
 };
 
+/**
+ * Find nearby coaches
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const findCoaches = async (req, res) => {
+  try {
+    const {
+      latitude,
+      longitude,
+      radius = 50,
+      skill_level,
+      specialization,
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    const userId = req.user ? req.user.id : null;
+
+    const coaches = await playerFinderService.findNearbyCoaches({
+      searcherId: userId,
+      latitude,
+      longitude,
+      radius,
+      skillLevel: skill_level ? { exact: skill_level } : null,
+      specialization
+    });
+
+    // Paginate results
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + parseInt(limit);
+    const paginatedCoaches = coaches.slice(startIndex, endIndex);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: API_MESSAGES.SUCCESS.DATA_FETCHED,
+      data: paginatedCoaches,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: coaches.length,
+        pages: Math.ceil(coaches.length / limit)
+      }
+    });
+
+  } catch (error) {
+    logger.error('Error finding coaches:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update player visibility (can be found) setting
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const updateVisibility = async (req, res) => {
+  try {
+    const { can_be_found } = req.body;
+    const userId = req.user.id;
+
+    if (typeof can_be_found !== 'boolean') {
+      throw createError.badRequest('can_be_found must be a boolean value');
+    }
+
+    const result = await playerFinderService.updatePlayerVisibility(userId, can_be_found);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: `Player visibility ${can_be_found ? 'enabled' : 'disabled'} successfully`,
+      data: result
+    });
+
+  } catch (error) {
+    logger.error('Error updating player visibility:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a player finder request with automatic matching
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const createFinderRequest = async (req, res) => {
+  try {
+    const searchRequest = {
+      searcher_id: req.user.id,
+      ...req.body,
+      search_location: {
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
+      },
+      is_active: true
+    };
+
+    const savedRequest = await playerFinderService.saveSearchRequest(searchRequest);
+
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: 'Player finder request created. You will be notified when matches are found.',
+      data: savedRequest
+    });
+
+  } catch (error) {
+    logger.error('Error creating finder request:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   searchPlayers,
   updateFinderPreferences,
@@ -509,5 +620,8 @@ module.exports = {
   toggleFinderStatus,
   getNearbyPlayers,
   sendMatchRequest,
-  getFinderStats
+  getFinderStats,
+  findCoaches,
+  updateVisibility,
+  createFinderRequest
 }; 
