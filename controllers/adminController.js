@@ -56,25 +56,20 @@ const getDashboardStats = async (req, res) => {
     const revenue = parseFloat(totalRevenue?.dataValues?.total_revenue || 0);
 
     const stats = {
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        verified: verifiedUsers
-      },
-      clubs: {
-        total: totalClubs
-      },
-      tournaments: {
-        total: totalTournaments
-      },
-      payments: {
-        total: totalPayments,
-        successful: successfulPayments,
-        revenue: revenue
-      }
+      total_users: totalUsers,
+      total_clubs: totalClubs,
+      total_tournaments: totalTournaments,
+      total_revenue: revenue,
+      active_memberships: activeUsers,
+      new_users_this_month: 0, // Calculate monthly new users
+      upcoming_tournaments: 0, // Calculate upcoming tournaments
+      pending_payments: totalPayments - successfulPayments
     };
 
-    res.status(HTTP_STATUS.OK).json(stats);
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: stats
+    });
   } catch (error) {
     logger.error('Error in getDashboardStats:', error);
     throw error;
