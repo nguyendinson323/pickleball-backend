@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import axiosInstance from '../../../config/axios';
+import { api } from '../../../lib/api';
 import { format, parseISO } from 'date-fns';
 
 interface Tournament {
@@ -62,16 +62,15 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
   const fetchTournaments = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get('/tournaments', {
-        params: {
-          organizer_type: 'club',
-          organizer_id: clubId
-        }
+      const params = new URLSearchParams({
+        organizer_type: 'club',
+        organizer_id: clubId || ''
       });
-      setTournaments(response.data.data.tournaments || []);
-    } catch (error) {
-      console.error('Error fetching tournaments:', error);
-      toast.error('Failed to load tournaments');
+      const response = await api.get(`/tournaments?${params.toString()}`);
+      setTournaments((response as any)?.data?.tournaments || []);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to load tournaments';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -97,7 +96,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
     format: 'single_elimination' as 'single_elimination' | 'double_elimination' | 'round_robin' | 'swiss_system' | 'custom',
     entry_fee: 50,
     prize_pool: 0,
-    prize_distribution: { '1st': 50, '2nd': 30, '3rd': 20 },
+    prize_distribution: {} as Record<string, number>,
     rules: '',
     equipment_requirements: '',
     dress_code: '',
@@ -133,17 +132,17 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
         status: 'draft'
       };
 
-      const response = await axiosInstance.post('/tournaments', tournamentData);
+      const response = await api.post('/tournaments', tournamentData);
       
-      if (response.data.success) {
+      if ((response as any)?.success) {
         toast.success('Tournament created successfully!');
         setShowCreateForm(false);
         resetForm();
         fetchTournaments();
       }
     } catch (error: any) {
-      console.error('Error creating tournament:', error);
-      toast.error(error.response?.data?.message || 'Failed to create tournament');
+      const errorMessage = error?.response?.data?.message || 'Failed to create tournament';
+      toast.error(errorMessage);
     }
   };
 
@@ -168,7 +167,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
       format: 'single_elimination',
       entry_fee: 50,
       prize_pool: 0,
-      prize_distribution: { '1st': 50, '2nd': 30, '3rd': 20 },
+      prize_distribution: {} as Record<string, number>,
       rules: '',
       equipment_requirements: '',
       dress_code: '',
@@ -201,7 +200,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
       format: tournament.format,
       entry_fee: tournament.entry_fee,
       prize_pool: tournament.prize_pool,
-      prize_distribution: tournament.prize_distribution || { '1st': 50, '2nd': 30, '3rd': 20 },
+      prize_distribution: tournament.prize_distribution || {},
       rules: tournament.rules || '',
       equipment_requirements: tournament.equipment_requirements || '',
       dress_code: tournament.dress_code || '',
@@ -217,9 +216,9 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
     if (!editingTournament) return;
 
     try {
-      const response = await axiosInstance.put(`/tournaments/${editingTournament.id}`, newTournament);
+      const response = await api.put(`/tournaments/${editingTournament.id}`, newTournament);
       
-      if (response.data.success) {
+      if ((response as any)?.success) {
         toast.success('Tournament updated successfully!');
         setShowCreateForm(false);
         setEditingTournament(null);
@@ -227,8 +226,8 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
         fetchTournaments();
       }
     } catch (error: any) {
-      console.error('Error updating tournament:', error);
-      toast.error(error.response?.data?.message || 'Failed to update tournament');
+      const errorMessage = error?.response?.data?.message || 'Failed to update tournament';
+      toast.error(errorMessage);
     }
   };
 
@@ -247,7 +246,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
         category: 'tournament_expense'
       };
 
-      await axiosInstance.post('/expenses', expensePayload);
+      await api.post('/expenses', expensePayload);
       
       setShowExpenseModal(false);
       setExpenseData({ description: '', amount: 0 });
@@ -255,15 +254,15 @@ const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
       toast.success('Expense added successfully!');
       fetchTournaments();
     } catch (error: any) {
-      console.error('Error adding expense:', error);
-      toast.error(error.response?.data?.message || 'Failed to add expense');
+      const errorMessage = error?.response?.data?.message || 'Failed to add expense';
+      toast.error(errorMessage);
     }
   };
 
   const generateReport = async (tournament: Tournament) => {
     try {
-      const response = await axiosInstance.get(`/tournaments/${tournament.id}/stats`);
-      const stats = response.data.data.stats;
+      const response = await api.get(`/tournaments/${tournament.id}/stats`);
+      const stats = (response as any)?.data?.stats;
       
       const report = `
 Tournament Report: ${tournament.name}
@@ -286,9 +285,9 @@ Completion Rate: ${stats.completion_rate?.toFixed(1)}%
       a.click();
       URL.revokeObjectURL(url);
       toast.success('Report downloaded successfully!');
-    } catch (error) {
-      console.error('Error generating report:', error);
-      toast.error('Failed to generate report');
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to generate report';
+      toast.error(errorMessage);
     }
   };
 
@@ -319,9 +318,9 @@ Completion Rate: ${stats.completion_rate?.toFixed(1)}%
         amount: invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
       };
 
-      const response = await axiosInstance.post('/payments/invoice', invoicePayload);
+      const response = await api.post('/payments/invoice', invoicePayload);
       
-      if (response.data.success) {
+      if ((response as any)?.success) {
         toast.success('Invoice created successfully!');
         setShowInvoiceModal(false);
         setInvoiceData({
@@ -332,24 +331,24 @@ Completion Rate: ${stats.completion_rate?.toFixed(1)}%
         setSelectedTournament(null);
       }
     } catch (error: any) {
-      console.error('Error creating invoice:', error);
-      toast.error(error.response?.data?.message || 'Failed to create invoice');
+      const errorMessage = error?.response?.data?.message || 'Failed to create invoice';
+      toast.error(errorMessage);
     }
   };
 
   const handlePublishTournament = async (tournament: Tournament) => {
     try {
-      const response = await axiosInstance.put(`/tournaments/${tournament.id}`, {
+      const response = await api.put(`/tournaments/${tournament.id}`, {
         status: 'published'
       });
       
-      if (response.data.success) {
+      if ((response as any)?.success) {
         toast.success('Tournament published successfully!');
         fetchTournaments();
       }
     } catch (error: any) {
-      console.error('Error publishing tournament:', error);
-      toast.error(error.response?.data?.message || 'Failed to publish tournament');
+      const errorMessage = error?.response?.data?.message || 'Failed to publish tournament';
+      toast.error(errorMessage);
     }
   };
 
@@ -548,13 +547,13 @@ Completion Rate: ${stats.completion_rate?.toFixed(1)}%
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Prizes</label>
-              <textarea
-                value={newTournament.prizes}
-                onChange={(e) => setNewTournament({...newTournament, prizes: e.target.value})}
-                rows={2}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+              <input
+                type="email"
+                value={newTournament.contact_email}
+                onChange={(e) => setNewTournament({...newTournament, contact_email: e.target.value})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Describe prizes and awards"
+                placeholder="Contact email for tournament"
               />
             </div>
 
@@ -576,11 +575,7 @@ Completion Rate: ${stats.completion_rate?.toFixed(1)}%
               onClick={() => {
                 setShowCreateForm(false);
                 setEditingTournament(null);
-                setNewTournament({
-                  name: '', date: '', startTime: '', endTime: '', maxParticipants: 32,
-                  entryFee: 50, description: '', location: '', tournamentType: 'doubles',
-                  skillLevel: 'all', prizes: '', rules: ''
-                });
+                resetForm();
               }}
             >
               Cancel

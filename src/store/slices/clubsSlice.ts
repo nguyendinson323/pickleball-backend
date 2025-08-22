@@ -103,7 +103,7 @@ const clubsSlice = createSlice({
       .addCase(fetchClubs.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.clubs = payload?.data || [];
+        state.clubs = payload?.data?.data || [];
         state.pagination = payload?.pagination || null;
       })
       .addCase(fetchClubs.rejected, (state, action) => {
@@ -118,8 +118,8 @@ const clubsSlice = createSlice({
       .addCase(fetchClub.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        if (payload) {
-          state.currentClub = payload;
+        if (payload?.data) {
+          state.currentClub = payload.data;
         }
       })
       .addCase(fetchClub.rejected, (state, action) => {
@@ -134,9 +134,9 @@ const clubsSlice = createSlice({
       .addCase(createClub.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        if (payload) {
-          state.clubs.unshift(payload);
-          state.currentClub = payload;
+        if (payload?.data) {
+          state.clubs.unshift(payload.data);
+          state.currentClub = payload.data;
         }
       })
       .addCase(createClub.rejected, (state, action) => {

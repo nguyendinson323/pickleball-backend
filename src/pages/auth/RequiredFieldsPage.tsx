@@ -5,6 +5,15 @@ import { AppDispatch, RootState } from '../../store';
 import { registerUser } from '../../store/slices/authSlice';
 import { toast } from 'sonner';
 
+interface FormField {
+  name: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  disabled: boolean;
+  maxLength?: number;
+}
+
 const RequiredFieldsPage = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -38,7 +47,6 @@ const RequiredFieldsPage = () => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
-    console.log('Form field change:', { name, value, type, checked, newValue });
     
     const updatedFormData = {
       ...formData,
@@ -74,6 +82,27 @@ const RequiredFieldsPage = () => {
     }
   };
 
+  const getInputType = (fieldType: string, fieldName: string) => {
+    if (fieldType !== 'password') return fieldType;
+    if (fieldName === 'password') return showPassword ? 'text' : 'password';
+    if (fieldName === 'confirmPassword') return showConfirmPassword ? 'text' : 'password';
+    return 'password';
+  };
+
+  const getPasswordIcon = (fieldName: string) => {
+    const isVisible = fieldName === 'password' ? showPassword : showConfirmPassword;
+    return isVisible ? (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+    );
+  };
+
   const validateForm = () => {
     if (!formData.username || formData.username.length < 3) {
       toast.error('Username must be at least 3 characters long');
@@ -99,8 +128,6 @@ const RequiredFieldsPage = () => {
       return false;
     }
     // Privacy policy acceptance required for all users
-    console.log('Validating privacy policy for:', userType);
-    console.log('Privacy policy value:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
     if (!formData.privacy_policy_accepted) {
       toast.error('You must accept the privacy policy to continue');
       return false;
@@ -150,9 +177,6 @@ const RequiredFieldsPage = () => {
   };
 
   const handleSkipToRegister = async () => {
-    console.log('handleSkipToRegister called');
-    console.log('Current form data:', formData);
-    console.log('Privacy policy accepted:', formData.privacy_policy_accepted);
     
     if (!validateForm()) return;
 
@@ -174,21 +198,13 @@ const RequiredFieldsPage = () => {
         privacy_policy_accepted: Boolean(formData.privacy_policy_accepted),
       };
 
-      console.log('Sending registration data:', registrationData);
-      console.log('Privacy policy accepted:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
-      console.log('Form data state:', formData);
-      console.log('User type:', userType);
 
       const result = await dispatch(registerUser(registrationData));
       
       // Check if registration was successful
-      // The result is a Redux action object with { type, payload, meta }
-      const registrationResult = result as any;
-      console.log('Registration result:', registrationResult);
-      
       // Extract the actual API response data from the payload
+      const registrationResult = result as any;
       const apiResponse = registrationResult?.payload;
-      console.log('API response from payload:', apiResponse);
       
       if (apiResponse?.data?.user && apiResponse?.data?.tokens) {
         // Registration successful - clear localStorage and navigate
@@ -213,27 +229,26 @@ const RequiredFieldsPage = () => {
       } else {
         // Registration failed - show error and stay on page
         toast.error('Registration failed - Invalid response from server');
-        console.error('Registration failed - Invalid response structure:', apiResponse);
       }
     } catch (err) {
       toast.error(error || 'Registration failed');
     }
   };
 
-  const getRequiredFields = () => {
+  const getRequiredFields = (): FormField[] => {
     const baseFields = [
       { name: 'username', label: 'Username', type: 'text', placeholder: 'Enter your username', disabled: useCurpAsUsername },
-      { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter your email address' },
-      { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password' },
-      { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Confirm your password' },
+      { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter your email address', disabled: false },
+      { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password', disabled: false },
+      { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Confirm your password', disabled: false },
     ];
 
     if (userType === 'club' || userType === 'partner') {
-      return [...baseFields, { name: 'business_name', label: 'Business Name', type: 'text', placeholder: 'Enter your business name' }];
+      return [...baseFields, { name: 'business_name', label: 'Business Name', type: 'text', placeholder: 'Enter your business name', disabled: false }];
     } else {
       const playerCoachFields = [
         ...baseFields,
-        { name: 'full_name', label: 'Full Name', type: 'text', placeholder: 'Enter your full name' }
+        { name: 'full_name', label: 'Full Name', type: 'text', placeholder: 'Enter your full name', disabled: false }
       ];
       
       // Add CURP field for players and coaches
@@ -243,8 +258,9 @@ const RequiredFieldsPage = () => {
           label: 'CURP (Optional)', 
           type: 'text', 
           placeholder: 'Enter your CURP (18 characters)',
+          disabled: false,
           maxLength: 18
-        });
+        } as FormField);
       }
       
       return playerCoachFields;
@@ -293,7 +309,7 @@ const RequiredFieldsPage = () => {
                 </div>
               )}
 
-              {getRequiredFields().map((field, index) => (
+              {getRequiredFields().map((field) => (
                 <div
                   key={field.name}
                   className="space-y-2"
@@ -306,11 +322,7 @@ const RequiredFieldsPage = () => {
                     <input
                       id={field.name}
                       name={field.name}
-                      type={
-                        field.type === 'password' 
-                          ? (field.name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password'))
-                          : field.type
-                      }
+                      type={getInputType(field.type, field.name)}
                       maxLength={field.maxLength}
                       value={formData[field.name as keyof typeof formData] as string}
                       onChange={handleChange}
@@ -332,28 +344,7 @@ const RequiredFieldsPage = () => {
                           }
                         }}
                       >
-                        {field.name === 'password' 
-                          ? (showPassword ? (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                              </svg>
-                            ) : (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            ))
-                          : (showConfirmPassword ? (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                              </svg>
-                            ) : (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            ))
-                        }
+                        {getPasswordIcon(field.name)}
                       </button>
                     )}
                   </div>
@@ -384,9 +375,6 @@ const RequiredFieldsPage = () => {
                       required
                       className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                    <span className="ml-2 text-sm text-gray-600">
-                      Current value: {formData.privacy_policy_accepted ? 'true' : 'false'}
-                    </span>
                     <div className="text-sm text-gray-700">
                       <label htmlFor="privacy_policy_accepted" className="font-medium">
                         I have read and accept the{' '}
@@ -410,7 +398,6 @@ const RequiredFieldsPage = () => {
               </div>
             </div>
           </div>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <button

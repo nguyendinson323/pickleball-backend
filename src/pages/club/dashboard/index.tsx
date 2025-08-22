@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../../../store';
+import { fetchClub, fetchClubCourts, fetchClubTournaments } from '../../../store/slices/clubsSlice';
 
 // Import dashboard components
 import Overview from './Overview';
@@ -12,26 +13,34 @@ import Reports from './Reports';
 import Members from './Members';
 
 const ClubDashboard = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { currentClub, loading, error } = useSelector((state: RootState) => state.clubs);
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedCourt, setSelectedCourt] = useState('all');
+  const [clubId, setClubId] = useState<string | null>(null);
 
-  // Mock data - in real app this would come from API
+  useEffect(() => {
+    if (user?.club_id) {
+      setClubId(user.club_id);
+      dispatch(fetchClub(user.club_id));
+      dispatch(fetchClubCourts(user.club_id));
+      dispatch(fetchClubTournaments(user.club_id));
+    }
+  }, [dispatch, user?.club_id]);
+
   const clubStats = {
-    totalMembers: 156,
-    activeMembers: 142,
-    totalCourts: 8,
-    availableCourts: 3,
-    upcomingEvents: 4,
-    monthlyRevenue: 12500,
+    totalMembers: currentClub?.member_count || 0,
+    activeMembers: currentClub?.member_count || 0,
+    totalCourts: currentClub?.courts?.length || 0,
+    availableCourts: currentClub?.courts?.length || 0,
+    upcomingEvents: currentClub?.tournaments?.length || 0,
+    monthlyRevenue: 0,
     averageRating: 4.6,
     totalReviews: 234,
     recentActivities: [
-      'New member registration - Sarah M.',
-      'Tournament registration - Spring Championship',
-      'Court maintenance completed - Court 3',
-      'Monthly membership renewal - 23 members'
+      'Recent club activity will be loaded from API'
     ]
   };
 
@@ -375,6 +384,39 @@ const ClubDashboard = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading club dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg mb-4">{error}</div>
+          <button 
+            onClick={() => {
+              if (user?.club_id) {
+                dispatch(fetchClub(user.club_id));
+                dispatch(fetchClubCourts(user.club_id));
+                dispatch(fetchClubTournaments(user.club_id));
+              }
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -391,7 +433,7 @@ const ClubDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="animate-on-scroll text-sm text-gray-600">Elite Pickleball Club</span>
+                <span className="animate-on-scroll text-sm text-gray-600">{currentClub?.name || 'Loading...'}</span>
               </div>
             </div>
           </div>
@@ -516,7 +558,7 @@ const ClubDashboard = () => {
 
             {/* Tournaments Tab */}
             {activeTab === 'tournaments' && (
-              <Tournaments tournaments={tournaments} />
+              <Tournaments clubId={clubId || undefined} />
             )}
 
             {/* Invoices Tab */}

@@ -5,13 +5,12 @@ import {
   MapPin, 
   Users, 
   DollarSign, 
-  TrendingUp,
   Settings,
   BarChart3,
   Activity
 } from 'lucide-react';
 import CourtCalendar from '../../../components/CourtCalendar';
-import axiosInstance from '../../../config/axios';
+import { api } from '../../../lib/api';
 import { toast } from 'sonner';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 
@@ -45,6 +44,7 @@ const CourtCalendarDashboard: React.FC<CourtCalendarDashboardProps> = ({ clubId 
   const [stats, setStats] = useState<CourtStats | null>(null);
   const [recentReservations, setRecentReservations] = useState<RecentReservation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
 
   useEffect(() => {
@@ -54,24 +54,25 @@ const CourtCalendarDashboard: React.FC<CourtCalendarDashboardProps> = ({ clubId 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch court statistics
-      const statsResponse = await axiosInstance.get(`/clubs/${clubId}/court-stats`);
-      setStats(statsResponse.data.data.stats);
+      const statsResponse = await api.get(`/clubs/${clubId}/court-stats`);
+      setStats((statsResponse as any)?.data?.data?.stats);
 
       // Fetch recent reservations
-      const reservationsResponse = await axiosInstance.get('/court-reservations', {
-        params: {
-          club_id: clubId,
-          limit: 10,
-          start_date: format(startOfWeek(new Date()), 'yyyy-MM-dd'),
-          end_date: format(endOfWeek(new Date()), 'yyyy-MM-dd')
-        }
+      const params = new URLSearchParams({
+        club_id: clubId,
+        limit: '10',
+        start_date: format(startOfWeek(new Date()), 'yyyy-MM-dd'),
+        end_date: format(endOfWeek(new Date()), 'yyyy-MM-dd')
       });
-      setRecentReservations(reservationsResponse.data.data.reservations || []);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      const reservationsResponse = await api.get(`/court-reservations?${params.toString()}`);
+      setRecentReservations((reservationsResponse as any)?.data?.data?.reservations || []);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to load dashboard data';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -91,6 +92,22 @@ const CourtCalendarDashboard: React.FC<CourtCalendarDashboardProps> = ({ clubId 
     return (
       <div className="flex justify-center items-center min-h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="text-center">
+          <div className="text-red-600 text-lg mb-4">{error}</div>
+          <button 
+            onClick={fetchDashboardData}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -172,9 +189,8 @@ const CourtCalendarDashboard: React.FC<CourtCalendarDashboardProps> = ({ clubId 
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Weekly Revenue</p>
                 <p className="text-2xl font-semibold text-gray-900">${stats.weekly_revenue.toLocaleString()}</p>
-                <p className="text-xs text-green-600">
-                  <TrendingUp className="h-3 w-3 inline mr-1" />
-                  +12% from last week
+                <p className="text-xs text-gray-500">
+                  Weekly total
                 </p>
               </div>
             </div>

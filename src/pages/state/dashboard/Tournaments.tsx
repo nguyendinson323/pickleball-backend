@@ -11,7 +11,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { toast } from 'sonner';
-import axiosInstance from '../../../config/axios';
+import { api } from '../../../lib/api';
 import { format, parseISO } from 'date-fns';
 
 interface Tournament {
@@ -83,7 +83,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
     format: 'single_elimination' as 'single_elimination' | 'double_elimination' | 'round_robin' | 'swiss_system' | 'custom',
     entry_fee: 75,
     prize_pool: 0,
-    prize_distribution: { '1st': 40, '2nd': 25, '3rd': 15, '4th': 10, 'Semifinalists': 5 },
+    prize_distribution: {} as Record<string, number>,
     rules: '',
     equipment_requirements: '',
     dress_code: '',
@@ -100,16 +100,15 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
   const fetchTournaments = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get('/tournaments', {
-        params: {
-          organizer_type: 'state',
-          organizer_id: stateId
-        }
+      const params = new URLSearchParams({
+        organizer_type: 'state',
+        organizer_id: stateId || ''
       });
-      setTournaments(response.data.data.tournaments || []);
-    } catch (error) {
-      console.error('Error fetching tournaments:', error);
-      toast.error('Failed to load tournaments');
+      const response = await api.get(`/tournaments?${params.toString()}`);
+      setTournaments((response as any)?.data?.tournaments || []);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to load tournaments';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -144,17 +143,17 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
         status: 'draft'
       };
 
-      const response = await axiosInstance.post('/tournaments', tournamentData);
+      const response = await api.post('/tournaments', tournamentData);
       
-      if (response.data.success) {
+      if ((response as any)?.success) {
         toast.success('State tournament created successfully!');
         setShowCreateModal(false);
         resetForm();
         fetchTournaments();
       }
     } catch (error: any) {
-      console.error('Error creating tournament:', error);
-      toast.error(error.response?.data?.message || 'Failed to create tournament');
+      const errorMessage = error?.response?.data?.message || 'Failed to create tournament';
+      toast.error(errorMessage);
     }
   };
 
@@ -179,7 +178,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
       format: 'single_elimination',
       entry_fee: 75,
       prize_pool: 0,
-      prize_distribution: { '1st': 40, '2nd': 25, '3rd': 15, '4th': 10, 'Semifinalists': 5 },
+      prize_distribution: {} as Record<string, number>,
       rules: '',
       equipment_requirements: '',
       dress_code: '',
@@ -202,21 +201,23 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
         break;
       case 'publish':
         try {
-          await axiosInstance.put(`/tournaments/${tournament.id}`, { status: 'published' });
+          await api.put(`/tournaments/${tournament.id}`, { status: 'published' });
           toast.success('Tournament published successfully!');
           fetchTournaments();
         } catch (error: any) {
-          toast.error('Failed to publish tournament');
+          const errorMessage = error?.response?.data?.message || 'Failed to publish tournament';
+          toast.error(errorMessage);
         }
         break;
       case 'delete':
         if (confirm('Are you sure you want to delete this tournament?')) {
           try {
-            await axiosInstance.delete(`/tournaments/${tournament.id}`);
+            await api.delete(`/tournaments/${tournament.id}`);
             toast.success('Tournament deleted successfully!');
             fetchTournaments();
           } catch (error: any) {
-            toast.error('Failed to delete tournament');
+            const errorMessage = error?.response?.data?.message || 'Failed to delete tournament';
+            toast.error(errorMessage);
           }
         }
         break;
@@ -225,15 +226,14 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
 
   const generateReport = async (type: string) => {
     try {
-      const response = await axiosInstance.get('/tournaments/reports', {
-        params: {
-          type,
-          organizer_type: 'state',
-          organizer_id: stateId
-        }
+      const params = new URLSearchParams({
+        type,
+        organizer_type: 'state',
+        organizer_id: stateId || ''
       });
+      const response = await api.get(`/tournaments/reports?${params.toString()}`);
       
-      const reportData = response.data.data;
+      const reportData = (response as any)?.data;
       const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -242,9 +242,9 @@ const Tournaments: React.FC<TournamentsProps> = ({ stateId }) => {
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`${type} report downloaded successfully!`);
-    } catch (error) {
-      console.error('Error generating report:', error);
-      toast.error('Failed to generate report');
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to generate report';
+      toast.error(errorMessage);
     }
   };
 

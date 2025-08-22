@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
 import { toast } from 'sonner';
-import axiosInstance from '../../../utils/axios';
+import { api } from '../../../lib/api';
 import {
   Eye,
-  Edit,
-  Trash2,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -15,13 +11,7 @@ import {
   Lock,
   Unlock,
   Settings,
-  MoreVertical,
-  Download,
-  RefreshCw,
-  Users,
-  Globe,
-  MapPin,
-  Calendar
+  RefreshCw
 } from 'lucide-react';
 
 interface Microsite {
@@ -47,20 +37,7 @@ interface Microsite {
   createdAt: string;
 }
 
-interface ModerationFlag {
-  id: string;
-  type: string;
-  description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  flagged_by: string;
-  flagged_by_name: string;
-  flagged_at: string;
-  status: 'active' | 'resolved';
-  auto_action: boolean;
-}
-
 const Microsites: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -77,17 +54,28 @@ const Microsites: React.FC = () => {
     fetchAnalytics();
   }, []);
 
+  // Debounced effect for search and filters
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchMicrosites();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, typeFilter, statusFilter]);
+
   const fetchMicrosites = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get('/admin/microsites', {
-        params: {
-          type: typeFilter !== 'all' ? typeFilter : undefined,
-          status: statusFilter !== 'all' ? statusFilter : undefined,
-          search: searchQuery || undefined
-        }
-      });
-      setMicrosites(response.data.data.microsites || []);
+      const params = new URLSearchParams();
+      if (typeFilter !== 'all') params.append('type', typeFilter);
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (searchQuery) params.append('search', searchQuery);
+      
+      const queryString = params.toString();
+      const url = queryString ? `/admin/microsites?${queryString}` : '/admin/microsites';
+      
+      const response = await api.get(url);
+      setMicrosites((response as any)?.data?.data?.microsites || []);
     } catch (error: any) {
       console.error('Error fetching microsites:', error);
       toast.error('Failed to fetch microsites');
@@ -98,10 +86,11 @@ const Microsites: React.FC = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axiosInstance.get('/admin/microsites/analytics');
-      setAnalytics(response.data.data.analytics);
+      const response = await api.get('/admin/microsites/analytics');
+      setAnalytics((response as any)?.data?.data?.analytics);
     } catch (error: any) {
       console.error('Error fetching analytics:', error);
+      toast.error('Failed to fetch analytics');
     }
   };
 
@@ -163,7 +152,7 @@ const Microsites: React.FC = () => {
         case 'deactivate':
         case 'suspend':
         case 'maintenance':
-          await axiosInstance.put(`/admin/microsites/${micrositeId}/status`, {
+          await api.put(`/admin/microsites/${micrositeId}/status`, {
             status: action === 'activate' ? 'active' : action,
             reason
           });
@@ -187,7 +176,7 @@ const Microsites: React.FC = () => {
     }
 
     try {
-      await axiosInstance.post('/admin/microsites/bulk-action', {
+      await api.post('/admin/microsites/bulk-action', {
         action,
         microsite_ids: selectedMicrosites,
         reason
@@ -204,7 +193,7 @@ const Microsites: React.FC = () => {
 
   const handleAddModerationFlag = async (micrositeId: string, flagData: any) => {
     try {
-      await axiosInstance.post(`/admin/microsites/${micrositeId}/moderation`, flagData);
+      await api.post(`/admin/microsites/${micrositeId}/moderation`, flagData);
       toast.success('Moderation flag added successfully');
       fetchMicrosites();
       setShowModerationModal(false);
@@ -214,18 +203,7 @@ const Microsites: React.FC = () => {
     }
   };
 
-  const handleResolveModerationFlag = async (micrositeId: string, flagId: string, resolutionNote?: string) => {
-    try {
-      await axiosInstance.delete(`/admin/microsites/${micrositeId}/moderation/${flagId}`, {
-        data: { resolution_note: resolutionNote }
-      });
-      toast.success('Moderation flag resolved successfully');
-      fetchMicrosites();
-    } catch (error: any) {
-      console.error('Error resolving moderation flag:', error);
-      toast.error(error.response?.data?.message || 'Failed to resolve moderation flag');
-    }
-  };
+  // Removed unused handleResolveModerationFlag function
 
   const generateReport = () => {
     const csvData = microsites.map(m => ({
@@ -259,14 +237,8 @@ const Microsites: React.FC = () => {
     toast.success('Report generated successfully');
   };
 
-  const filteredMicrosites = microsites.filter(microsite => {
-    const matchesSearch = microsite.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         microsite.owner.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = typeFilter === 'all' || microsite.type === typeFilter;
-    const matchesStatus = statusFilter === 'all' || microsite.status === statusFilter;
-    
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  // Using server-side filtering, so we can use microsites directly
+  const filteredMicrosites = microsites;
 
   const stats = analytics?.overview || {
     total_microsites: microsites.length,
@@ -662,7 +634,7 @@ const Microsites: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500 animate-on-scroll">Owner</label>
-                  <p className="animate-on-scroll">{selectedMicrosite.owner}</p>
+                  <p className="animate-on-scroll">{typeof selectedMicrosite.owner === 'string' ? selectedMicrosite.owner : selectedMicrosite.owner.name}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 animate-on-scroll">Region</label>

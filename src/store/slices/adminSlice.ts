@@ -81,8 +81,8 @@ const adminSlice = createSlice({
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        if (payload) {
-          state.dashboardStats = payload;
+        if (payload?.data) {
+          state.dashboardStats = payload.data;
         }
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {

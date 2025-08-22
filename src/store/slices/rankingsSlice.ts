@@ -78,8 +78,8 @@ const rankingsSlice = createSlice({
       .addCase(fetchRankings.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.rankings = payload?.data || [];
-        state.pagination = payload?.pagination || null;
+        state.rankings = payload?.data?.rankings || [];
+        state.pagination = payload?.data?.pagination || null;
       })
       .addCase(fetchRankings.rejected, (state, action) => {
         state.loading = false;
@@ -93,7 +93,7 @@ const rankingsSlice = createSlice({
       .addCase(fetchTopPlayers.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.topPlayers = payload || [];
+        state.topPlayers = payload?.data?.rankings || [];
       })
       .addCase(fetchTopPlayers.rejected, (state, action) => {
         state.loading = false;
@@ -107,7 +107,7 @@ const rankingsSlice = createSlice({
       .addCase(fetchUserRankings.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload as any;
-        state.userRankings = payload || [];
+        state.userRankings = payload?.data?.rankings || [];
       })
       .addCase(fetchUserRankings.rejected, (state, action) => {
         state.loading = false;

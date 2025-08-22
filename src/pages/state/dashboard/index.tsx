@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../../../store';
+import { fetchClubs } from '../../../store/slices/clubsSlice';
+import { fetchTournaments } from '../../../store/slices/tournamentsSlice';
+import { toast } from 'sonner';
 import Overview from './Overview';
 import Tournaments from './Tournaments';
 import ClubManagement from './ClubManagement';
@@ -10,60 +13,50 @@ import Analytics from './Analytics';
 import Communications from './Communications';
 
 const StateDashboard = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { clubs } = useSelector((state: RootState) => state.clubs);
+  const { tournaments } = useSelector((state: RootState) => state.tournaments);
   const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Mock state federation data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch state-level data
+        if (user?.state) {
+          await Promise.all([
+            dispatch(fetchClubs({ state: user.state })),
+            dispatch(fetchTournaments({ state: user.state, tournament_type: 'state' }))
+          ]);
+        }
+      } catch (err: any) {
+        const errorMessage = err?.message || 'Failed to load dashboard data';
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, user?.state]);
+
   const stateStats = {
-    totalMembers: 1247,
-    activeMembers: 1189,
-    totalClubs: 89,
-    totalCourts: 456,
-    totalTournaments: 23,
-    monthlyRevenue: 45600,
-    pendingApplications: 12,
-    upcomingEvents: 8
+    totalMembers: clubs.reduce((sum, club) => sum + (club.member_count || 0), 0),
+    activeMembers: clubs.filter(club => club.membership_status === 'active').reduce((sum, club) => sum + (club.member_count || 0), 0),
+    totalClubs: clubs.length,
+    totalCourts: clubs.reduce((sum, club) => sum + (club.court_count || 0), 0),
+    totalTournaments: tournaments.length,
+    monthlyRevenue: 0, // This would need a separate API endpoint
+    pendingApplications: clubs.filter(club => club.membership_status === 'pending').length,
+    upcomingEvents: tournaments.filter(t => new Date(t.start_date) > new Date()).length
   };
 
-  // Tournament management data
-  const tournaments = [
-    {
-      id: 1,
-      name: 'State Championship 2024',
-      date: '2024-06-15',
-      location: 'State Sports Complex',
-      participants: 128,
-      maxParticipants: 256,
-      entryFee: 85,
-      status: 'Registration Open',
-      category: 'Championship',
-      revenue: 10880
-    },
-    {
-      id: 2,
-      name: 'Spring League Finals',
-      date: '2024-05-20',
-      location: 'Metro Courts',
-      participants: 64,
-      maxParticipants: 64,
-      entryFee: 65,
-      status: 'Full',
-      category: 'League',
-      revenue: 4160
-    },
-    {
-      id: 3,
-      name: 'Youth Development Cup',
-      date: '2024-07-10',
-      location: 'Community Center',
-      participants: 32,
-      maxParticipants: 48,
-      entryFee: 45,
-      status: 'Registration Open',
-      category: 'Youth',
-      revenue: 1440
-    }
-  ];
 
   // Club affiliation data
   const clubAffiliations = [
@@ -317,13 +310,40 @@ const StateDashboard = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading state dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg mb-4">{error}</div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8 animate-on-scroll">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">State Federation Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.full_name || 'Federation Administrator'}</p>
+          <p className="text-gray-600">Welcome back, {user?.full_name || 'Federation Administrator'} - {user?.state || 'State'} Federation</p>
         </div>
 
         {/* Quick Stats */}
@@ -469,14 +489,25 @@ const StateDashboard = () => {
             {/* Tournaments Tab */}
             {activeTab === 'tournaments' && (
               <div className="animate-on-scroll">
-                <Tournaments tournaments={tournaments} />
+                <Tournaments stateId={user?.state_id} />
               </div>
             )}
 
             {/* Clubs Tab */}
             {activeTab === 'clubs' && (
               <div className="animate-on-scroll">
-                <ClubManagement clubAffiliations={clubAffiliations} />
+                <ClubManagement clubAffiliations={clubs.map(club => ({
+                  id: parseInt(club.id),
+                  name: club.name,
+                  city: club.city || '',
+                  members: club.member_count || 0,
+                  status: club.membership_status === 'active' ? 'Active' : 
+                          club.membership_status === 'pending' ? 'Pending Review' : 'Inactive',
+                  complianceScore: 85,
+                  lastInspection: '2024-01-01',
+                  nextInspection: '2024-06-01',
+                  issues: 0
+                }))} />
               </div>
             )}
 
