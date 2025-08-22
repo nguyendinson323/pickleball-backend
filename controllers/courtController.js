@@ -317,7 +317,7 @@ const getCourtAvailability = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_AVAILABILITY_RETRIEVED,
-      data: availability
+      data: { slots: availability }
     });
   } catch (error) {
     logger.error('Error in getCourtAvailability:', error);
@@ -610,7 +610,7 @@ const getCourtReservations = async (req, res) => {
       };
     }
 
-    // Include court and club information
+    // Include court, club, and user information
     const include = [
       {
         model: Court,
@@ -624,6 +624,11 @@ const getCourtReservations = async (req, res) => {
             where: club_id ? { id: club_id } : undefined
           }
         ]
+      },
+      {
+        model: require('../db/models/User'),
+        as: 'user',
+        attributes: ['id', 'full_name', 'email']
       }
     ];
 
@@ -720,6 +725,226 @@ const cancelCourtReservation = async (req, res) => {
   }
 };
 
+/**
+ * Create a court reservation (alternative endpoint for frontend compatibility)
+ * @route POST /api/v1/court-reservations
+ * @access Private
+ */
+const createCourtReservation = async (req, res) => {
+  try {
+    const { user } = req;
+    const { court_id } = req.body;
+    
+    // Forward to the existing bookCourt function
+    req.params.id = court_id;
+    return await bookCourt(req, res);
+  } catch (error) {
+    logger.error('Error in createCourtReservation:', error);
+    throw error;
+  }
+};
+
+/**
+ * Check for booking conflicts
+ * @route POST /api/v1/court-reservations/check-conflicts
+ * @access Private
+ */
+const checkBookingConflicts = async (req, res) => {
+  try {
+    const { court_id, dates, start_time, duration_hours } = req.body;
+
+    const court = await Court.findByPk(court_id);
+    if (!court) {
+      throw createError.notFound('Court not found');
+    }
+
+    const conflicts = [];
+
+    for (const dateStr of dates) {
+      const [hours, minutes] = start_time.split(':').map(Number);
+      const startDateTime = new Date(dateStr);
+      startDateTime.setHours(hours, minutes, 0, 0);
+      
+      const endDateTime = new Date(startDateTime);
+      endDateTime.setTime(endDateTime.getTime() + (duration_hours * 60 * 60 * 1000));
+
+      // Check for existing reservations
+      const existingReservation = await CourtReservation.findOne({
+        where: {
+          court_id: court_id,
+          status: { [Op.in]: ['confirmed', 'pending'] },
+          [Op.or]: [
+            {
+              start_time: { [Op.lt]: endDateTime },
+              end_time: { [Op.gt]: startDateTime }
+            }
+          ]
+        }
+      });
+
+      if (existingReservation) {
+        conflicts.push({
+          date: dateStr,
+          time: start_time,
+          existing_reservation_id: existingReservation.id
+        });
+      }
+    }
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Conflict check completed',
+      data: { conflicts }
+    });
+  } catch (error) {
+    logger.error('Error in checkBookingConflicts:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create recurring court reservations
+ * @route POST /api/v1/court-reservations/recurring
+ * @access Private
+ */
+const createRecurringReservation = async (req, res) => {
+  try {
+    const { user } = req;
+    const { 
+      court_id, 
+      start_time, 
+      duration_hours, 
+      purpose, 
+      match_type, 
+      participants, 
+      guest_count, 
+      special_requests, 
+      equipment_needed,
+      recurrence 
+    } = req.body;
+
+    const court = await Court.findByPk(court_id, {
+      include: [{ model: require('../db/models/Club'), as: 'club', attributes: ['id', 'name'] }]
+    });
+    if (!court) {
+      throw createError.notFound('Court not found');
+    }
+
+    const startDate = new Date(start_time);
+    const reservations = [];
+    const conflicts = [];
+    
+    // Generate dates based on recurrence pattern
+    const dates = [];
+    let currentDate = new Date(startDate);
+    let count = 0;
+    const maxOccurrences = recurrence.max_occurrences || 10;
+    const endDate = recurrence.end_date ? new Date(recurrence.end_date) : null;
+
+    while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
+      if (recurrence.pattern === 'daily') {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + recurrence.interval);
+        count++;
+      } else if (recurrence.pattern === 'weekly') {
+        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        if (recurrence.days_of_week && recurrence.days_of_week.includes(dayName)) {
+          dates.push(new Date(currentDate));
+          count++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+        
+        // Move to next week interval when we complete a week
+        if (currentDate.getDay() === startDate.getDay() && count > 0) {
+          currentDate.setDate(currentDate.getDate() + (7 * (recurrence.interval - 1)));
+        }
+      } else if (recurrence.pattern === 'monthly') {
+        dates.push(new Date(currentDate));
+        currentDate.setMonth(currentDate.getMonth() + recurrence.interval);
+        count++;
+      }
+
+      // Safety break
+      if (dates.length > 100) break;
+    }
+
+    // Create reservations for each date
+    for (const reservationDate of dates) {
+      const reservationStart = new Date(reservationDate);
+      const [hours, minutes] = start_time.split('T')[1].split(':').slice(0, 2).map(Number);
+      reservationStart.setHours(hours, minutes, 0, 0);
+      
+      const reservationEnd = new Date(reservationStart);
+      reservationEnd.setTime(reservationEnd.getTime() + (duration_hours * 60 * 60 * 1000));
+
+      // Check for conflicts
+      const existingReservation = await CourtReservation.findOne({
+        where: {
+          court_id: court_id,
+          status: { [Op.in]: ['confirmed', 'pending'] },
+          [Op.or]: [
+            {
+              start_time: { [Op.lt]: reservationEnd },
+              end_time: { [Op.gt]: reservationStart }
+            }
+          ]
+        }
+      });
+
+      if (existingReservation) {
+        conflicts.push({
+          date: reservationDate.toISOString().split('T')[0],
+          time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+        });
+        continue;
+      }
+
+      // Create reservation
+      const reservationData = {
+        court_id: court_id,
+        user_id: user.id,
+        club_id: court.club.id,
+        start_time: reservationStart,
+        end_time: reservationEnd,
+        reservation_date: reservationDate.toISOString().split('T')[0],
+        duration_hours: duration_hours,
+        purpose,
+        match_type,
+        participants,
+        guest_count: guest_count || 0,
+        special_requests,
+        equipment_needed,
+        hourly_rate: court.hourly_rate || 0,
+        total_amount: (court.hourly_rate || 0) * duration_hours,
+        member_discount: 0,
+        final_amount: (court.hourly_rate || 0) * duration_hours,
+        booking_source: 'web',
+        ip_address: req.ip,
+        user_agent: req.get('User-Agent')
+      };
+
+      const reservation = await CourtReservation.create(reservationData);
+      reservations.push(reservation);
+    }
+
+    logger.info(`Recurring reservations created: ${reservations.length} reservations for user ${user.id}`);
+
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: `${reservations.length} recurring reservations created successfully`,
+      data: { 
+        reservations,
+        conflicts,
+        created_count: reservations.length,
+        conflict_count: conflicts.length
+      }
+    });
+  } catch (error) {
+    logger.error('Error in createRecurringReservation:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getCourts,
   getCourtById,
@@ -731,5 +956,8 @@ module.exports = {
   bookCourt,
   getCourtStats,
   getCourtReservations,
-  cancelCourtReservation
+  cancelCourtReservation,
+  createCourtReservation,
+  checkBookingConflicts,
+  createRecurringReservation
 }; 

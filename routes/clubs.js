@@ -135,4 +135,14 @@ router.get('/:id/stats',
   asyncHandler(clubController.getClubStats)
 );
 
+/**
+ * @route   GET /clubs/:id/court-stats
+ * @desc    Get club court statistics
+ * @access  Private (Club Owner/Admin)
+ */
+router.get('/:id/court-stats', 
+  authenticateToken,
+  asyncHandler(clubController.getClubCourtStats)
+);
+
 module.exports = router; 

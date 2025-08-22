@@ -350,6 +350,44 @@ const User = sequelize.define('User', {
     defaultValue: 0,
     allowNull: false,
     comment: 'Current number of active students'
+  },
+
+  // Microsite Management Fields
+  microsite_status: {
+    type: DataTypes.ENUM('active', 'inactive', 'pending', 'maintenance', 'suspended'),
+    defaultValue: 'active',
+    allowNull: false,
+    comment: 'Microsite status for admin supervision'
+  },
+
+  microsite_url: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    comment: 'Custom microsite URL if different from default'
+  },
+
+  microsite_settings: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Microsite configuration and settings'
+  },
+
+  content_moderation_flags: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Content moderation flags and issues'
+  },
+
+  last_content_update: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Last time microsite content was updated'
+  },
+
+  organization_name: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    comment: 'Organization name for display purposes'
   }
 
 }, {

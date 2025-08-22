@@ -27,6 +27,9 @@ const playerFinderRoutes = require('./playerFinder');
 const digitalCredentialRoutes = require('./digitalCredentials');
 const courtReservationRoutes = require('./courtReservations');
 const coachRoutes = require('./coaches');
+const adminMessageRoutes = require('./adminMessages');
+const micrositeRoutes = require('./microsites');
+const expenseRoutes = require('./expenses');
 
 // Define route prefixes
 const API_PREFIX = '/api/v1';
@@ -47,6 +50,9 @@ router.use(`${API_PREFIX}/player-finder`, playerFinderRoutes);
 router.use(`${API_PREFIX}/digital-credentials`, digitalCredentialRoutes);
 router.use(`${API_PREFIX}/court-reservations`, courtReservationRoutes);
 router.use(`${API_PREFIX}/coaches`, coachRoutes);
+router.use(`${API_PREFIX}/admin/messages`, adminMessageRoutes);
+router.use(`${API_PREFIX}/admin/microsites`, micrositeRoutes);
+router.use(`${API_PREFIX}/expenses`, expenseRoutes);
 
 // Health check endpoint
 router.get(`${API_PREFIX}/health`, (req, res) => {
@@ -240,6 +246,18 @@ router.get(`${API_PREFIX}/docs`, (req, res) => {
             'POST /search/:searchId/perform - Perform search with existing criteria',
             'GET /search/stats - Get coach search statistics',
             'POST /:coachId/contact - Contact a coach'
+          ]
+        },
+        expenses: {
+          base: '/expenses',
+          routes: [
+            'POST / - Create new expense',
+            'GET / - Get paginated list of expenses',
+            'GET /:id - Get specific expense by ID',
+            'PUT /:id - Update expense',
+            'DELETE /:id - Delete expense',
+            'GET /tournament/:tournamentId - Get expenses for tournament',
+            'GET /club/:clubId - Get expenses for club'
           ]
         }
       }

@@ -27,6 +27,7 @@ const PlayerFinder = require('./PlayerFinder');
 const CourtReservation = require('./CourtReservation');
 const DigitalCredential = require('./DigitalCredential');
 const CoachFinder = require('./CoachFinder');
+const Expense = require('./Expense');
 
 // Define associations
 
@@ -351,6 +352,51 @@ DigitalCredential.belongsTo(User, {
   as: 'user'
 });
 
+// Expense associations
+Expense.belongsTo(Tournament, {
+  foreignKey: 'tournament_id',
+  as: 'tournament'
+});
+
+Expense.belongsTo(Club, {
+  foreignKey: 'club_id',
+  as: 'club'
+});
+
+Expense.belongsTo(User, {
+  foreignKey: 'created_by',
+  as: 'creator'
+});
+
+Expense.belongsTo(User, {
+  foreignKey: 'approved_by',
+  as: 'approver'
+});
+
+// Tournament has many expenses
+Tournament.hasMany(Expense, {
+  foreignKey: 'tournament_id',
+  as: 'expenses'
+});
+
+// Club has many expenses
+Club.hasMany(Expense, {
+  foreignKey: 'club_id',
+  as: 'expenses'
+});
+
+// User has many expenses (created)
+User.hasMany(Expense, {
+  foreignKey: 'created_by',
+  as: 'createdExpenses'
+});
+
+// User has many expenses (approved)
+User.hasMany(Expense, {
+  foreignKey: 'approved_by',
+  as: 'approvedExpenses'
+});
+
 // Export all models
 module.exports = {
   sequelize,
@@ -369,5 +415,6 @@ module.exports = {
   PlayerFinder,
   CourtReservation,
   DigitalCredential,
-  CoachFinder
+  CoachFinder,
+  Expense
 }; 

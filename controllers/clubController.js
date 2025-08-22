@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-const { Club, User, Court, Tournament } = require('../db/models');
+const { Club, User, Court, Tournament, CourtReservation, sequelize } = require('../db/models');
 const { createError } = require('../middlewares/errorHandler');
 const { API_MESSAGES, HTTP_STATUS, CLUB_TYPES, PAGINATION } = require('../config/constants');
 const logger = require('../config/logger');
@@ -533,6 +533,109 @@ const getClubStats = async (req, res) => {
   }
 };
 
+/**
+ * Get club court statistics
+ * @route GET /api/v1/clubs/:id/court-stats
+ * @access Private (Club Owner/Admin)
+ */
+const getClubCourtStats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    const club = await Club.findByPk(id);
+    if (!club) {
+      throw createError.notFound('Club not found');
+    }
+
+    // Check if user is club owner or admin
+    if (club.owner_id !== user.id && !['admin', 'super_admin'].includes(user.role)) {
+      throw createError.forbidden('Access denied');
+    }
+
+    // Get all courts for this club
+    const courts = await Court.findAll({
+      where: { club_id: id },
+      attributes: ['id', 'name', 'court_type', 'surface', 'is_available', 'hourly_rate']
+    });
+
+    // Get detailed stats for each court
+    const courtStats = await Promise.all(courts.map(async (court) => {
+      const totalReservations = await CourtReservation.count({
+        where: { court_id: court.id }
+      });
+
+      const completedReservations = await CourtReservation.count({
+        where: { 
+          court_id: court.id,
+          status: 'completed'
+        }
+      });
+
+      const upcomingReservations = await CourtReservation.count({
+        where: { 
+          court_id: court.id,
+          status: 'confirmed',
+          start_time: {
+            [sequelize.Op.gte]: new Date()
+          }
+        }
+      });
+
+      const cancelledReservations = await CourtReservation.count({
+        where: { 
+          court_id: court.id,
+          status: 'cancelled'
+        }
+      });
+
+      return {
+        court_id: court.id,
+        court_name: court.name,
+        court_type: court.court_type,
+        surface: court.surface,
+        is_available: court.is_available,
+        hourly_rate: court.hourly_rate,
+        total_reservations: totalReservations,
+        completed_reservations: completedReservations,
+        upcoming_reservations: upcomingReservations,
+        cancelled_reservations: cancelledReservations,
+        utilization_rate: totalReservations > 0 ? (completedReservations / totalReservations) * 100 : 0,
+        cancellation_rate: totalReservations > 0 ? (cancelledReservations / totalReservations) * 100 : 0
+      };
+    }));
+
+    // Calculate overall club court statistics
+    const totalCourts = courts.length;
+    const availableCourts = courts.filter(court => court.is_available).length;
+    const totalReservationsAll = courtStats.reduce((sum, stat) => sum + stat.total_reservations, 0);
+    const completedReservationsAll = courtStats.reduce((sum, stat) => sum + stat.completed_reservations, 0);
+    const upcomingReservationsAll = courtStats.reduce((sum, stat) => sum + stat.upcoming_reservations, 0);
+
+    const summary = {
+      total_courts: totalCourts,
+      available_courts: availableCourts,
+      total_reservations: totalReservationsAll,
+      completed_reservations: completedReservationsAll,
+      upcoming_reservations: upcomingReservationsAll,
+      overall_utilization_rate: totalReservationsAll > 0 ? (completedReservationsAll / totalReservationsAll) * 100 : 0,
+      average_hourly_rate: courts.length > 0 ? courts.reduce((sum, court) => sum + (court.hourly_rate || 0), 0) / courts.length : 0
+    };
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Club court statistics retrieved successfully',
+      data: {
+        summary,
+        court_stats: courtStats
+      }
+    });
+  } catch (error) {
+    logger.error('Error in getClubCourtStats:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getClubs,
   getClubById,
@@ -544,5 +647,6 @@ module.exports = {
   getClubCourts,
   getClubTournaments,
   getClubMembers,
-  getClubStats
+  getClubStats,
+  getClubCourtStats
 }; 
