@@ -174,20 +174,25 @@ const register = async (req, res) => {
       throw createError.validation(`Missing required fields: ${basicRequiredFields.join(', ')}`);
     }
 
+    // Privacy policy acceptance required for all users
+    if (!privacy_policy_accepted) {
+      throw createError.validation('You must accept the privacy policy to register');
+    }
+
     // Validate user type specific required fields
     if (['player', 'coach', 'admin'].includes(user_type)) {
       if (!full_name) {
         throw createError.validation('full_name is required for this user type');
       }
       
-      // Require privacy policy acceptance for players and coaches
-      if (!privacy_policy_accepted) {
-        throw createError.validation('You must accept the privacy policy to register');
-      }
-      
       // Require verification document for players and coaches
       if (!verification_document) {
         throw createError.validation('Verification document (INE or passport) is required for registration');
+      }
+
+      // Require profile photo for players and coaches
+      if (!profile_photo) {
+        throw createError.validation('Profile photo is required for players and coaches');
       }
     }
     

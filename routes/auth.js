@@ -74,7 +74,8 @@ const registerValidation = [
   body('curp')
     .optional()
     .isLength({ min: 18, max: 18 })
-    .withMessage('CURP must be exactly 18 characters'),
+    .matches(/^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}$/)
+    .withMessage('CURP must be exactly 18 characters in valid Mexican format'),
   body('business_name')
     .optional()
     .isLength({ min: 2, max: 200 })
