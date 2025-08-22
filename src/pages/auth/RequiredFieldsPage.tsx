@@ -13,11 +13,13 @@ const RequiredFieldsPage = () => {
     confirmPassword: '',
     full_name: '',
     business_name: '',
+    curp: '',
     privacy_policy_accepted: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState<string>('');
+  const [useCurpAsUsername, setUseCurpAsUsername] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -38,10 +40,38 @@ const RequiredFieldsPage = () => {
     
     console.log('Form field change:', { name, value, type, checked, newValue });
     
-    setFormData({
+    const updatedFormData = {
       ...formData,
       [name]: newValue,
-    });
+    };
+
+    // Auto-generate username from CURP if enabled
+    if (name === 'curp' && useCurpAsUsername && value.length >= 10) {
+      updatedFormData.username = value.toUpperCase();
+    }
+    
+    setFormData(updatedFormData);
+  };
+
+  const validateCURP = (curp: string): boolean => {
+    // CURP format: AAAANNDDCNN where:
+    // AAAA: 4 letters (name + surname)
+    // NN: 2 digits (year)
+    // DD: 2 letters (month + day)
+    // C: 1 letter (gender)
+    // NN: 2 letters/digits (state + consonants)
+    const curpRegex = /^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}$/;
+    return curpRegex.test(curp.toUpperCase());
+  };
+
+  const handleCurpAsUsernameToggle = (enabled: boolean) => {
+    setUseCurpAsUsername(enabled);
+    if (enabled && formData.curp) {
+      setFormData(prev => ({
+        ...prev,
+        username: prev.curp.toUpperCase()
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -53,14 +83,29 @@ const RequiredFieldsPage = () => {
       toast.error('Please enter a valid email address');
       return false;
     }
-    if (!formData.password || formData.password.length < 3) {
-      toast.error('Password must be at least 3 characters long');
+    if (!formData.password || formData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return false;
+    }
+    
+    // Validate password complexity
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    if (!passwordRegex.test(formData.password)) {
+      toast.error('Password must contain uppercase, lowercase, number, and special character');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return false;
     }
+    // Privacy policy acceptance required for all users
+    console.log('Validating privacy policy for:', userType);
+    console.log('Privacy policy value:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
+    if (!formData.privacy_policy_accepted) {
+      toast.error('You must accept the privacy policy to continue');
+      return false;
+    }
+
     if (userType === 'club' || userType === 'partner') {
       if (!formData.business_name) {
         toast.error('Business name is required');
@@ -72,12 +117,12 @@ const RequiredFieldsPage = () => {
         return false;
       }
       
-      // Require privacy policy acceptance for players and coaches
-      console.log('Validating privacy policy for:', userType);
-      console.log('Privacy policy value:', formData.privacy_policy_accepted, typeof formData.privacy_policy_accepted);
-      if (!formData.privacy_policy_accepted) {
-        toast.error('You must accept the privacy policy to continue');
-        return false;
+      // Validate CURP for players and coaches (Mexican federation requirement)
+      if ((userType === 'player' || userType === 'coach') && formData.curp) {
+        if (!validateCURP(formData.curp)) {
+          toast.error('Please enter a valid CURP (18 characters)');
+          return false;
+        }
       }
     }
     return true;
@@ -93,6 +138,7 @@ const RequiredFieldsPage = () => {
       password: formData.password,
       full_name: formData.full_name,
       business_name: formData.business_name,
+      curp: formData.curp,
       privacy_policy_accepted: formData.privacy_policy_accepted,
     }));
 
@@ -124,6 +170,7 @@ const RequiredFieldsPage = () => {
         password: formData.password,
         full_name: formData.full_name,
         business_name: formData.business_name,
+        curp: formData.curp,
         privacy_policy_accepted: Boolean(formData.privacy_policy_accepted),
       };
 
@@ -175,7 +222,7 @@ const RequiredFieldsPage = () => {
 
   const getRequiredFields = () => {
     const baseFields = [
-      { name: 'username', label: 'Username', type: 'text', placeholder: 'Enter your username' },
+      { name: 'username', label: 'Username', type: 'text', placeholder: 'Enter your username', disabled: useCurpAsUsername },
       { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter your email address' },
       { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password' },
       { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Confirm your password' },
@@ -184,7 +231,23 @@ const RequiredFieldsPage = () => {
     if (userType === 'club' || userType === 'partner') {
       return [...baseFields, { name: 'business_name', label: 'Business Name', type: 'text', placeholder: 'Enter your business name' }];
     } else {
-      return [...baseFields, { name: 'full_name', label: 'Full Name', type: 'text', placeholder: 'Enter your full name' }];
+      const playerCoachFields = [
+        ...baseFields,
+        { name: 'full_name', label: 'Full Name', type: 'text', placeholder: 'Enter your full name' }
+      ];
+      
+      // Add CURP field for players and coaches
+      if (userType === 'player' || userType === 'coach') {
+        playerCoachFields.push({ 
+          name: 'curp', 
+          label: 'CURP (Optional)', 
+          type: 'text', 
+          placeholder: 'Enter your CURP (18 characters)',
+          maxLength: 18
+        });
+      }
+      
+      return playerCoachFields;
     }
   };
 
@@ -209,12 +272,36 @@ const RequiredFieldsPage = () => {
               </p>
             </div>
             <div className="px-6 py-4 space-y-6">
+              {/* CURP-as-Username Toggle for Players/Coaches */}
+              {(userType === 'player' || userType === 'coach') && (
+                <div className="border border-blue-200 bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      id="use_curp_as_username"
+                      type="checkbox"
+                      checked={useCurpAsUsername}
+                      onChange={(e) => handleCurpAsUsernameToggle(e.target.checked)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="use_curp_as_username" className="text-sm font-medium text-blue-800">
+                      Use CURP as Username
+                    </label>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">
+                    CURP is a unique Mexican identification code. Using it as your username ensures uniqueness and follows federation standards.
+                  </p>
+                </div>
+              )}
+
               {getRequiredFields().map((field, index) => (
                 <div
                   key={field.name}
                   className="space-y-2"
                 >
-                  <label htmlFor={field.name} className="animate-on-scroll block text-sm font-medium text-gray-700">{field.label}</label>
+                  <label htmlFor={field.name} className="animate-on-scroll block text-sm font-medium text-gray-700">
+                    {field.label}
+                    {field.name === 'curp' && useCurpAsUsername && <span className="text-red-500 ml-1">*</span>}
+                  </label>
                   <div className="relative">
                     <input
                       id={field.name}
@@ -224,11 +311,14 @@ const RequiredFieldsPage = () => {
                           ? (field.name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password'))
                           : field.type
                       }
-                      // placeholder={field.placeholder}
+                      maxLength={field.maxLength}
                       value={formData[field.name as keyof typeof formData] as string}
                       onChange={handleChange}
-                      required
-                      className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={field.disabled}
+                      required={field.name !== 'curp' || useCurpAsUsername}
+                      className={`w-full h-10 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        field.disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
+                      }`}
                     />
                     {field.type === 'password' && (
                       <button
@@ -273,16 +363,15 @@ const RequiredFieldsPage = () => {
           </div>
         </div>
 
-        {/* Privacy Policy Section */}
-        {(userType === 'player' || userType === 'coach') && (
-          <div className="mt-6">
-            <div className="animate-on-scroll w-full bg-white rounded-lg shadow-lg border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="animate-on-scroll text-xl font-semibold text-gray-900">Privacy Policy</h2>
-                <p className="animate-on-scroll text-gray-600">
-                  Please read and accept our privacy policy to continue
-                </p>
-              </div>
+        {/* Privacy Policy Section - Required for all users */}
+        <div className="mt-6">
+          <div className="animate-on-scroll w-full bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="animate-on-scroll text-xl font-semibold text-gray-900">Privacy Policy</h2>
+              <p className="animate-on-scroll text-gray-600">
+                Please read and accept our privacy policy to continue
+              </p>
+            </div>
               <div className="px-6 py-4">
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
@@ -321,7 +410,7 @@ const RequiredFieldsPage = () => {
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8">
           <button
@@ -335,14 +424,17 @@ const RequiredFieldsPage = () => {
           </button>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button
-              className="animate-on-scroll px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSkipToRegister}
-              disabled={loading || userType === 'player' || userType === 'coach'}
-              title={userType === 'player' || userType === 'coach' ? 'Players and coaches must complete full registration' : 'Skip optional fields and register now'}
-            >
-              {loading ? 'Creating Account...' : 'Skip & Register Now'}
-            </button>
+            {/* Only show skip option for business users (club, partner, state) */}
+            {(userType === 'club' || userType === 'partner' || userType === 'state') && (
+              <button
+                className="animate-on-scroll px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSkipToRegister}
+                disabled={loading}
+                title="Skip optional fields and register now"
+              >
+                {loading ? 'Creating Account...' : 'Skip & Register Now'}
+              </button>
+            )}
             
             <button
               className="animate-on-scroll flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300"

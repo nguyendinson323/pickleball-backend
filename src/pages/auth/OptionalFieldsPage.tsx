@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import { registerUser } from '../../store/slices/authSlice';
 import { toast } from 'sonner';
+import PhotoCrop from '../../components/PhotoCrop';
 
 const OptionalFieldsPage = () => {
   const [formData, setFormData] = useState({
@@ -33,6 +34,11 @@ const OptionalFieldsPage = () => {
   });
   const [userType, setUserType] = useState<string>('');
   const [requiredFields, setRequiredFields] = useState<any>({});
+  
+  // Photo crop states
+  const [showPhotoCrop, setShowPhotoCrop] = useState(false);
+  const [rawPhotoFile, setRawPhotoFile] = useState<File | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('');
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -66,10 +72,30 @@ const OptionalFieldsPage = () => {
   };
 
   const handleFileChange = (name: string, file: File | null) => {
-    setFiles(prev => ({
-      ...prev,
-      [name]: file,
-    }));
+    if (name === 'profile_photo' && file) {
+      // Show crop modal for profile photos
+      setRawPhotoFile(file);
+      setShowPhotoCrop(true);
+    } else {
+      setFiles(prev => ({
+        ...prev,
+        [name]: file,
+      }));
+    }
+  };
+
+  const handleCroppedPhoto = (croppedFile: File | null) => {
+    if (croppedFile) {
+      setFiles(prev => ({
+        ...prev,
+        profile_photo: croppedFile,
+      }));
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(croppedFile);
+      setPhotoPreviewUrl(previewUrl);
+    }
+    setShowPhotoCrop(false);
+    setRawPhotoFile(null);
   };
 
   const handleFileDrop = (name: string, droppedFiles: FileList | null) => {
@@ -478,18 +504,35 @@ const OptionalFieldsPage = () => {
                         <div className="space-y-2">
                           <div className="w-20 h-20 mx-auto rounded-full overflow-hidden bg-gray-100">
                             <img
-                              src={URL.createObjectURL(files.profile_photo)}
+                              src={photoPreviewUrl || URL.createObjectURL(files.profile_photo)}
                               alt="Profile preview"
                               className="w-full h-full object-cover"
                             />
                           </div>
                           <p className="text-sm text-gray-600">{files.profile_photo.name}</p>
-                          <button
-                            className="animate-on-scroll px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm"
-                            onClick={() => handleFileChange('profile_photo', null)}
-                          >
-                            Remove Photo
-                          </button>
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              className="animate-on-scroll px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+                              onClick={() => {
+                                if (photoPreviewUrl) {
+                                  URL.revokeObjectURL(photoPreviewUrl);
+                                  setPhotoPreviewUrl('');
+                                }
+                                setFiles(prev => ({ ...prev, profile_photo: null }));
+                              }}
+                            >
+                              Remove Photo
+                            </button>
+                            <button
+                              className="animate-on-scroll px-3 py-1 border border-blue-300 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors text-sm"
+                              onClick={() => {
+                                setRawPhotoFile(files.profile_photo);
+                                setShowPhotoCrop(true);
+                              }}
+                            >
+                              Re-crop
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-2">
@@ -617,13 +660,16 @@ const OptionalFieldsPage = () => {
           </button>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button
-              className="animate-on-scroll px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSkip}
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : 'Skip & Register Now'}
-            </button>
+            {/* Only show skip option for business users */}
+            {(userType === 'club' || userType === 'partner' || userType === 'state') && (
+              <button
+                className="animate-on-scroll px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSkip}
+                disabled={loading}
+              >
+                {loading ? 'Creating Account...' : 'Skip & Register Now'}
+              </button>
+            )}
             
             <button
               className="animate-on-scroll px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -634,6 +680,18 @@ const OptionalFieldsPage = () => {
             </button>
           </div>
         </div>
+
+        {/* Photo Crop Modal */}
+        {showPhotoCrop && (
+          <PhotoCrop
+            imageFile={rawPhotoFile}
+            onCroppedImage={handleCroppedPhoto}
+            onClose={() => {
+              setShowPhotoCrop(false);
+              setRawPhotoFile(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
