@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { toast } from 'sonner';
-import axiosInstance from '../../utils/axios';
+import { api } from '../../lib/api';
 import {
   MessageSquare,
   Megaphone,
@@ -119,16 +119,15 @@ const MessagingCenter: React.FC = () => {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get('/admin/messages', {
-        params: {
-          status: filters.status !== 'all' ? filters.status : undefined,
-          message_type: filters.message_type !== 'all' ? filters.message_type : undefined,
-          target_audience: filters.target_audience !== 'all' ? filters.target_audience : undefined,
-          priority: filters.priority !== 'all' ? filters.priority : undefined,
-          limit: 50
-        }
-      });
-      setMessages(response.data.data.messages || []);
+      const params = new URLSearchParams();
+      if (filters.status !== 'all') params.append('status', filters.status);
+      if (filters.message_type !== 'all') params.append('message_type', filters.message_type);
+      if (filters.target_audience !== 'all') params.append('target_audience', filters.target_audience);
+      if (filters.priority !== 'all') params.append('priority', filters.priority);
+      params.append('limit', '50');
+      
+      const response = await api.get(`/admin/messages?${params.toString()}`);
+      setMessages((response as any)?.data?.data?.messages || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast.error('Failed to fetch messages');
@@ -139,8 +138,8 @@ const MessagingCenter: React.FC = () => {
 
   const fetchMessageStats = async () => {
     try {
-      const response = await axiosInstance.get('/admin/messages/stats/overview');
-      const stats = response.data.data;
+      const response = await api.get('/admin/messages/stats/overview');
+      const stats = (response as any)?.data?.data;
       setMessageStats({
         total_messages: stats.total_messages || 0,
         direct_messages: 0, // Not applicable for admin messages
@@ -172,8 +171,8 @@ const MessagingCenter: React.FC = () => {
     }
 
     try {
-      const response = await axiosInstance.post('/admin/messages', formData);
-      const newMessage = response.data.data.message;
+      const response = await api.post('/admin/messages', formData);
+      const newMessage = (response as any)?.data?.data?.message;
       
       setMessages(prev => [newMessage, ...prev]);
       setShowCreateModal(false);
@@ -192,8 +191,8 @@ const MessagingCenter: React.FC = () => {
     }
 
     try {
-      const response = await axiosInstance.put(`/admin/messages/${editingAnnouncement.id}`, formData);
-      const updatedMessage = response.data.data.message;
+      const response = await api.put(`/admin/messages/${editingAnnouncement.id}`, formData);
+      const updatedMessage = (response as any)?.data?.data?.message;
       
       setMessages(prev => 
         prev.map(m => m.id === editingAnnouncement.id ? updatedMessage : m)
@@ -210,7 +209,7 @@ const MessagingCenter: React.FC = () => {
 
   const handleSendMessage = async (id: string, sendImmediately = true) => {
     try {
-      const response = await axiosInstance.post(`/admin/messages/${id}/send`, {
+      const response = await api.post(`/admin/messages/${id}/send`, {
         send_immediately: sendImmediately
       });
       
@@ -233,7 +232,7 @@ const MessagingCenter: React.FC = () => {
     if (!confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      await axiosInstance.delete(`/admin/messages/${id}`);
+      await api.delete(`/admin/messages/${id}`);
       setMessages(prev => prev.filter(m => m.id !== id));
       toast.success('Message deleted successfully');
     } catch (error: any) {
@@ -245,11 +244,11 @@ const MessagingCenter: React.FC = () => {
   const handlePreviewRecipients = async () => {
     setPreviewLoading(true);
     try {
-      const response = await axiosInstance.post('/admin/messages/preview-recipients', {
+      const response = await api.post('/admin/messages/preview-recipients', {
         target_audience: formData.target_audience,
         target_filters: formData.target_filters
       });
-      setRecipientsPreview(response.data.data);
+      setRecipientsPreview((response as any)?.data?.data);
     } catch (error: any) {
       console.error('Error previewing recipients:', error);
       toast.error(error.response?.data?.message || 'Failed to preview recipients');
@@ -558,8 +557,8 @@ const MessagingCenter: React.FC = () => {
   const fetchTemplates = async () => {
     setLoadingTemplates(true);
     try {
-      const response = await axiosInstance.get('/admin/messages/templates');
-      setTemplates(response.data.data.templates || []);
+      const response = await api.get('/admin/messages/templates');
+      setTemplates((response as any)?.data?.templates || []);
     } catch (error: any) {
       console.error('Error fetching templates:', error);
       toast.error('Failed to fetch templates');
