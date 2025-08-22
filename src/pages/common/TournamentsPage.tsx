@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import { fetchTournaments, registerForTournament } from '../../store/slices/tournamentsSlice';
 import { Tournament } from '../../types/api';
@@ -153,6 +154,7 @@ const mockTournaments: Tournament[] = [
 
 const TournamentsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { tournaments: reduxTournaments, loading, error, pagination } = useSelector((state: RootState) => state.tournaments);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -313,16 +315,17 @@ const TournamentsPage = () => {
     }
   };
 
-  // New handler functions for button actions
+  // New handler functions for button actions  
   const handleViewTournament = (tournamentId: string) => {
     const tournament = tournaments.find(t => t.id === tournamentId);
     if (tournament) {
-      toast.info(`Viewing details for ${tournament.name}`, {
-        description: `Tournament: ${tournament.tournament_type} - ${tournament.category}`,
-        duration: 3000
+      // For now, show detailed information in toast until detail page is created
+      toast.info(`${tournament.name} Details`, {
+        description: `Type: ${tournament.tournament_type} | Category: ${tournament.category} | Entry Fee: $${tournament.entry_fee} | Date: ${new Date(tournament.start_date).toLocaleDateString()} | Participants: ${tournament.current_participants}/${tournament.max_participants}`,
+        duration: 5000
       });
-      // In a real app, this would navigate to tournament details page
-      console.log('Viewing tournament:', tournament);
+      // TODO: Create tournament detail page and navigate to `/tournaments/${tournamentId}`
+      console.log('Tournament details:', tournament);
     }
   };
 

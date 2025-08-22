@@ -302,37 +302,37 @@ const routes = [
   {
     key: 'club',
     path: '/club',
-    element: <ClubDashboard />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'club-dashboard',
     path: '/club/dashboard',
-    element: <ClubDashboard />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'club-profile',
     path: '/club/profile',
-    element: <ClubProfile />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'club-courts',
     path: '/club/courts',
-    element: <ClubCourtManagement />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubCourtManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'club-members',
     path: '/club/members',
-    element: <ClubMemberManagement />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubMemberManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'club-microsite',
     path: '/club/microsite',
-    element: <ClubMicrosite />,
+    element: <ProtectedRoute allowedRoles={['club']}><ClubMicrosite /></ProtectedRoute>,
     public: false
   },
 
@@ -340,37 +340,37 @@ const routes = [
   {
     key: 'partner',
     path: '/partner',
-    element: <PartnerDashboard />,
+    element: <ProtectedRoute allowedRoles={['partner']}><PartnerDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'partner-dashboard',
     path: '/partner/dashboard',
-    element: <PartnerDashboard />,
+    element: <ProtectedRoute allowedRoles={['partner']}><PartnerDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'partner-profile',
     path: '/partner/profile',
-    element: <BusinessProfile />,
+    element: <ProtectedRoute allowedRoles={['partner']}><BusinessProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'partner-courts',
     path: '/partner/courts',
-    element: <PartnerCourtManagement />,
+    element: <ProtectedRoute allowedRoles={['partner']}><PartnerCourtManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'partner-microsite',
     path: '/partner/microsite',
-    element: <BusinessMicrosite />,
+    element: <ProtectedRoute allowedRoles={['partner']}><BusinessMicrosite /></ProtectedRoute>,
     public: false
   },
   {
     key: 'partner-analytics',
     path: '/partner/analytics',
-    element: <PartnerAnalytics />,
+    element: <ProtectedRoute allowedRoles={['partner']}><PartnerAnalytics /></ProtectedRoute>,
     public: false
   },
 
@@ -378,49 +378,49 @@ const routes = [
   {
     key: 'state',
     path: '/state',
-    element: <StateDashboard />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-dashboard',
     path: '/state/dashboard',
-    element: <StateDashboard />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-profile',
     path: '/state/profile',
-    element: <StateProfile />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-members',
     path: '/state/members',
-    element: <StateMemberManagement />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateMemberManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-courts',
     path: '/state/courts',
-    element: <StateCourtManagement />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateCourtManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-microsite',
     path: '/state/microsite',
-    element: <StateMicrosite />,
+    element: <ProtectedRoute allowedRoles={['state']}><StateMicrosite /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-announcements',
     path: '/state/announcements',
-    element: <Announcements />,
+    element: <ProtectedRoute allowedRoles={['state']}><Announcements /></ProtectedRoute>,
     public: false
   },
   {
     key: 'state-statistics',
     path: '/state/statistics',
-    element: <Statistics />,
+    element: <ProtectedRoute allowedRoles={['state']}><Statistics /></ProtectedRoute>,
     public: false
   },
 
@@ -446,13 +446,13 @@ const routes = [
   {
     key: 'admin-system',
     path: '/admin/system',
-    element: <SystemManagement />,
+    element: <ProtectedRoute allowedRoles={['admin']}><SystemManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-analytics',
     path: '/admin/analytics',
-    element: <Analytics />,
+    element: <ProtectedRoute allowedRoles={['admin']}><Analytics /></ProtectedRoute>,
     public: false
   },
 
@@ -466,25 +466,25 @@ const routes = [
   {
     key: 'banners',
     path: '/admin/banners',
-    element: <BannersPage />,
+    element: <ProtectedRoute allowedRoles={['admin']}><BannersPage /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-digital-credentials',
     path: '/admin/digital-credentials',
-    element: <DigitalCredentialsManagement />,
+    element: <ProtectedRoute allowedRoles={['admin']}><DigitalCredentialsManagement /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-court-reservations',
     path: '/admin/court-reservations',
-    element: <CourtReservationDashboard />,
+    element: <ProtectedRoute allowedRoles={['admin']}><CourtReservationDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-tournaments',
     path: '/admin/tournaments',
-    element: <TournamentsManagementPage />,
+    element: <ProtectedRoute allowedRoles={['admin']}><TournamentsManagementPage /></ProtectedRoute>,
     public: false
   },
   {
