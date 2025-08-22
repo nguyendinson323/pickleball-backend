@@ -18,7 +18,9 @@ import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManage
 import CourtReservationDashboard from "./pages/admin/CourtReservationDashboard";
 import TournamentsManagementPage from "./pages/admin/TournamentsManagementPage";
 import CoachRefereeProfile from "./pages/coach/CoachRefereeProfile";
-import CoachFinder from "./components/CoachFinder";
+// Coach finder page
+import CoachFinderPage from "./pages/common/CoachFinderPage";
+// Coach profile component for public viewing
 import CoachProfile from "./components/CoachProfile";
 
 // Common pages (accessible to all logged-in users)
@@ -209,11 +211,11 @@ const routes = [
   {
     key: 'coach-finder',
     path: '/coach-finder',
-    element: <CoachFinder />,
+    element: <CoachFinderPage />,
     public: true
   },
   {
-    key: 'coach-profile',
+    key: 'coach-profile-public',
     path: '/coaches/:coachId/profile',
     element: <CoachProfile />,
     public: true

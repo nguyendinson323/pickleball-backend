@@ -20,6 +20,7 @@ export const commonLoggedInTabs: NavigationItem[] = [
   { name: 'Rankings', href: '/rankings', public: true },
   { name: 'Find Court', href: '/find-court', public: true },
   { name: 'Player Finder', href: '/player-finder', public: true },
+  { name: 'Coach Finder', href: '/coach-finder', public: true },
   { name: 'Clubs', href: '/clubs', public: true },
   { name: 'Court Reservations', href: '/court-reservations', public: true },
   { name: 'Messages', href: '/messages', public: true },
