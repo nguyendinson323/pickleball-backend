@@ -357,19 +357,26 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('active', 'inactive', 'pending', 'maintenance', 'suspended'),
     defaultValue: 'active',
     allowNull: false,
-    comment: 'Microsite status for admin supervision'
+    comment: 'Status of user\'s microsite'
   },
 
-  microsite_url: {
-    type: DataTypes.STRING(500),
+  microsite_template: {
+    type: DataTypes.ENUM('basic', 'professional', 'premium', 'custom'),
+    defaultValue: 'basic',
+    allowNull: false,
+    comment: 'Template used for user\'s microsite'
+  },
+
+  microsite_custom_domain: {
+    type: DataTypes.STRING(255),
     allowNull: true,
-    comment: 'Custom microsite URL if different from default'
+    comment: 'Custom domain for user\'s microsite'
   },
 
   microsite_settings: {
     type: DataTypes.JSON,
     allowNull: true,
-    comment: 'Microsite configuration and settings'
+    comment: 'JSON object containing microsite configuration and settings'
   },
 
   content_moderation_flags: {

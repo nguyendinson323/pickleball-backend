@@ -262,7 +262,7 @@ const toggleFinderStatus = async (req, res) => {
     });
 
     if (!finder) {
-      throw createError.notFound('Player finder preferences not found');
+      throw createError.NotFound('Player finder preferences not found');
     }
 
     finder.is_active = !finder.is_active;
@@ -293,7 +293,7 @@ const getNearbyPlayers = async (req, res) => {
     });
 
     if (!user || !user.latitude || !user.longitude) {
-      throw createError.badRequest('User location not available');
+      throw createError.BadRequest('User location not available');
     }
 
     // Get user's finder preferences
@@ -385,12 +385,12 @@ const sendMatchRequest = async (req, res) => {
     // Validate target user
     const targetUser = await User.findByPk(targetUserId);
     if (!targetUser || targetUser.user_type !== 'player') {
-      throw createError.notFound('Target player not found');
+      throw createError.NotFound('Target player not found');
     }
 
     // Check if user is not sending request to themselves
     if (targetUserId === senderId) {
-      throw createError.badRequest('Cannot send match request to yourself');
+      throw createError.BadRequest('Cannot send match request to yourself');
     }
 
     // TODO: Create match request model and save the request
@@ -401,14 +401,13 @@ const sendMatchRequest = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       target_user: {
         id: targetUser.id,
-          username: targetUser.username,
-          full_name: targetUser.full_name
-        },
-        message,
-        preferred_date,
-        preferred_time,
-        match_type
-      }
+        username: targetUser.username,
+        full_name: targetUser.full_name
+      },
+      message,
+      preferred_date,
+      preferred_time,
+      match_type
     });
 
   } catch (error) {
@@ -433,19 +432,17 @@ const getFinderStats = async (req, res) => {
       return res.status(HTTP_STATUS.OK).json({
         total_matches_found: 0,
         matches_contacted: 0,
-          successful_matches: 0,
-          is_active: false
-        }
+        successful_matches: 0,
+        is_active: false
       });
     }
 
     res.status(HTTP_STATUS.OK).json({
       total_matches_found: finder.total_matches_found,
       matches_contacted: finder.matches_contacted,
-        successful_matches: finder.successful_matches,
-        is_active: finder.is_active,
-        last_search_date: finder.last_search_date
-      }
+      successful_matches: finder.successful_matches,
+      is_active: finder.is_active,
+      last_search_date: finder.last_search_date
     });
 
   } catch (error) {
@@ -536,7 +533,7 @@ const updateVisibility = async (req, res) => {
     const userId = req.user.id;
 
     if (typeof can_be_found !== 'boolean') {
-      throw createError.badRequest('can_be_found must be a boolean value');
+      throw createError.BadRequest('can_be_found must be a boolean value');
     }
 
     const result = await playerFinderService.updatePlayerVisibility(userId, can_be_found);

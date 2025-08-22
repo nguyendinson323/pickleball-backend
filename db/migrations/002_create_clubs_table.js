@@ -28,9 +28,9 @@ module.exports = {
         allowNull: true
       },
       club_type: {
-        type: Sequelize.ENUM('public', 'private', 'semi_private', 'resort', 'community'),
+        type: Sequelize.ENUM('recreational', 'competitive', 'training', 'mixed'),
         allowNull: false,
-        defaultValue: 'public'
+        defaultValue: 'recreational'
       },
       owner_id: {
         type: Sequelize.UUID,

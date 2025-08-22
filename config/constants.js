@@ -15,7 +15,7 @@ const USER_TYPES = {
   CLUB: 'club',
   PARTNER: 'partner',
   STATE: 'state',
-  FEDERATION: 'federation'
+  ADMIN: 'admin'
 };
 
 const USER_ROLES = {

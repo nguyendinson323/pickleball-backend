@@ -28,7 +28,7 @@ const CourtReservation = require('./CourtReservation');
 const DigitalCredential = require('./DigitalCredential');
 const CoachFinder = require('./CoachFinder');
 const Expense = require('./Expense');
-const AdminMessage = require('./AdminMessage');
+const { AdminMessage, AdminMessageRecipient } = require('./AdminMessage');
 const Message = require('./Message');
 const Announcement = require('./Announcement');
 
@@ -464,6 +464,7 @@ module.exports = {
   CoachFinder,
   Expense,
   AdminMessage,
+  AdminMessageRecipient,
   Message,
   Announcement
 }; 

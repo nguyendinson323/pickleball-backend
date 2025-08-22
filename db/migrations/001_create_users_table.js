@@ -1,11 +1,12 @@
 /**
- * Migration: Create Users Table
+ * Migration: Create Integrated Users Table
  * 
- * This migration creates the users table with all necessary fields
- * for user management, authentication, and profile information.
+ * This migration creates the users table with all necessary fields including
+ * user management, authentication, profile information, coaching features,
+ * and microsite functionality - all integrated in one comprehensive migration.
  * 
  * @author Pickleball Federation Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 'use strict';
@@ -13,6 +14,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
+      // Core Identity Fields
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -33,6 +35,8 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      
+      // Personal Information
       full_name: {
         type: Sequelize.STRING(200),
         allowNull: true
@@ -57,6 +61,8 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      
+      // User Classification
       user_type: {
         type: Sequelize.ENUM('player', 'coach', 'club', 'partner', 'state', 'admin'),
         allowNull: false,
@@ -66,6 +72,8 @@ module.exports = {
         type: Sequelize.ENUM('2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5'),
         allowNull: true
       },
+      
+      // Membership and Status
       membership_status: {
         type: Sequelize.ENUM('free', 'basic', 'premium', 'elite'),
         allowNull: false,
@@ -75,6 +83,8 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true
       },
+      
+      // Authentication and Security
       email_verified: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
@@ -119,6 +129,8 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true
       },
+      
+      // Location Information
       state: {
         type: Sequelize.STRING(100),
         allowNull: true
@@ -143,7 +155,8 @@ module.exports = {
         type: Sequelize.STRING(50),
         allowNull: true
       },
-      // Organization specific fields
+      
+      // Organization/Business Fields
       business_name: {
         type: Sequelize.STRING(200),
         allowNull: true
@@ -169,6 +182,8 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: true
       },
+      
+      // System Fields
       verification_documents: {
         type: Sequelize.JSON,
         allowNull: true
@@ -189,14 +204,16 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true
       },
+      
+      // Player Search Features
       can_be_found: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true,
         comment: 'Whether player can be found in player search (privacy setting)'
       },
-
-      // Coach-specific fields
+      
+      // Coach-Specific Fields
       is_findable: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
@@ -279,7 +296,31 @@ module.exports = {
         allowNull: false,
         comment: 'Current number of active students'
       },
-
+      
+      // Microsite Fields
+      microsite_status: {
+        type: Sequelize.ENUM('active', 'inactive', 'pending', 'maintenance', 'suspended'),
+        defaultValue: 'active',
+        allowNull: false,
+        comment: 'Status of user\'s microsite'
+      },
+      microsite_template: {
+        type: Sequelize.ENUM('basic', 'professional', 'premium', 'custom'),
+        defaultValue: 'basic',
+        allowNull: false,
+        comment: 'Template used for user\'s microsite'
+      },
+      microsite_custom_domain: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        comment: 'Custom domain for user\'s microsite'
+      },
+      microsite_settings: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'JSON object containing microsite configuration and settings'
+      },
+      
       // Timestamps
       created_at: {
         type: Sequelize.DATE,
@@ -297,7 +338,7 @@ module.exports = {
       }
     });
 
-    // Add indexes
+    // Add Core Indexes
     await queryInterface.addIndex('users', ['email'], {
       unique: true,
       name: 'users_email_unique'
@@ -308,6 +349,7 @@ module.exports = {
       name: 'users_username_unique'
     });
 
+    // Classification and Status Indexes
     await queryInterface.addIndex('users', ['user_type'], {
       name: 'users_user_type_index'
     });
@@ -320,6 +362,11 @@ module.exports = {
       name: 'users_membership_status_index'
     });
 
+    await queryInterface.addIndex('users', ['is_active'], {
+      name: 'users_is_active_index'
+    });
+
+    // Location Indexes
     await queryInterface.addIndex('users', ['state'], {
       name: 'users_state_index'
     });
@@ -332,19 +379,17 @@ module.exports = {
       name: 'users_location_index'
     });
 
-    await queryInterface.addIndex('users', ['is_active'], {
-      name: 'users_is_active_index'
-    });
-
+    // Time-based Indexes
     await queryInterface.addIndex('users', ['created_at'], {
       name: 'users_created_at_index'
     });
 
+    // Player Search Indexes
     await queryInterface.addIndex('users', ['can_be_found'], {
       name: 'users_can_be_found_index'
     });
 
-    // Coach-specific indexes
+    // Coach-specific Indexes
     await queryInterface.addIndex('users', ['is_findable'], {
       name: 'users_is_findable_index'
     });
@@ -369,13 +414,34 @@ module.exports = {
       name: 'users_reviews_count_index'
     });
 
-    // Composite index for coach search optimization
+    // Microsite Indexes
+    await queryInterface.addIndex('users', ['microsite_status'], {
+      name: 'users_microsite_status_index'
+    });
+
+    await queryInterface.addIndex('users', ['microsite_template'], {
+      name: 'users_microsite_template_index'
+    });
+
+    await queryInterface.addIndex('users', ['microsite_custom_domain'], {
+      name: 'users_microsite_custom_domain_index'
+    });
+
+    // Composite Indexes for Performance Optimization
     await queryInterface.addIndex('users', ['user_type', 'is_findable', 'available_for_lessons', 'is_active'], {
       name: 'users_coach_search_index'
+    });
+
+    await queryInterface.addIndex('users', ['user_type', 'can_be_found', 'is_active'], {
+      name: 'users_player_search_index'
+    });
+
+    await queryInterface.addIndex('users', ['microsite_status', 'microsite_template'], {
+      name: 'users_microsite_search_index'
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('users');
   }
-}; 
+};
