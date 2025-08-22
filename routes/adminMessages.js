@@ -370,7 +370,9 @@ router.get('/stats/overview', asyncHandler(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: stats
+      data: {
+        data: stats
+      }
     });
   } catch (error) {
     throw error;
@@ -442,7 +444,11 @@ router.get('/templates', asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    data: { templates }
+    data: {
+      data: {
+        templates
+      }
+    }
   });
 }));
 

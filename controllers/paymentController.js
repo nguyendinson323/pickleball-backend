@@ -84,7 +84,9 @@ const getPayments = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.PAYMENTS_RETRIEVED,
-      data: payments,
+      data: {
+        data: payments
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -171,7 +173,11 @@ const createPayment = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json(createdPayment);
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: 'Payment created successfully',
+      data: createdPayment
+    });
   } catch (error) {
     logger.error('Error in createPayment:', error);
     throw error;

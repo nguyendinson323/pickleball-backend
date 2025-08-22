@@ -75,7 +75,9 @@ const getUsers = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USERS_RETRIEVED,
-      data: users,
+      data: {
+        data: users
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -366,7 +368,9 @@ const getPlayers = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.PLAYERS_RETRIEVED,
-      data: players,
+      data: {
+        data: players
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

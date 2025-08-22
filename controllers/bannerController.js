@@ -103,7 +103,11 @@ const getBanners = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: banners,
+      data: {
+        data: {
+        banner
+      }s
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -133,7 +137,11 @@ const getActiveBanners = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: banners
+      data: {
+        data: {
+        banner
+      }s
+      }
     });
 
   } catch (error) {
@@ -155,7 +163,11 @@ const getCarouselBanners = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: banners
+      data: {
+        data: {
+        banner
+      }s
+      }
     });
 
   } catch (error) {
@@ -183,7 +195,9 @@ const getBannerById = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: banner
+      data: {
+        banner
+      }
     });
 
   } catch (error) {
@@ -262,7 +276,9 @@ const createBanner = async (req, res) => {
     res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: API_MESSAGES.SUCCESS.BANNER_CREATED,
-      data: banner
+      data: {
+        banner
+      }
     });
 
   } catch (error) {
@@ -317,7 +333,9 @@ const updateBanner = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.BANNER_UPDATED,
-      data: banner
+      data: {
+        banner
+      }
     });
 
   } catch (error) {
@@ -377,7 +395,9 @@ const toggleBannerStatus = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: banner.is_active ? 'Banner activated' : 'Banner deactivated',
-      data: banner
+      data: {
+        banner
+      }
     });
 
   } catch (error) {
@@ -413,7 +433,9 @@ const updateBannerPosition = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: 'Banner position updated',
-      data: banner
+      data: {
+        banner
+      }
     });
 
   } catch (error) {

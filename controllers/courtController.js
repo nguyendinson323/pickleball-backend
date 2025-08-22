@@ -81,7 +81,9 @@ const getCourts = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURTS_RETRIEVED,
-      data: courts,
+      data: {
+        data: courts
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -118,7 +120,11 @@ const getCourtById = async (req, res) => {
       throw createError.notFound('Court not found');
     }
 
-    res.status(HTTP_STATUS.OK).json(court);
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Court retrieved successfully',
+      data: court
+    });
   } catch (error) {
     logger.error('Error in getCourtById:', error);
     throw error;
@@ -166,7 +172,11 @@ const createCourt = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json(createdCourt);
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: 'Court created successfully',
+      data: createdCourt
+    });
   } catch (error) {
     logger.error('Error in createCourt:', error);
     throw error;
@@ -359,7 +369,9 @@ const getCourtBookings = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_BOOKINGS_RETRIEVED,
-      bookings: paginatedBookings,
+      data: {
+        data: paginatedBookings
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -639,7 +651,9 @@ const getCourtReservations = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_RESERVATIONS_RETRIEVED,
-      data: reservations,
+      data: {
+        data: reservations
+      },
       pagination
     });
   } catch (error) {

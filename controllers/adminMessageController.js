@@ -86,7 +86,11 @@ const createMessage = async (req, res) => {
     res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: 'Admin message created successfully',
-      data: { message }
+      data: {
+        data: {
+          message
+        }
+      }
     });
   } catch (error) {
     logger.error('Error in createMessage:', error);
@@ -145,12 +149,14 @@ const getMessages = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       data: {
-        messages,
+        data: {
+          messages
+        },
         pagination: {
-          currentPage: parseInt(page),
-          totalPages,
-          totalItems: count,
-          itemsPerPage: parseInt(limit)
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: count,
+          pages: totalPages
         }
       }
     });
@@ -195,7 +201,9 @@ const getMessageById = async (req, res) => {
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
-      data: { message, stats }
+      data: {
+        data: message
+      }
     });
   } catch (error) {
     logger.error('Error in getMessageById:', error);
@@ -239,7 +247,11 @@ const updateMessage = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: 'Message updated successfully',
-      data: { message }
+      data: {
+        data: {
+          message
+        }
+      }
     });
   } catch (error) {
     logger.error('Error in updateMessage:', error);
@@ -305,9 +317,11 @@ const previewRecipients = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       data: {
-        total_recipients: recipients.length,
-        recipients: recipients.slice(0, 100), // Limit preview to first 100
-        breakdown: getRecipientBreakdown(recipients)
+        data: {
+          total_recipients: recipients.length,
+          recipients: recipients.slice(0, 100), // Limit preview to first 100
+          breakdown: getRecipientBreakdown(recipients)
+        }
       }
     });
   } catch (error) {
@@ -355,7 +369,9 @@ const sendMessage = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: send_immediately ? 'Message sent successfully' : 'Message scheduled successfully',
-      data: { message }
+      data: {
+        data: message
+      }
     });
   } catch (error) {
     logger.error('Error in sendMessage:', error);

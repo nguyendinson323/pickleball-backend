@@ -84,7 +84,9 @@ const getClubs = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.CLUBS_RETRIEVED,
-      data: clubs,
+      data: {
+        data: clubs
+      },
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -126,7 +128,11 @@ const getClubById = async (req, res) => {
       throw createError.notFound('Club not found');
     }
 
-    res.status(HTTP_STATUS.OK).json(club);
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Club retrieved successfully',
+      data: club
+    });
   } catch (error) {
     logger.error('Error in getClubById:', error);
     throw error;
