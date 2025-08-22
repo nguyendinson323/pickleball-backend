@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/admin/dashboard";
 import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManagement";
 import CourtReservationDashboard from "./pages/admin/CourtReservationDashboard";
 import TournamentsManagementPage from "./pages/admin/TournamentsManagementPage";
+import MessagingCenter from "./pages/admin/MessagingCenter";
 import CoachRefereeProfile from "./pages/coach/CoachRefereeProfile";
 // Coach finder page
 import CoachFinderPage from "./pages/common/CoachFinderPage";
@@ -264,37 +265,37 @@ const routes = [
   {
     key: 'coach-profile',
     path: '/coach/profile',
-    element: <CoachProfilePage />,
+    element: <ProtectedRoute allowedRoles={['coach']}><CoachProfilePage /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-referee',
     path: '/coach/referee',
-    element: <CoachRefereeProfile />,
+    element: <ProtectedRoute allowedRoles={['coach']}><CoachRefereeProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-credentials',
     path: '/coach/credentials',
-    element: <Credentials />,
+    element: <ProtectedRoute allowedRoles={['coach']}><Credentials /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-students',
     path: '/coach/students',
-    element: <Students />,
+    element: <ProtectedRoute allowedRoles={['coach']}><Students /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-sessions',
     path: '/coach/sessions',
-    element: <Sessions />,
+    element: <ProtectedRoute allowedRoles={['coach']}><Sessions /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-certifications',
     path: '/coach/certifications',
-    element: <Certifications />,
+    element: <ProtectedRoute allowedRoles={['coach']}><Certifications /></ProtectedRoute>,
     public: false
   },
 
@@ -488,6 +489,12 @@ const routes = [
     public: false
   },
   {
+    key: 'admin-messaging',
+    path: '/admin/messaging',
+    element: <ProtectedRoute allowedRoles={['admin']}><MessagingCenter /></ProtectedRoute>,
+    public: false
+  },
+  {
     key: 'admin-settings',
     path: '/admin/settings',
     element: <Navigate to="/admin/system" replace />,
@@ -510,7 +517,7 @@ const routes = [
   {
     key: 'profile',
     path: '/profile',
-    element: <ProfilePage />,
+    element: <ProtectedRoute allowedRoles={['player', 'coach', 'club', 'partner', 'state', 'admin']}><ProfilePage /></ProtectedRoute>,
     public: false
   },
 

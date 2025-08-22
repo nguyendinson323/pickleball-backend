@@ -40,6 +40,7 @@ export const basePublicNavigation: NavigationItem[] = [
 export const playerPrivateTabs: NavigationItem[] = [
   { name: 'Dashboard', href: '/player/dashboard', public: false },
   { name: 'My Profile', href: '/player/profile', public: false },
+  { name: 'My Credentials', href: '/player/credentials', public: false },
 ]
 
 // Coach navigation - only private tabs
@@ -47,6 +48,7 @@ export const coachPrivateTabs: NavigationItem[] = [
   { name: 'Dashboard', href: '/coach/dashboard', public: false },
   { name: 'My Profile', href: '/coach/profile', public: false },
   { name: 'My Credentials', href: '/coach/credentials', public: false },
+  { name: 'Referee Profile', href: '/coach/referee', public: false },
   { name: 'My Students', href: '/coach/students', public: false },
   { name: 'Training Sessions', href: '/coach/sessions', public: false },
   { name: 'Certifications', href: '/coach/certifications', public: false },
@@ -89,10 +91,14 @@ export const adminPrivateTabs: NavigationItem[] = [
   { name: 'System Management', href: '/admin/system', public: false },
   { name: 'Analytics', href: '/admin/analytics', public: false },
   { name: 'Banner Management', href: '/admin/banners', public: false },
+  { name: 'Tournament Management', href: '/admin/tournaments', public: false },
+  { name: 'Court Reservations', href: '/admin/court-reservations', public: false },
+  { name: 'Digital Credentials', href: '/admin/digital-credentials', public: false },
 ]
 
 // Admin additional admin tabs (removed duplicate dashboard and non-existent pages)
 export const adminAdminTabs: NavigationItem[] = [
+  { name: 'Messaging Center', href: '/admin/messaging', public: false },
   { name: 'Global Settings', href: '/admin/settings', public: false },
   { name: 'Payment Management', href: '/admin/payments', public: false },
   { name: 'Content Management', href: '/admin/content', public: false },

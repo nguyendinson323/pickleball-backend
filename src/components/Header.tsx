@@ -140,7 +140,7 @@ const Header = () => {
                       }, 150)
                     }}
                   >
-                    {userNavigation.main?.slice(5).map((item) => (
+                    {userNavigation.main?.slice(homePages.length).map((item) => (
                       <Link
                         key={item.name}
                         to={item.href}
@@ -346,7 +346,7 @@ const Header = () => {
                       Features
                     </div>
                   </div>
-                  {userNavigation.main?.slice(5).map((item) => (
+                  {userNavigation.main?.slice(homePages.length).map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
