@@ -85,14 +85,12 @@ const getTournaments = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.TOURNAMENTS_RETRIEVED,
-      data: {
-        tournaments,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
+      data: tournaments,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: count,
+        pages: totalPages
       }
     });
   } catch (error) {
@@ -135,11 +133,7 @@ const getTournamentById = async (req, res) => {
       throw createError.notFound('Tournament not found');
     }
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.TOURNAMENT_RETRIEVED,
-      data: { tournament }
-    });
+    res.status(HTTP_STATUS.OK).json(tournament);
   } catch (error) {
     logger.error('Error in getTournamentById:', error);
     throw error;
@@ -179,11 +173,7 @@ const createTournament = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.TOURNAMENT_CREATED,
-      data: { tournament: createdTournament }
-    });
+    res.status(HTTP_STATUS.CREATED).json(createdTournament);
   } catch (error) {
     logger.error('Error in createTournament:', error);
     throw error;
@@ -467,11 +457,7 @@ const getUpcomingTournaments = async (req, res) => {
       limit: parseInt(limit)
     });
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.UPCOMING_TOURNAMENTS_RETRIEVED,
-      data: { tournaments }
-    });
+    res.status(HTTP_STATUS.OK).json(tournaments);
   } catch (error) {
     logger.error('Error in getUpcomingTournaments:', error);
     throw error;

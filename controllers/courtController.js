@@ -81,14 +81,12 @@ const getCourts = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURTS_RETRIEVED,
-      data: {
-        courts,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
+      data: courts,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: count,
+        pages: totalPages
       }
     });
   } catch (error) {
@@ -120,11 +118,7 @@ const getCourtById = async (req, res) => {
       throw createError.notFound('Court not found');
     }
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.COURT_RETRIEVED,
-      data: { court }
-    });
+    res.status(HTTP_STATUS.OK).json(court);
   } catch (error) {
     logger.error('Error in getCourtById:', error);
     throw error;
@@ -172,11 +166,7 @@ const createCourt = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.COURT_CREATED,
-      data: { court: createdCourt }
-    });
+    res.status(HTTP_STATUS.CREATED).json(createdCourt);
   } catch (error) {
     logger.error('Error in createCourt:', error);
     throw error;
@@ -317,7 +307,7 @@ const getCourtAvailability = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_AVAILABILITY_RETRIEVED,
-      data: { slots: availability }
+      data: availability
     });
   } catch (error) {
     logger.error('Error in getCourtAvailability:', error);
@@ -369,14 +359,12 @@ const getCourtBookings = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_BOOKINGS_RETRIEVED,
-      data: {
-        bookings: paginatedBookings,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: totalBookings,
-          pages: totalPages
-        }
+      bookings: paginatedBookings,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: totalBookings,
+        pages: totalPages
       }
     });
   } catch (error) {
@@ -651,7 +639,7 @@ const getCourtReservations = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.COURT_RESERVATIONS_RETRIEVED,
-      data: { reservations },
+      data: reservations,
       pagination
     });
   } catch (error) {

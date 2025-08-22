@@ -84,14 +84,12 @@ const getPayments = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.PAYMENTS_RETRIEVED,
-      data: {
-        payments,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
+      data: payments,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: count,
+        pages: totalPages
       }
     });
   } catch (error) {
@@ -173,11 +171,7 @@ const createPayment = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.PAYMENT_CREATED,
-      data: { payment: createdPayment }
-    });
+    res.status(HTTP_STATUS.CREATED).json(createdPayment);
   } catch (error) {
     logger.error('Error in createPayment:', error);
     throw error;
@@ -250,11 +244,7 @@ const processPayment = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.PAYMENT_PROCESSED,
-      data: { payment: updatedPayment }
-    });
+    res.status(HTTP_STATUS.OK).json(updatedPayment);
   } catch (error) {
     logger.error('Error in processPayment:', error);
     throw error;

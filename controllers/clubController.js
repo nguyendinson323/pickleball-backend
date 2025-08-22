@@ -84,14 +84,12 @@ const getClubs = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.CLUBS_RETRIEVED,
-      data: {
-        clubs,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
+      data: clubs,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: count,
+        pages: totalPages
       }
     });
   } catch (error) {
@@ -128,11 +126,7 @@ const getClubById = async (req, res) => {
       throw createError.notFound('Club not found');
     }
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.CLUB_RETRIEVED,
-      data: { club }
-    });
+    res.status(HTTP_STATUS.OK).json(club);
   } catch (error) {
     logger.error('Error in getClubById:', error);
     throw error;
@@ -175,11 +169,7 @@ const createClub = async (req, res) => {
       ]
     });
 
-    res.status(HTTP_STATUS.CREATED).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.CLUB_CREATED,
-      data: { club: createdClub }
-    });
+    res.status(HTTP_STATUS.CREATED).json(createdClub);
   } catch (error) {
     logger.error('Error in createClub:', error);
     throw error;
@@ -366,11 +356,7 @@ const getClubCourts = async (req, res) => {
       order: [['name', 'ASC']]
     });
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.CLUB_COURTS_RETRIEVED,
-      data: { courts }
-    });
+    res.status(HTTP_STATUS.OK).json(courts);
   } catch (error) {
     logger.error('Error in getClubCourts:', error);
     throw error;
@@ -403,19 +389,7 @@ const getClubTournaments = async (req, res) => {
 
     const totalPages = Math.ceil(count / limit);
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.CLUB_TOURNAMENTS_RETRIEVED,
-      data: {
-        tournaments,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
-      }
-    });
+    res.status(HTTP_STATUS.OK).json(tournaments);
   } catch (error) {
     logger.error('Error in getClubTournaments:', error);
     throw error;

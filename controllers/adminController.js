@@ -74,11 +74,7 @@ const getDashboardStats = async (req, res) => {
       }
     };
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.DASHBOARD_STATS_RETRIEVED,
-      data: { stats }
-    });
+    res.status(HTTP_STATUS.OK).json(stats);
   } catch (error) {
     logger.error('Error in getDashboardStats:', error);
     throw error;
@@ -150,14 +146,12 @@ const getSystemUsers = async (req, res) => {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       message: API_MESSAGES.SUCCESS.USERS_RETRIEVED,
-      data: {
-        users,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: count,
-          pages: totalPages
-        }
+      data: users,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: count,
+        pages: totalPages
       }
     });
   } catch (error) {

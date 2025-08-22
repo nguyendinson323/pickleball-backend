@@ -217,11 +217,7 @@ const updateFinderPreferences = async (req, res) => {
 
     logger.info(`Player finder preferences updated: ${userId}`);
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: 'Player finder preferences updated successfully',
-      data: finder
-    });
+    res.status(HTTP_STATUS.OK).json(finder);
 
   } catch (error) {
     throw error;
@@ -242,18 +238,10 @@ const getFinderPreferences = async (req, res) => {
     });
 
     if (!finder) {
-      return res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: 'No preferences found',
-        data: null
-      });
+      return res.status(HTTP_STATUS.OK).json(null);
     }
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: finder
-    });
+    res.status(HTTP_STATUS.OK).json(finder);
 
   } catch (error) {
     throw error;
@@ -282,11 +270,7 @@ const toggleFinderStatus = async (req, res) => {
 
     logger.info(`Player finder status toggled: ${userId} - ${finder.is_active ? 'active' : 'inactive'}`);
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: finder.is_active ? 'Player finder activated' : 'Player finder deactivated',
-      data: finder
-    });
+    res.status(HTTP_STATUS.OK).json(finder);
 
   } catch (error) {
     throw error;
@@ -380,11 +364,7 @@ const getNearbyPlayers = async (req, res) => {
 
     logger.info(`Nearby players found: ${playersWithDistance.length} for user ${userId}`);
 
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: playersWithDistance
-    });
+    res.status(HTTP_STATUS.OK).json(playersWithDistance);
 
   } catch (error) {
     throw error;
@@ -419,11 +399,8 @@ const sendMatchRequest = async (req, res) => {
     logger.info(`Match request sent: ${senderId} to ${targetUserId}`);
 
     res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: 'Match request sent successfully',
-      data: {
-        target_user: {
-          id: targetUser.id,
+      target_user: {
+        id: targetUser.id,
           username: targetUser.username,
           full_name: targetUser.full_name
         },
@@ -454,11 +431,8 @@ const getFinderStats = async (req, res) => {
 
     if (!finder) {
       return res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: 'No finder statistics available',
-        data: {
-          total_matches_found: 0,
-          matches_contacted: 0,
+        total_matches_found: 0,
+        matches_contacted: 0,
           successful_matches: 0,
           is_active: false
         }
@@ -466,11 +440,8 @@ const getFinderStats = async (req, res) => {
     }
 
     res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: API_MESSAGES.SUCCESS.DATA_FETCHED,
-      data: {
-        total_matches_found: finder.total_matches_found,
-        matches_contacted: finder.matches_contacted,
+      total_matches_found: finder.total_matches_found,
+      matches_contacted: finder.matches_contacted,
         successful_matches: finder.successful_matches,
         is_active: finder.is_active,
         last_search_date: finder.last_search_date
