@@ -369,7 +369,7 @@ exports.getCoachSearchStats = async (req, res) => {
 exports.contactCoach = async (req, res) => {
   try {
     const { coachId } = req.params;
-    const { searchId, message, contact_method } = req.body;
+    const { searchId } = req.body;
     const userId = req.user.id;
 
     // Verify coach exists
@@ -476,12 +476,12 @@ function calculateMatchScore(coach, searchCriteria) {
   return Math.min(score, 100);
 }
 
-function calculateResponseRate(coach) {
+function calculateResponseRate() {
   // Would be calculated from actual response data
   return 85; // Placeholder
 }
 
-function getNextAvailableSlot(schedule) {
+function getNextAvailableSlot() {
   // Would parse coaching_schedule JSON and find next available slot
   return 'Tomorrow 2:00 PM'; // Placeholder
 }

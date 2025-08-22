@@ -12,6 +12,27 @@
 
 const bcrypt = require('bcryptjs');
 
+// Helper function to generate default coach fields
+const getCoachFields = (userType, overrides = {}) => ({
+  can_be_found: true,
+  // Coach-specific fields
+  is_findable: userType === 'coach' ? true : true,
+  coaching_experience: userType === 'coach' ? (overrides.coaching_experience || 5) : 0,
+  specializations: userType === 'coach' ? JSON.stringify(overrides.specializations || ['Beginner Training', 'Technique']) : null,
+  hourly_rate: userType === 'coach' ? (overrides.hourly_rate || '75.00') : null,
+  available_for_lessons: userType === 'coach' ? true : true,
+  coaching_languages: JSON.stringify(overrides.coaching_languages || ['English']),
+  coaching_locations: userType === 'coach' ? JSON.stringify(overrides.coaching_locations || ['Indoor Courts', 'Outdoor Courts']) : null,
+  lesson_types_offered: userType === 'coach' ? JSON.stringify(overrides.lesson_types_offered || ['Individual', 'Group', 'Clinic']) : null,
+  coaching_schedule: userType === 'coach' ? JSON.stringify(overrides.coaching_schedule || { weekdays: ['Monday', 'Wednesday', 'Friday'], time: '9:00-17:00' }) : null,
+  coaching_bio: userType === 'coach' ? (overrides.coaching_bio || 'Experienced pickleball coach dedicated to helping players improve their game') : null,
+  certifications: userType === 'coach' ? JSON.stringify(overrides.certifications || ['USAPA Certified', 'IPTPA Level 2']) : null,
+  rating: userType === 'coach' ? (overrides.rating || '4.50') : null,
+  reviews_count: userType === 'coach' ? (overrides.reviews_count || 25) : 0,
+  total_students: userType === 'coach' ? (overrides.total_students || 50) : 0,
+  active_students: userType === 'coach' ? (overrides.active_students || 15) : 0
+});
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     const hashedPassword = await bcrypt.hash('aaa', 10);
@@ -1228,7 +1249,88 @@ module.exports = {
 
     ];
 
-    await queryInterface.bulkInsert('users', users, {});
+    // Add coach fields to all users
+    const usersWithCoachFields = users.map(user => {
+      let coachOverrides = {};
+      
+      // Specific overrides for individual coaches
+      if (user.user_type === 'coach') {
+        switch (user.username) {
+          case 'sarah_coach':
+            coachOverrides = {
+              coaching_experience: 10,
+              specializations: ['Beginner Training', 'Women\'s Coaching'],
+              hourly_rate: '85.00',
+              coaching_bio: 'Certified pickleball coach with 10+ years experience specializing in beginner and women\'s coaching',
+              certifications: ['USAPA Certified', 'IPTPA Level 3', 'Women\'s Specialist'],
+              rating: '4.8',
+              reviews_count: 45,
+              total_students: 120,
+              active_students: 25
+            };
+            break;
+          case 'miguel_coach':
+            coachOverrides = {
+              coaching_experience: 15,
+              specializations: ['Advanced Technique', 'Tournament Preparation'],
+              hourly_rate: '100.00',
+              coaching_bio: 'Former professional player turned coach with extensive tournament experience',
+              certifications: ['USAPA Certified', 'IPTPA Level 4', 'PPR Professional'],
+              rating: '4.9',
+              reviews_count: 60,
+              total_students: 150,
+              active_students: 40
+            };
+            break;
+          case 'patricia_coach':
+            coachOverrides = {
+              coaching_experience: 8,
+              specializations: ['Youth Training', 'Beginner Coaching'],
+              hourly_rate: '70.00',
+              coaching_bio: 'Specialized in beginner and youth coaching',
+              certifications: ['USAPA Certified', 'Youth Specialist'],
+              rating: '4.7',
+              reviews_count: 35,
+              total_students: 80,
+              active_students: 30
+            };
+            break;
+          case 'roberto_coach':
+            coachOverrides = {
+              coaching_experience: 12,
+              specializations: ['Advanced Technique', 'Strategy'],
+              hourly_rate: '90.00',
+              coaching_bio: 'Advanced technique and strategy coach',
+              certifications: ['USAPA Certified', 'IPTPA Level 3', 'Advanced Technique'],
+              rating: '4.8',
+              reviews_count: 50,
+              total_students: 100,
+              active_students: 35
+            };
+            break;
+          case 'carmen_coach':
+            coachOverrides = {
+              coaching_experience: 6,
+              specializations: ['Fitness', 'Conditioning'],
+              hourly_rate: '65.00',
+              coaching_bio: 'Fitness and pickleball conditioning coach',
+              certifications: ['USAPA Certified', 'Fitness Specialist'],
+              rating: '4.6',
+              reviews_count: 30,
+              total_students: 60,
+              active_students: 20
+            };
+            break;
+        }
+      }
+      
+      return {
+        ...user,
+        ...getCoachFields(user.user_type, coachOverrides)
+      };
+    });
+
+    await queryInterface.bulkInsert('users', usersWithCoachFields, {});
   },
 
   async down(queryInterface, Sequelize) {

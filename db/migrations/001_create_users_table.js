@@ -195,6 +195,92 @@ module.exports = {
         defaultValue: true,
         comment: 'Whether player can be found in player search (privacy setting)'
       },
+
+      // Coach-specific fields
+      is_findable: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+        comment: 'Whether coach can be found in coach search (privacy setting)'
+      },
+      coaching_experience: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+        comment: 'Years of coaching experience'
+      },
+      specializations: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'Array of coaching specializations (serve, volley, strategy, etc.)'
+      },
+      hourly_rate: {
+        type: Sequelize.DECIMAL(8, 2),
+        allowNull: true,
+        comment: 'Hourly coaching rate'
+      },
+      available_for_lessons: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+        comment: 'Whether coach is currently accepting new students'
+      },
+      coaching_languages: {
+        type: Sequelize.JSON,
+        defaultValue: JSON.stringify(['English']),
+        allowNull: false,
+        comment: 'Languages coach can teach in'
+      },
+      coaching_locations: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'Preferred coaching locations or travel radius'
+      },
+      lesson_types_offered: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'Types of lessons offered (individual, group, clinic, etc.)'
+      },
+      coaching_schedule: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'Available days and times for coaching'
+      },
+      coaching_bio: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+        comment: 'Coach biography and teaching philosophy'
+      },
+      certifications: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        comment: 'Array of coaching certifications and credentials'
+      },
+      rating: {
+        type: Sequelize.DECIMAL(3, 2),
+        allowNull: true,
+        comment: 'Average rating from students (0.0 to 5.0)'
+      },
+      reviews_count: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+        comment: 'Total number of reviews received'
+      },
+      total_students: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+        comment: 'Total number of students coached'
+      },
+      active_students: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+        comment: 'Current number of active students'
+      },
+
+      // Timestamps
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -256,6 +342,36 @@ module.exports = {
 
     await queryInterface.addIndex('users', ['can_be_found'], {
       name: 'users_can_be_found_index'
+    });
+
+    // Coach-specific indexes
+    await queryInterface.addIndex('users', ['is_findable'], {
+      name: 'users_is_findable_index'
+    });
+
+    await queryInterface.addIndex('users', ['coaching_experience'], {
+      name: 'users_coaching_experience_index'
+    });
+
+    await queryInterface.addIndex('users', ['hourly_rate'], {
+      name: 'users_hourly_rate_index'
+    });
+
+    await queryInterface.addIndex('users', ['available_for_lessons'], {
+      name: 'users_available_for_lessons_index'
+    });
+
+    await queryInterface.addIndex('users', ['rating'], {
+      name: 'users_rating_index'
+    });
+
+    await queryInterface.addIndex('users', ['reviews_count'], {
+      name: 'users_reviews_count_index'
+    });
+
+    // Composite index for coach search optimization
+    await queryInterface.addIndex('users', ['user_type', 'is_findable', 'available_for_lessons', 'is_active'], {
+      name: 'users_coach_search_index'
     });
   },
 

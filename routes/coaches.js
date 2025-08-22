@@ -11,7 +11,7 @@
 const express = require('express');
 const router = express.Router();
 const coachController = require('../controllers/coachController');
-const { authenticateToken, requireMembership } = require('../middleware/auth');
+const { authenticateToken, requireMembership } = require('../middlewares/auth');
 
 // Public routes (no authentication required)
 

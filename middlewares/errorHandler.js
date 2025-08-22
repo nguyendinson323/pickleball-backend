@@ -92,11 +92,26 @@ const errorHandler = (err, req, res, next) => {
     error = 'Something went wrong';
   }
 
+  // Generate error ID for tracking
+  const errorId = require('crypto').randomUUID();
+  
+  // Log error with ID for tracking
+  logger.error(`Error ${errorId}:`, {
+    message: err.message,
+    statusCode,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+    userAgent: req.get('User-Agent'),
+    ip: req.ip
+  });
+
   // Send error response
   res.status(statusCode).json({
     success: false,
     message,
     error,
+    errorId,
     ...(process.env.NODE_ENV === 'development' && {
       stack: err.stack,
       details: err
