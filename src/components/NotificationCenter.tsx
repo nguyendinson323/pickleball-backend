@@ -19,9 +19,7 @@ import {
   MessageSquare,
   Megaphone,
   AlertTriangle,
-  CheckCircle,
-  Clock,
-  Eye
+  Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
 

@@ -76,7 +76,7 @@ export const logoutUser = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (profileData: any) => {
-    const response = await api.put('/auth/profile', profileData);
+    const response = await api.put<ProfileResponse>('/auth/profile', profileData);
     return response;
   }
 );

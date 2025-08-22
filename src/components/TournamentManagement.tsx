@@ -16,16 +16,9 @@ import {
   Trophy,
   User as UserIcon,
   MapPin,
-  Clock,
-  DollarSign,
-  Star,
-  AlertTriangle,
-  CheckCircle,
   XCircle,
   UserCheck,
-  Settings,
   Search,
-  Filter,
   Download,
   Eye,
   Edit,
@@ -45,7 +38,6 @@ interface TournamentManagementProps {
 const TournamentManagement: React.FC<TournamentManagementProps> = ({ userRole, userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { tournaments, loading } = useSelector((state: RootState) => state.tournaments);
-  const { user } = useSelector((state: RootState) => state.auth);
   
   const [activeTab, setActiveTab] = useState<'tournaments' | 'matches' | 'referees' | 'analytics'>('tournaments');
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
@@ -87,7 +79,7 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ userRole, u
   const loadTournamentMatches = async (tournamentId: string) => {
     try {
       const response = await api.get(`/tournaments/${tournamentId}/matches`);
-      setTournamentMatches(response.data.matches || []);
+      setTournamentMatches((response as any).data.matches || []);
     } catch (error) {
       toast.error('Failed to load tournament matches');
     }
@@ -97,7 +89,7 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ userRole, u
     try {
       const params = date ? `?date=${date}` : '';
       const response = await api.get(`/tournaments/${tournamentId}/available-referees${params}`);
-      setAvailableReferees(response.data.referees || []);
+      setAvailableReferees((response as any).data.referees || []);
     } catch (error) {
       toast.error('Failed to load available referees');
     }
@@ -108,7 +100,7 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ userRole, u
       const response = await api.get(`/tournaments/referee-stats/${refereeId}`);
       setRefereeStats(prev => ({
         ...prev,
-        [refereeId]: response.data.stats
+        [refereeId]: (response as any).data.stats
       }));
     } catch (error) {
       console.error('Failed to load referee stats:', error);

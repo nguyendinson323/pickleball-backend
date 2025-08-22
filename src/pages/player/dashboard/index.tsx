@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import Overview from './Overview';
@@ -120,11 +120,6 @@ const PlayerDashboard = () => {
     },
     club: user?.club,
     membershipStatus: user?.membership_status
-  };
-
-  // Privacy settings data
-  const privacySettings = {
-    canBeFound: user?.can_be_found ?? true
   };
 
   return (
@@ -249,10 +244,7 @@ const PlayerDashboard = () => {
               {/* Settings Tab */}
               {activeTab === 'settings' && (
                 <div className="animate-on-scroll">
-                  <Settings 
-                    privacySettings={privacySettings}
-                    profileCompletion={profileCompletion}
-                  />
+                  <Settings />
                 </div>
               )}
             </div>

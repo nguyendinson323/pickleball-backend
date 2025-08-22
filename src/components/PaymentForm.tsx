@@ -1,11 +1,68 @@
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { toast } from 'sonner';
 import { CreditCard, Lock, CheckCircle } from 'lucide-react';
+
+// UI Component definitions (temporary until proper UI library is set up)
+const Button = ({ children, type = 'button', onClick, className = '', disabled = false }: any) => (
+  <button type={type} onClick={onClick} className={className} disabled={disabled}>
+    {children}
+  </button>
+);
+
+const Card = ({ children, className = '' }: any) => (
+  <div className={className}>{children}</div>
+);
+
+const CardHeader = ({ children, className = '' }: any) => (
+  <div className={className}>{children}</div>
+);
+
+const CardTitle = ({ children, className = '' }: any) => (
+  <h3 className={className}>{children}</h3>
+);
+
+const CardDescription = ({ children }: any) => (
+  <p>{children}</p>
+);
+
+const CardContent = ({ children }: any) => (
+  <div>{children}</div>
+);
+
+const Label = ({ children, htmlFor, className = '' }: any) => (
+  <label htmlFor={htmlFor} className={className}>{children}</label>
+);
+
+const Input = ({ id, type = 'text', placeholder, value, onChange, maxLength, required = false, className = '' }: any) => (
+  <input
+    id={id}
+    type={type}
+    placeholder={placeholder}
+    value={value}
+    onChange={onChange}
+    maxLength={maxLength}
+    required={required}
+    className={className}
+  />
+);
+
+const Select = ({ children, value, onValueChange }: any) => (
+  <select value={value} onChange={(e) => onValueChange(e.target.value)}>
+    {children}
+  </select>
+);
+
+const SelectTrigger = ({ children, className = '' }: any) => (
+  <div className={className}>{children}</div>
+);
+
+const SelectValue = () => null;
+
+const SelectContent = ({ children }: any) => <>{children}</>;
+
+const SelectItem = ({ children, value }: any) => (
+  <option value={value}>{children}</option>
+);
 
 interface PaymentFormProps {
   amount: number;
@@ -23,8 +80,7 @@ const PaymentForm = ({
   paymentType, 
   description, 
   onSuccess, 
-  onCancel,
-  metadata = {}
+  onCancel
 }: PaymentFormProps) => {
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
@@ -56,7 +112,7 @@ const PaymentForm = ({
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Simulate successful payment
-      const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
       
       toast.success('Payment successful!');
       
@@ -163,7 +219,7 @@ const PaymentForm = ({
                     type="text"
                     placeholder="1234 5678 9012 3456"
                     value={formData.cardNumber}
-                    onChange={(e) => handleInputChange('cardNumber', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('cardNumber', e.target.value)}
                     maxLength={19}
                     required
                   />
@@ -180,7 +236,7 @@ const PaymentForm = ({
                     type="text"
                     placeholder="MM/YY"
                     value={formData.expiryDate}
-                    onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('expiryDate', e.target.value)}
                     maxLength={5}
                     required
                   />
@@ -192,7 +248,7 @@ const PaymentForm = ({
                     type="text"
                     placeholder="123"
                     value={formData.cvv}
-                    onChange={(e) => handleInputChange('cvv', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('cvv', e.target.value)}
                     maxLength={4}
                     required
                   />
@@ -207,7 +263,7 @@ const PaymentForm = ({
                   type="text"
                   placeholder="John Doe"
                   value={formData.cardholderName}
-                  onChange={(e) => handleInputChange('cardholderName', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('cardholderName', e.target.value)}
                   required
                 />
               </div>
@@ -220,7 +276,7 @@ const PaymentForm = ({
                   type="email"
                   placeholder="john@example.com"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('email', e.target.value)}
                   required
                 />
               </div>
@@ -231,25 +287,25 @@ const PaymentForm = ({
                 <Input
                   placeholder="Street Address"
                   value={formData.billingAddress.line1}
-                  onChange={(e) => handleInputChange('billingAddress.line1', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('billingAddress.line1', e.target.value)}
                   required
                 />
                 <Input
                   placeholder="Apartment, suite, etc. (optional)"
                   value={formData.billingAddress.line2}
-                  onChange={(e) => handleInputChange('billingAddress.line2', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('billingAddress.line2', e.target.value)}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     placeholder="City"
                     value={formData.billingAddress.city}
-                    onChange={(e) => handleInputChange('billingAddress.city', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('billingAddress.city', e.target.value)}
                     required
                   />
                   <Input
                     placeholder="State"
                     value={formData.billingAddress.state}
-                    onChange={(e) => handleInputChange('billingAddress.state', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('billingAddress.state', e.target.value)}
                     required
                   />
                 </div>
@@ -257,12 +313,12 @@ const PaymentForm = ({
                   <Input
                     placeholder="Postal Code"
                     value={formData.billingAddress.postalCode}
-                    onChange={(e) => handleInputChange('billingAddress.postalCode', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('billingAddress.postalCode', e.target.value)}
                     required
                   />
                   <Select 
                     value={formData.billingAddress.country} 
-                    onValueChange={(value) => handleInputChange('billingAddress.country', value)}
+                    onValueChange={(value: string) => handleInputChange('billingAddress.country', value)}
                   >
                     <SelectTrigger>
                       <SelectValue />

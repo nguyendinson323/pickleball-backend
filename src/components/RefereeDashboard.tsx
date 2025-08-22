@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { RefereeStats, Match, Tournament } from '../types/api';
+import { RefereeStats } from '../types/api';
 import {
   Award,
-  Calendar,
-  Clock,
   DollarSign,
   TrendingUp,
   Target,
   CheckCircle,
-  Users,
   Trophy,
   Star,
-  MapPin,
   BarChart3,
   Download
 } from 'lucide-react';
@@ -38,7 +34,7 @@ const RefereeDashboard: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(`/tournaments/referee-stats/${user.id}`);
-      setRefereeStats(response.data.stats);
+      setRefereeStats((response as any).data.stats);
     } catch (error) {
       toast.error('Failed to load referee statistics');
     } finally {

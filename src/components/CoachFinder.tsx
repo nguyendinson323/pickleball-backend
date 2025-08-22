@@ -8,16 +8,11 @@ import {
   MapPin,
   Star,
   Users,
-  Clock,
   DollarSign,
   Award,
   MessageSquare,
-  Phone,
-  Mail,
   Languages,
-  Calendar,
   Target,
-  TrendingUp,
   Bookmark,
   BookmarkCheck
 } from 'lucide-react';
@@ -86,26 +81,39 @@ const CoachFinder: React.FC = () => {
 
   useEffect(() => {
     searchCoaches();
-    loadSavedCoaches();
   }, [filters]);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadSavedCoaches();
+    }
+  }, [user?.id]);
 
   const searchCoaches = async (page = 1) => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
-        ...filters,
+      const searchParams: Record<string, string> = {
         limit: '12',
         offset: ((page - 1) * 12).toString()
-      } as any);
-
-      const response = await api.get(`/coaches/search?${params}`);
+      };
       
-      if (response.data.success) {
-        setCoaches(response.data.data.coaches);
+      // Add filters as strings
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          searchParams[key] = String(value);
+        }
+      });
+      
+      const params = new URLSearchParams(searchParams);
+
+      const response = await api.get(`/coaches/search?${params}`) as any;
+      
+      if (response.success) {
+        setCoaches(response.data.coaches);
         setPagination({
-          page: response.data.data.page,
-          totalPages: response.data.data.totalPages,
-          total: response.data.data.total
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+          total: response.data.total
         });
       }
     } catch (error) {
@@ -116,19 +124,23 @@ const CoachFinder: React.FC = () => {
   };
 
   const loadSavedCoaches = () => {
-    const saved = localStorage.getItem(`saved_coaches_${user?.id}`);
+    if (!user?.id) return;
+    
+    const saved = localStorage.getItem(`saved_coaches_${user.id}`);
     if (saved) {
       setSavedCoaches(JSON.parse(saved));
     }
   };
 
   const toggleSaveCoach = (coachId: string) => {
+    if (!user?.id) return;
+    
     const newSaved = savedCoaches.includes(coachId)
       ? savedCoaches.filter(id => id !== coachId)
       : [...savedCoaches, coachId];
     
     setSavedCoaches(newSaved);
-    localStorage.setItem(`saved_coaches_${user?.id}`, JSON.stringify(newSaved));
+    localStorage.setItem(`saved_coaches_${user.id}`, JSON.stringify(newSaved));
     
     toast.success(
       savedCoaches.includes(coachId) 
@@ -142,9 +154,9 @@ const CoachFinder: React.FC = () => {
       const response = await api.post(`/coaches/${coach.id}/contact`, {
         message,
         contact_method: contactMethod
-      });
+      }) as any;
 
-      if (response.data.success) {
+      if (response.success) {
         toast.success('Contact request sent successfully!');
         setShowContactModal(false);
         setSelectedCoach(null);

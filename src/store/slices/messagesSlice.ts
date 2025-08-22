@@ -52,14 +52,14 @@ export const getMessageById = createAsyncThunk(
 export const markMessageAsRead = createAsyncThunk(
   'messages/markMessageAsRead',
   async (id: string) => {
-    return await api.put(`/messages/${id}/read`);
+    return await api.put(`/messages/${id}/read`, {});
   }
 );
 
 export const markAllMessagesAsRead = createAsyncThunk(
   'messages/markAllMessagesAsRead',
   async () => {
-    return await api.put('/messages/read-all');
+    return await api.put('/messages/read-all', {});
   }
 );
 
@@ -73,7 +73,7 @@ export const toggleStarMessage = createAsyncThunk(
 export const archiveMessage = createAsyncThunk(
   'messages/archiveMessage',
   async (id: string) => {
-    return await api.put(`/messages/${id}/archive`);
+    return await api.put(`/messages/${id}/archive`, {});
   }
 );
 
@@ -283,20 +283,6 @@ const messagesSlice = createSlice({
       .addCase(getMessageStatistics.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch message statistics';
-      })
-      // Fetch Public Announcements
-      .addCase(fetchPublicAnnouncements.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchPublicAnnouncements.fulfilled, (state, action) => {
-        state.loading = false;
-        const payload = action.payload as any;
-        state.publicAnnouncements = payload?.data || [];
-      })
-      .addCase(fetchPublicAnnouncements.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch public announcements';
       });
   },
 });

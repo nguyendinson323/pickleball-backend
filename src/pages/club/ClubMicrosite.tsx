@@ -1,6 +1,122 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import {
+  Eye,
+  Save,
+  Settings,
+  Globe,
+  Palette,
+  Layout,
+  Star
+} from 'lucide-react';
+
+// Simple UI component replacements
+const Card = ({ children, className = '' }: any) => (
+  <div className={`bg-white rounded-lg shadow ${className}`}>{children}</div>
+);
+const CardHeader = ({ children }: any) => (
+  <div className="px-6 py-4 border-b">{children}</div>
+);
+const CardTitle = ({ children }: any) => (
+  <h3 className="text-lg font-semibold">{children}</h3>
+);
+const CardContent = ({ children, className = '' }: any) => (
+  <div className={`p-6 ${className}`}>{children}</div>
+);
+
+const Button = ({ children, variant = 'default', size = 'default', onClick, disabled = false, className = '' }: any) => {
+  const variants: any = {
+    default: 'bg-blue-600 text-white hover:bg-blue-700',
+    outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+  };
+  const sizes: any = {
+    default: 'px-4 py-2',
+    sm: 'px-3 py-1 text-sm'
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-md font-medium ${variants[variant]} ${sizes[size]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+const Input = ({ type = 'text', value, onChange, disabled = false, placeholder = '', id, className = '' }: any) => (
+  <input
+    type={type}
+    id={id}
+    value={value}
+    onChange={onChange}
+    disabled={disabled}
+    placeholder={placeholder}
+    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? 'bg-gray-100' : ''} ${className}`}
+  />
+);
+
+const Label = ({ children, htmlFor }: any) => (
+  <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 mb-1">
+    {children}
+  </label>
+);
+
+const Textarea = ({ value, onChange, disabled = false, placeholder = '', rows = 4, id }: any) => (
+  <textarea
+    id={id}
+    value={value}
+    onChange={onChange}
+    disabled={disabled}
+    placeholder={placeholder}
+    rows={rows}
+    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? 'bg-gray-100' : ''}`}
+  />
+);
+
+const Badge = ({ children, className = '' }: any) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>
+    {children}
+  </span>
+);
+
+const Switch = ({ checked, onCheckedChange, disabled = false }: any) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    onClick={() => !disabled && onCheckedChange(!checked)}
+    disabled={disabled}
+    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+      checked ? 'bg-blue-600' : 'bg-gray-200'
+    } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+  >
+    <span
+      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+        checked ? 'translate-x-6' : 'translate-x-1'
+      }`}
+    />
+  </button>
+);
+
+const Select = ({ value, onValueChange, disabled = false, children }: any) => {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onValueChange(e.target.value)}
+      disabled={disabled}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      {children}
+    </select>
+  );
+};
+
+const SelectTrigger = ({ children }: any) => <>{children}</>;
+const SelectValue = () => null;
+const SelectContent = ({ children }: any) => <>{children}</>;
+const SelectItem = ({ value, children }: any) => <option value={value}>{children}</option>;
 
 const ClubMicrosite = () => {
   const { user } = useSelector((state: RootState) => state.auth);

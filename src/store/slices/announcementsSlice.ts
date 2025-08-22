@@ -55,7 +55,7 @@ export const publishAnnouncement = createAsyncThunk(
 export const archiveAnnouncement = createAsyncThunk(
   'announcements/archiveAnnouncement',
   async (id: string) => {
-    return await api.post(`/announcements/${id}/archive`);
+    return await api.post(`/announcements/${id}/archive`, {});
   }
 );
 
@@ -69,7 +69,7 @@ export const deleteAnnouncement = createAsyncThunk(
 export const togglePinAnnouncement = createAsyncThunk(
   'announcements/togglePinAnnouncement',
   async (id: string) => {
-    return await api.post(`/announcements/${id}/pin`);
+    return await api.post(`/announcements/${id}/pin`, {});
   }
 );
 

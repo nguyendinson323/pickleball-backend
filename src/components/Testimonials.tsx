@@ -1,5 +1,3 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Star, Play, Pause, ChevronLeft, ChevronRight } from "lucide-react";
 import { componentAnimations } from "@/lib/animations";
 import { useState, useEffect, useCallback } from "react";

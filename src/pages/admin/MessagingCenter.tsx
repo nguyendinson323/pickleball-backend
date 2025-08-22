@@ -82,7 +82,7 @@ const MessagingCenter: React.FC = () => {
     content: '',
     excerpt: '',
     category: 'general',
-    priority: 'medium',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
     target_audience: 'all_members',
     target_states: [],
     publish_date: '',
@@ -101,7 +101,7 @@ const MessagingCenter: React.FC = () => {
     subject: '',
     content: '',
     category: 'general',
-    priority: 'medium',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
     action_button_text: '',
     action_button_url: ''
   });
@@ -289,7 +289,7 @@ const MessagingCenter: React.FC = () => {
         subject: '',
         content: '',
         category: 'general',
-        priority: 'medium',
+        priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
         action_button_text: '',
         action_button_url: ''
       });
@@ -304,7 +304,7 @@ const MessagingCenter: React.FC = () => {
       content: '',
       excerpt: '',
       category: 'general',
-      priority: 'medium',
+      priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
       target_audience: 'all_members',
       target_states: [],
       publish_date: '',
@@ -555,7 +555,7 @@ const MessagingCenter: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
               <select
                 value={broadcastData.priority}
-                onChange={(e) => setBroadcastData(prev => ({ ...prev, priority: e.target.value }))}
+                onChange={(e) => setBroadcastData(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="low">Low</option>
@@ -828,7 +828,7 @@ const MessagingCenter: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
                     <select
                       value={formData.priority}
-                      onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="low">Low</option>

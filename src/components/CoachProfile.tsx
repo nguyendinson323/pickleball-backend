@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store';
 import {
   ArrowLeft,
   Star,
   MapPin,
-  Clock,
   DollarSign,
   Award,
   Users,
@@ -21,7 +18,6 @@ import {
   TrendingUp,
   BookOpen,
   Heart,
-  ThumbsUp,
   Share2
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -71,7 +67,6 @@ interface Review {
 const CoachProfile: React.FC = () => {
   const { coachId } = useParams<{ coachId: string }>();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
   
   const [coach, setCoach] = useState<CoachDetail | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -88,10 +83,10 @@ const CoachProfile: React.FC = () => {
   const loadCoachProfile = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/coaches/${coachId}/profile`);
+      const response = await api.get(`/coaches/${coachId}/profile`) as any;
       
-      if (response.data.success) {
-        setCoach(response.data.data.coach);
+      if (response.success) {
+        setCoach(response.data.coach);
         
         // Mock reviews for demonstration
         setReviews([
@@ -126,9 +121,9 @@ const CoachProfile: React.FC = () => {
       const response = await api.post(`/coaches/${coachId}/contact`, {
         message,
         contact_method: contactMethod
-      });
+      }) as any;
 
-      if (response.data.success) {
+      if (response.success) {
         toast.success('Contact request sent successfully!');
         setShowContactModal(false);
       }
