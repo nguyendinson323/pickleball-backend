@@ -138,4 +138,33 @@ router.put('/:id/toggle-visibility',
   asyncHandler(userController.togglePlayerVisibility)
 );
 
+/**
+ * @route   GET /users/players/find-nearby
+ * @desc    Find nearby players for matching
+ * @access  Private
+ */
+router.get('/players/find-nearby', 
+  authenticateToken,
+  query('latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Valid latitude is required'),
+  query('longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Valid longitude is required'),
+  query('radius').optional().isInt({ min: 1, max: 500 }).withMessage('Radius must be between 1 and 500 km'),
+  query('skill_level').optional().isIn(['2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '5.5']).withMessage('Invalid skill level'),
+  query('gender').optional().isIn(['male', 'female', 'any']).withMessage('Invalid gender'),
+  query('age_min').optional().isInt({ min: 13, max: 100 }).withMessage('Age must be between 13 and 100'),
+  query('age_max').optional().isInt({ min: 13, max: 100 }).withMessage('Age must be between 13 and 100'),
+  asyncHandler(userController.findNearbyPlayers)
+);
+
+/**
+ * @route   POST /users/players/:playerId/contact
+ * @desc    Contact a player for match request
+ * @access  Private
+ */
+router.post('/players/:playerId/contact', 
+  authenticateToken,
+  body('message').optional().isLength({ max: 500 }).withMessage('Message must be 500 characters or less'),
+  body('contact_type').optional().isIn(['play_request', 'general']).withMessage('Invalid contact type'),
+  asyncHandler(userController.contactPlayer)
+);
+
 module.exports = router; 

@@ -467,6 +467,82 @@ const getUserPaymentHistory = async (req, res) => {
   }
 };
 
+/**
+ * Create invoice for payment
+ * @route POST /api/v1/payments/invoice
+ * @access Private
+ */
+const createInvoice = async (req, res) => {
+  try {
+    const { user } = req;
+    const {
+      tournament_id,
+      club_id,
+      amount,
+      description,
+      due_date
+    } = req.body;
+
+    // Validate that either tournament_id or club_id is provided
+    if (!tournament_id && !club_id) {
+      throw createError.badRequest('Either tournament_id or club_id must be provided');
+    }
+
+    // Create payment record as invoice
+    const payment = await Payment.create({
+      user_id: user.id,
+      tournament_id,
+      club_id,
+      amount,
+      payment_type: tournament_id ? 'tournament_registration' : 'club_expense',
+      status: 'pending',
+      payment_method: 'invoice',
+      description,
+      due_date: due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      invoice_number: `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      created_by: user.id
+    });
+
+    // Get created payment with related data
+    const createdPayment = await Payment.findByPk(payment.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'full_name', 'email']
+        },
+        {
+          model: Tournament,
+          as: 'tournament',
+          attributes: ['id', 'name', 'tournament_type']
+        },
+        {
+          model: Club,
+          as: 'club', 
+          attributes: ['id', 'name', 'club_type']
+        }
+      ]
+    });
+
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: 'Invoice created successfully',
+      data: { 
+        payment: createdPayment,
+        invoice: {
+          invoice_number: payment.invoice_number,
+          amount: payment.amount,
+          due_date: payment.due_date,
+          status: payment.status
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error in createInvoice:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getPayments,
   getPaymentById,
@@ -475,5 +551,6 @@ module.exports = {
   refundPayment,
   stripeWebhook,
   getPaymentStats,
-  getUserPaymentHistory
+  getUserPaymentHistory,
+  createInvoice
 }; 

@@ -827,6 +827,135 @@ const getAvailableReferees = async (req, res) => {
   }
 };
 
+/**
+ * Get tournament reports
+ * @route GET /api/v1/tournaments/reports
+ * @access Private (Admin/Organizer)
+ */
+const getTournamentReports = async (req, res) => {
+  try {
+    const { user } = req;
+    const {
+      start_date,
+      end_date,
+      organizer_type,
+      tournament_type,
+      format = 'summary'
+    } = req.query;
+
+    // Build where clause
+    const whereClause = {};
+    
+    if (start_date && end_date) {
+      whereClause.start_date = {
+        [sequelize.Op.between]: [start_date, end_date]
+      };
+    } else if (start_date) {
+      whereClause.start_date = {
+        [sequelize.Op.gte]: start_date
+      };
+    } else if (end_date) {
+      whereClause.start_date = {
+        [sequelize.Op.lte]: end_date
+      };
+    }
+
+    if (tournament_type) {
+      whereClause.tournament_type = tournament_type;
+    }
+
+    if (organizer_type) {
+      whereClause.organizer_type = organizer_type;
+    }
+
+    // If not admin, filter by user's tournaments
+    if (!['admin', 'super_admin'].includes(user.role)) {
+      whereClause.organizer_id = user.id;
+    }
+
+    const tournaments = await Tournament.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: TournamentRegistration,
+          as: 'registrations',
+          attributes: ['id', 'registration_date', 'status']
+        }
+      ],
+      order: [['start_date', 'DESC']]
+    });
+
+    // Calculate report data
+    const reportData = tournaments.map(tournament => {
+      const registrations = tournament.registrations || [];
+      const totalRegistrations = registrations.length;
+
+      const baseData = {
+        tournament_id: tournament.id,
+        tournament_name: tournament.name,
+        tournament_type: tournament.tournament_type,
+        organizer_type: tournament.organizer_type,
+        start_date: tournament.start_date,
+        end_date: tournament.end_date,
+        status: tournament.status,
+        venue_name: tournament.venue_name,
+        city: tournament.city,
+        state: tournament.state,
+        total_registrations: totalRegistrations
+      };
+
+      if (format === 'detailed') {
+        return {
+          ...baseData,
+          registrations: {
+            total: totalRegistrations,
+            confirmed: registrations.filter(r => r.status === 'confirmed').length,
+            pending: registrations.filter(r => r.status === 'pending').length,
+            cancelled: registrations.filter(r => r.status === 'cancelled').length
+          }
+        };
+      }
+
+      return baseData;
+    });
+
+    // Calculate summary statistics
+    const summary = {
+      total_tournaments: tournaments.length,
+      total_registrations: reportData.reduce((sum, t) => sum + t.total_registrations, 0),
+      average_registrations_per_tournament: tournaments.length > 0 ? 
+        reportData.reduce((sum, t) => sum + t.total_registrations, 0) / tournaments.length : 0,
+      tournament_types: tournaments.reduce((acc, t) => {
+        acc[t.tournament_type] = (acc[t.tournament_type] || 0) + 1;
+        return acc;
+      }, {}),
+      organizer_types: tournaments.reduce((acc, t) => {
+        acc[t.organizer_type] = (acc[t.organizer_type] || 0) + 1;
+        return acc;
+      }, {})
+    };
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Tournament reports retrieved successfully',
+      data: {
+        summary,
+        tournaments: reportData,
+        filters: {
+          start_date,
+          end_date,
+          organizer_type,
+          tournament_type,
+          format
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error in getTournamentReports:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getTournaments,
   getTournamentById,
@@ -841,5 +970,6 @@ module.exports = {
   assignRefereeToTournament,
   assignRefereeToMatch,
   getRefereeStats,
-  getAvailableReferees
+  getAvailableReferees,
+  getTournamentReports
 }; 

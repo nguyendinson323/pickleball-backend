@@ -209,4 +209,19 @@ router.get('/referee-stats/:refereeId',
   asyncHandler(tournamentController.getRefereeStats)
 );
 
+/**
+ * @route   GET /tournaments/reports
+ * @desc    Get tournament reports
+ * @access  Private (Admin/Organizer)
+ */
+router.get('/reports', 
+  authenticateToken,
+  query('start_date').optional().isISO8601().withMessage('Valid start date required'),
+  query('end_date').optional().isISO8601().withMessage('Valid end date required'),
+  query('organizer_type').optional().isIn(['club', 'state', 'federation']).withMessage('Invalid organizer type'),
+  query('tournament_type').optional().isIn(['local', 'state', 'national', 'international', 'exhibition', 'league']).withMessage('Invalid tournament type'),
+  query('format').optional().isIn(['summary', 'detailed', 'financial']).withMessage('Invalid report format'),
+  asyncHandler(tournamentController.getTournamentReports)
+);
+
 module.exports = router; 

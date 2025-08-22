@@ -681,6 +681,167 @@ const getUserStats = async (req, res) => {
   }
 };
 
+/**
+ * Find nearby players for matching
+ * @route GET /api/v1/players/find-nearby
+ * @access Private
+ */
+const findNearbyPlayers = async (req, res) => {
+  try {
+    const { user } = req;
+    const {
+      latitude,
+      longitude,
+      radius = 50,
+      skill_level,
+      gender,
+      age_min,
+      age_max,
+      match_type,
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    // Build where clause
+    const whereClause = {
+      user_type: 'player',
+      is_active: true,
+      can_be_found: true,
+      id: { [sequelize.Op.ne]: user.id } // Exclude current user
+    };
+
+    if (skill_level) {
+      whereClause.skill_level = skill_level;
+    }
+
+    if (gender && gender !== 'any') {
+      whereClause.gender = gender;
+    }
+
+    // Calculate pagination
+    const offset = (page - 1) * limit;
+
+    // Get players
+    const { count, rows: players } = await User.findAndCountAll({
+      where: whereClause,
+      attributes: [
+        'id', 'username', 'full_name', 'skill_level', 'gender',
+        'city', 'state', 'profile_image', 'latitude', 'longitude', 'bio'
+      ],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      order: [['last_active', 'DESC']]
+    });
+
+    // Calculate distances if coordinates provided
+    let playersWithDistance = players;
+    if (latitude && longitude) {
+      playersWithDistance = players
+        .map(player => {
+          if (player.latitude && player.longitude) {
+            const distance = calculateDistance(
+              parseFloat(latitude),
+              parseFloat(longitude),
+              player.latitude,
+              player.longitude
+            );
+            return {
+              ...player.toJSON(),
+              distance: distance
+            };
+          }
+          return {
+            ...player.toJSON(),
+            distance: null
+          };
+        })
+        .filter(player => !radius || !player.distance || player.distance <= radius)
+        .sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+    }
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Nearby players found successfully',
+      data: {
+        players: playersWithDistance,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: playersWithDistance.length,
+          pages: totalPages
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error in findNearbyPlayers:', error);
+    throw error;
+  }
+};
+
+/**
+ * Contact a player for match request
+ * @route POST /api/v1/players/:playerId/contact
+ * @access Private
+ */
+const contactPlayer = async (req, res) => {
+  try {
+    const { user } = req;
+    const { playerId } = req.params;
+    const { message, contact_type = 'play_request' } = req.body;
+
+    // Check if target player exists and can be contacted
+    const targetPlayer = await User.findOne({
+      where: {
+        id: playerId,
+        user_type: 'player',
+        is_active: true,
+        can_be_found: true
+      }
+    });
+
+    if (!targetPlayer) {
+      throw createError.notFound('Player not found or not available for contact');
+    }
+
+    // Check if user is trying to contact themselves
+    if (user.id === playerId) {
+      throw createError.badRequest('Cannot contact yourself');
+    }
+
+    res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: 'Contact request sent successfully',
+      data: {
+        recipient: {
+          id: targetPlayer.id,
+          name: targetPlayer.full_name
+        },
+        contact_type,
+        message: 'Contact functionality will be implemented with messaging system'
+      }
+    });
+  } catch (error) {
+    logger.error('Error in contactPlayer:', error);
+    throw error;
+  }
+};
+
+// Helper function to calculate distance between two coordinates
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c;
+  return Math.round(distance * 100) / 100; // Round to 2 decimal places
+}
+
 module.exports = {
   getUsers,
   getUserById,
@@ -692,5 +853,7 @@ module.exports = {
   getClubs,
   getStates,
   getUserStats,
-  togglePlayerVisibility
+  togglePlayerVisibility,
+  findNearbyPlayers,
+  contactPlayer
 }; 

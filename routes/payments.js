@@ -125,6 +125,21 @@ router.post('/:id/refund',
 );
 
 /**
+ * @route   POST /payments/invoice
+ * @desc    Create invoice for payment
+ * @access  Private
+ */
+router.post('/invoice', 
+  authenticateToken,
+  body('tournament_id').optional().isUUID().withMessage('Valid tournament ID is required'),
+  body('club_id').optional().isUUID().withMessage('Valid club ID is required'),
+  body('amount').isFloat({ min: 0 }).withMessage('Amount must be a positive number'),
+  body('description').isLength({ min: 3 }).withMessage('Description is required'),
+  body('due_date').optional().isISO8601().withMessage('Valid due date is required'),
+  asyncHandler(paymentController.createInvoice)
+);
+
+/**
  * @route   POST /payments/webhook/stripe
  * @desc    Stripe webhook endpoint
  * @access  Public
