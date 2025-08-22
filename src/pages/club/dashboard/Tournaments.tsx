@@ -1,51 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import axiosInstance from '../../../config/axios';
+import { format, parseISO } from 'date-fns';
 
 interface Tournament {
-  id: number;
+  id: string;
   name: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  participants: number;
-  maxParticipants: number;
-  entryFee: number;
-  totalRevenue: number;
-  expenses: number;
-  profit: number;
-  status: string;
-  description: string;
-  location: string;
-  tournamentType: 'singles' | 'doubles' | 'mixed';
-  skillLevel: string;
-  prizes: string;
-  rules: string;
+  tournament_type: 'local' | 'state' | 'national';
+  category: 'singles' | 'doubles' | 'mixed_doubles' | 'team';
+  description?: string;
+  organizer_id: string;
+  organizer_type: string;
+  organizer_name: string;
+  venue_name: string;
+  venue_address: string;
+  state: string;
+  city: string;
+  start_date: string;
+  end_date: string;
+  registration_deadline: string;
+  max_participants?: number;
+  current_participants: number;
+  min_participants: number;
+  skill_levels?: string[];
+  age_groups?: string[];
+  gender_categories?: string[];
+  format: 'single_elimination' | 'double_elimination' | 'round_robin' | 'swiss_system' | 'custom';
+  entry_fee: number;
+  prize_pool: number;
+  prize_distribution?: Record<string, number>;
+  status: 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'in_progress' | 'completed' | 'cancelled';
+  rules?: string;
+  equipment_requirements?: string;
+  dress_code?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  registration_requirements?: any;
+  registration_notes?: string;
+  banner_image?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface TournamentsProps {
-  tournaments: Tournament[];
+  clubId?: string;
 }
 
-const Tournaments: React.FC<TournamentsProps> = ({ tournaments: initialTournaments }) => {
-  const [tournaments, setTournaments] = useState<Tournament[]>(initialTournaments);
+const Tournaments: React.FC<TournamentsProps> = ({ clubId }) => {
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+
+  useEffect(() => {
+    fetchTournaments();
+  }, [clubId]);
+
+  const fetchTournaments = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get('/tournaments', {
+        params: {
+          organizer_type: 'club',
+          organizer_id: clubId
+        }
+      });
+      setTournaments(response.data.data.tournaments || []);
+    } catch (error) {
+      console.error('Error fetching tournaments:', error);
+      toast.error('Failed to load tournaments');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [newTournament, setNewTournament] = useState({
     name: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    maxParticipants: 32,
-    entryFee: 50,
+    tournament_type: 'local' as 'local' | 'state' | 'national',
+    category: 'doubles' as 'singles' | 'doubles' | 'mixed_doubles' | 'team',
     description: '',
-    location: '',
-    tournamentType: 'doubles' as 'singles' | 'doubles' | 'mixed',
-    skillLevel: 'all',
-    prizes: '',
-    rules: ''
+    venue_name: '',
+    venue_address: '',
+    state: '',
+    city: '',
+    start_date: '',
+    end_date: '',
+    registration_deadline: '',
+    max_participants: 32,
+    min_participants: 8,
+    skill_levels: ['all'],
+    age_groups: [],
+    gender_categories: ['mixed'],
+    format: 'single_elimination' as 'single_elimination' | 'double_elimination' | 'round_robin' | 'swiss_system' | 'custom',
+    entry_fee: 50,
+    prize_pool: 0,
+    prize_distribution: { '1st': 50, '2nd': 30, '3rd': 20 },
+    rules: '',
+    equipment_requirements: '',
+    dress_code: '',
+    contact_email: '',
+    contact_phone: '',
+    registration_notes: '',
+    banner_image: ''
   });
 
   const [expenseData, setExpenseData] = useState({
@@ -53,124 +112,254 @@ const Tournaments: React.FC<TournamentsProps> = ({ tournaments: initialTournamen
     amount: 0
   });
 
-  const handleCreateTournament = () => {
-    if (!newTournament.name || !newTournament.date || !newTournament.startTime) {
+  const [invoiceData, setInvoiceData] = useState({
+    items: [
+      { description: 'Tournament Entry Fee', quantity: 1, unit_price: 0 }
+    ],
+    due_date: '',
+    notes: ''
+  });
+
+  const handleCreateTournament = async () => {
+    if (!newTournament.name || !newTournament.start_date || !newTournament.venue_name) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const tournament: Tournament = {
-      id: Date.now(),
-      ...newTournament,
-      participants: 0,
-      totalRevenue: 0,
-      expenses: 0,
-      profit: 0,
-      status: 'Registration Open'
-    };
+    try {
+      const tournamentData = {
+        ...newTournament,
+        organizer_type: 'club',
+        status: 'draft'
+      };
 
-    setTournaments([...tournaments, tournament]);
-    setShowCreateForm(false);
+      const response = await axiosInstance.post('/tournaments', tournamentData);
+      
+      if (response.data.success) {
+        toast.success('Tournament created successfully!');
+        setShowCreateForm(false);
+        resetForm();
+        fetchTournaments();
+      }
+    } catch (error: any) {
+      console.error('Error creating tournament:', error);
+      toast.error(error.response?.data?.message || 'Failed to create tournament');
+    }
+  };
+
+  const resetForm = () => {
     setNewTournament({
-      name: '', date: '', startTime: '', endTime: '', maxParticipants: 32,
-      entryFee: 50, description: '', location: '', tournamentType: 'doubles',
-      skillLevel: 'all', prizes: '', rules: ''
+      name: '',
+      tournament_type: 'local',
+      category: 'doubles',
+      description: '',
+      venue_name: '',
+      venue_address: '',
+      state: '',
+      city: '',
+      start_date: '',
+      end_date: '',
+      registration_deadline: '',
+      max_participants: 32,
+      min_participants: 8,
+      skill_levels: ['all'],
+      age_groups: [],
+      gender_categories: ['mixed'],
+      format: 'single_elimination',
+      entry_fee: 50,
+      prize_pool: 0,
+      prize_distribution: { '1st': 50, '2nd': 30, '3rd': 20 },
+      rules: '',
+      equipment_requirements: '',
+      dress_code: '',
+      contact_email: '',
+      contact_phone: '',
+      registration_notes: '',
+      banner_image: ''
     });
-    toast.success('Tournament created successfully!');
   };
 
   const handleEditTournament = (tournament: Tournament) => {
     setEditingTournament(tournament);
     setNewTournament({
       name: tournament.name,
-      date: tournament.date,
-      startTime: tournament.startTime,
-      endTime: tournament.endTime,
-      maxParticipants: tournament.maxParticipants,
-      entryFee: tournament.entryFee,
-      description: tournament.description,
-      location: tournament.location,
-      tournamentType: tournament.tournamentType,
-      skillLevel: tournament.skillLevel,
-      prizes: tournament.prizes,
-      rules: tournament.rules
+      tournament_type: tournament.tournament_type,
+      category: tournament.category,
+      description: tournament.description || '',
+      venue_name: tournament.venue_name,
+      venue_address: tournament.venue_address,
+      state: tournament.state,
+      city: tournament.city,
+      start_date: tournament.start_date ? format(parseISO(tournament.start_date), 'yyyy-MM-dd') : '',
+      end_date: tournament.end_date ? format(parseISO(tournament.end_date), 'yyyy-MM-dd') : '',
+      registration_deadline: tournament.registration_deadline ? format(parseISO(tournament.registration_deadline), 'yyyy-MM-dd') : '',
+      max_participants: tournament.max_participants || 32,
+      min_participants: tournament.min_participants,
+      skill_levels: tournament.skill_levels || ['all'],
+      age_groups: tournament.age_groups || [],
+      gender_categories: tournament.gender_categories || ['mixed'],
+      format: tournament.format,
+      entry_fee: tournament.entry_fee,
+      prize_pool: tournament.prize_pool,
+      prize_distribution: tournament.prize_distribution || { '1st': 50, '2nd': 30, '3rd': 20 },
+      rules: tournament.rules || '',
+      equipment_requirements: tournament.equipment_requirements || '',
+      dress_code: tournament.dress_code || '',
+      contact_email: tournament.contact_email || '',
+      contact_phone: tournament.contact_phone || '',
+      registration_notes: tournament.registration_notes || '',
+      banner_image: tournament.banner_image || ''
     });
     setShowCreateForm(true);
   };
 
-  const handleUpdateTournament = () => {
+  const handleUpdateTournament = async () => {
     if (!editingTournament) return;
 
-    const updatedTournaments = tournaments.map(t => 
-      t.id === editingTournament.id 
-        ? { ...t, ...newTournament }
-        : t
-    );
-
-    setTournaments(updatedTournaments);
-    setShowCreateForm(false);
-    setEditingTournament(null);
-    setNewTournament({
-      name: '', date: '', startTime: '', endTime: '', maxParticipants: 32,
-      entryFee: 50, description: '', location: '', tournamentType: 'doubles',
-      skillLevel: 'all', prizes: '', rules: ''
-    });
-    toast.success('Tournament updated successfully!');
+    try {
+      const response = await axiosInstance.put(`/tournaments/${editingTournament.id}`, newTournament);
+      
+      if (response.data.success) {
+        toast.success('Tournament updated successfully!');
+        setShowCreateForm(false);
+        setEditingTournament(null);
+        resetForm();
+        fetchTournaments();
+      }
+    } catch (error: any) {
+      console.error('Error updating tournament:', error);
+      toast.error(error.response?.data?.message || 'Failed to update tournament');
+    }
   };
 
-  const handleAddExpense = () => {
+  const handleAddExpense = async () => {
     if (!selectedTournament || !expenseData.description || expenseData.amount <= 0) {
       toast.error('Please fill in expense details');
       return;
     }
 
-    const updatedTournaments = tournaments.map(t => {
-      if (t.id === selectedTournament.id) {
-        const newExpenses = t.expenses + expenseData.amount;
-        const newProfit = t.totalRevenue - newExpenses;
-        return { ...t, expenses: newExpenses, profit: newProfit };
-      }
-      return t;
-    });
+    try {
+      // Create expense record via API
+      const expensePayload = {
+        tournament_id: selectedTournament.id,
+        description: expenseData.description,
+        amount: expenseData.amount,
+        category: 'tournament_expense'
+      };
 
-    setTournaments(updatedTournaments);
-    setShowExpenseModal(false);
-    setExpenseData({ description: '', amount: 0 });
-    setSelectedTournament(null);
-    toast.success('Expense added successfully!');
+      await axiosInstance.post('/expenses', expensePayload);
+      
+      setShowExpenseModal(false);
+      setExpenseData({ description: '', amount: 0 });
+      setSelectedTournament(null);
+      toast.success('Expense added successfully!');
+      fetchTournaments();
+    } catch (error: any) {
+      console.error('Error adding expense:', error);
+      toast.error(error.response?.data?.message || 'Failed to add expense');
+    }
   };
 
-  const generateReport = (tournament: Tournament) => {
-    const report = `
+  const generateReport = async (tournament: Tournament) => {
+    try {
+      const response = await axiosInstance.get(`/tournaments/${tournament.id}/stats`);
+      const stats = response.data.data.stats;
+      
+      const report = `
 Tournament Report: ${tournament.name}
-Date: ${tournament.date}
-Participants: ${tournament.participants}/${tournament.maxParticipants}
-Entry Fee: $${tournament.entryFee}
-Total Revenue: $${tournament.totalRevenue}
-Total Expenses: $${tournament.expenses}
-Net Profit: $${tournament.profit}
+Date: ${format(parseISO(tournament.start_date), 'MMMM dd, yyyy')}
+Location: ${tournament.venue_name}, ${tournament.city}
+Participants: ${tournament.current_participants}/${tournament.max_participants || 'Unlimited'}
+Entry Fee: $${tournament.entry_fee}
+Prize Pool: $${tournament.prize_pool}
+Total Revenue: $${(tournament.current_participants * tournament.entry_fee).toLocaleString()}
 Status: ${tournament.status}
-    `;
-    
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tournament-${tournament.id}-report.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Report downloaded successfully!');
+Registration Rate: ${stats.registration_rate?.toFixed(1)}%
+Completion Rate: ${stats.completion_rate?.toFixed(1)}%
+      `;
+      
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tournament-${tournament.name.replace(/\s+/g, '-')}-report.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Report downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating report:', error);
+      toast.error('Failed to generate report');
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Registration Open': return 'bg-green-100 text-green-800';
-      case 'Full': return 'bg-blue-100 text-blue-800';
-      case 'In Progress': return 'bg-yellow-100 text-yellow-800';
-      case 'Completed': return 'bg-gray-100 text-gray-800';
+      case 'draft': return 'bg-gray-100 text-gray-800';
+      case 'published': return 'bg-blue-100 text-blue-800';
+      case 'registration_open': return 'bg-green-100 text-green-800';
+      case 'registration_closed': return 'bg-yellow-100 text-yellow-800';
+      case 'in_progress': return 'bg-orange-100 text-orange-800';
+      case 'completed': return 'bg-purple-100 text-purple-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const formatStatus = (status: string) => {
+    return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const handleCreateInvoice = async () => {
+    if (!selectedTournament) return;
+
+    try {
+      const invoicePayload = {
+        ...invoiceData,
+        tournament_id: selectedTournament.id,
+        amount: invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
+      };
+
+      const response = await axiosInstance.post('/payments/invoice', invoicePayload);
+      
+      if (response.data.success) {
+        toast.success('Invoice created successfully!');
+        setShowInvoiceModal(false);
+        setInvoiceData({
+          items: [{ description: 'Tournament Entry Fee', quantity: 1, unit_price: 0 }],
+          due_date: '',
+          notes: ''
+        });
+        setSelectedTournament(null);
+      }
+    } catch (error: any) {
+      console.error('Error creating invoice:', error);
+      toast.error(error.response?.data?.message || 'Failed to create invoice');
+    }
+  };
+
+  const handlePublishTournament = async (tournament: Tournament) => {
+    try {
+      const response = await axiosInstance.put(`/tournaments/${tournament.id}`, {
+        status: 'published'
+      });
+      
+      if (response.data.success) {
+        toast.success('Tournament published successfully!');
+        fetchTournaments();
+      }
+    } catch (error: any) {
+      console.error('Error publishing tournament:', error);
+      toast.error(error.response?.data?.message || 'Failed to publish tournament');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -208,31 +397,44 @@ Status: ${tournament.status}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tournament Type</label>
+              <select
+                value={newTournament.tournament_type}
+                onChange={(e) => setNewTournament({...newTournament, tournament_type: e.target.value as any})}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="local">Local</option>
+                <option value="state">State</option>
+                <option value="national">National</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
               <input
                 type="date"
-                value={newTournament.date}
-                onChange={(e) => setNewTournament({...newTournament, date: e.target.value})}
+                value={newTournament.start_date}
+                onChange={(e) => setNewTournament({...newTournament, start_date: e.target.value})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
               <input
-                type="time"
-                value={newTournament.startTime}
-                onChange={(e) => setNewTournament({...newTournament, startTime: e.target.value})}
+                type="date"
+                value={newTournament.end_date}
+                onChange={(e) => setNewTournament({...newTournament, end_date: e.target.value})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Registration Deadline *</label>
               <input
-                type="time"
-                value={newTournament.endTime}
-                onChange={(e) => setNewTournament({...newTournament, endTime: e.target.value})}
+                type="date"
+                value={newTournament.registration_deadline}
+                onChange={(e) => setNewTournament({...newTournament, registration_deadline: e.target.value})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -241,8 +443,8 @@ Status: ${tournament.status}
               <label className="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
               <input
                 type="number"
-                value={newTournament.maxParticipants}
-                onChange={(e) => setNewTournament({...newTournament, maxParticipants: parseInt(e.target.value)})}
+                value={newTournament.max_participants}
+                onChange={(e) => setNewTournament({...newTournament, max_participants: parseInt(e.target.value)})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 min="2"
               />
@@ -252,48 +454,85 @@ Status: ${tournament.status}
               <label className="block text-sm font-medium text-gray-700 mb-1">Entry Fee ($)</label>
               <input
                 type="number"
-                value={newTournament.entryFee}
-                onChange={(e) => setNewTournament({...newTournament, entryFee: parseInt(e.target.value)})}
+                value={newTournament.entry_fee}
+                onChange={(e) => setNewTournament({...newTournament, entry_fee: parseFloat(e.target.value) || 0})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 min="0"
+                step="0.01"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tournament Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <select
-                value={newTournament.tournamentType}
-                onChange={(e) => setNewTournament({...newTournament, tournamentType: e.target.value as any})}
+                value={newTournament.category}
+                onChange={(e) => setNewTournament({...newTournament, category: e.target.value as any})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="singles">Singles</option>
                 <option value="doubles">Doubles</option>
-                <option value="mixed">Mixed Doubles</option>
+                <option value="mixed_doubles">Mixed Doubles</option>
+                <option value="team">Team</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Skill Level</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Prize Pool ($)</label>
+              <input
+                type="number"
+                value={newTournament.prize_pool}
+                onChange={(e) => setNewTournament({...newTournament, prize_pool: parseFloat(e.target.value) || 0})}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tournament Format</label>
               <select
-                value={newTournament.skillLevel}
-                onChange={(e) => setNewTournament({...newTournament, skillLevel: e.target.value})}
+                value={newTournament.format}
+                onChange={(e) => setNewTournament({...newTournament, format: e.target.value as any})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Levels</option>
-                <option value="beginner">Beginner (2.5-3.0)</option>
-                <option value="intermediate">Intermediate (3.5-4.0)</option>
-                <option value="advanced">Advanced (4.5+)</option>
+                <option value="single_elimination">Single Elimination</option>
+                <option value="double_elimination">Double Elimination</option>
+                <option value="round_robin">Round Robin</option>
+                <option value="swiss_system">Swiss System</option>
+                <option value="custom">Custom</option>
               </select>
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Venue Name *</label>
               <input
                 type="text"
-                value={newTournament.location}
-                onChange={(e) => setNewTournament({...newTournament, location: e.target.value})}
+                value={newTournament.venue_name}
+                onChange={(e) => setNewTournament({...newTournament, venue_name: e.target.value})}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter tournament location"
+                placeholder="Enter venue name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+              <input
+                type="text"
+                value={newTournament.city}
+                onChange={(e) => setNewTournament({...newTournament, city: e.target.value})}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter city"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Venue Address</label>
+              <input
+                type="text"
+                value={newTournament.venue_address}
+                onChange={(e) => setNewTournament({...newTournament, venue_address: e.target.value})}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter full venue address"
               />
             </div>
 
@@ -366,12 +605,11 @@ Status: ${tournament.status}
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tournament</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Location</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Fee</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prize Pool</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expenses</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profit</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -382,29 +620,24 @@ Status: ${tournament.status}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{tournament.name}</div>
-                      <div className="text-sm text-gray-500">{tournament.tournamentType} • {tournament.skillLevel}</div>
+                      <div className="text-sm text-gray-500">{tournament.category.replace('_', ' ')} • {tournament.tournament_type}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{tournament.date}</div>
-                    <div className="text-sm text-gray-500">{tournament.startTime} - {tournament.endTime}</div>
+                    <div className="text-sm text-gray-900">{format(parseISO(tournament.start_date), 'MMM dd, yyyy')}</div>
+                    <div className="text-sm text-gray-500">{tournament.venue_name}, {tournament.city}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {tournament.participants}/{tournament.maxParticipants}
+                    {tournament.current_participants}/{tournament.max_participants || 'Unlimited'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tournament.entryFee}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tournament.totalRevenue}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tournament.expenses}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`font-bold ${
-                      tournament.profit > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      ${tournament.profit}
-                    </span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tournament.entry_fee}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${tournament.prize_pool}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                    ${(tournament.current_participants * tournament.entry_fee).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
-                      {tournament.status}
+                      {formatStatus(tournament.status)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -417,6 +650,33 @@ Status: ${tournament.status}
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Edit
+                      </button>
+                      {tournament.status === 'draft' && (
+                        <button
+                          className="inline-flex items-center px-3 py-1 border border-green-300 rounded-md text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100"
+                          onClick={() => handlePublishTournament(tournament)}
+                        >
+                          <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Publish
+                        </button>
+                      )}
+                      <button
+                        className="inline-flex items-center px-3 py-1 border border-blue-300 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100"
+                        onClick={() => {
+                          setSelectedTournament(tournament);
+                          setInvoiceData({
+                            ...invoiceData,
+                            items: [{ description: 'Tournament Entry Fee', quantity: 1, unit_price: tournament.entry_fee }]
+                          });
+                          setShowInvoiceModal(true);
+                        }}
+                      >
+                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Create Invoice
                       </button>
                       <button
                         className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50"
@@ -489,6 +749,127 @@ Status: ${tournament.status}
                   onClick={handleAddExpense}
                 >
                   Add Expense
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Invoice Modal */}
+      {showInvoiceModal && selectedTournament && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-10 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Create Invoice for {selectedTournament.name}</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Invoice Items</label>
+                  {invoiceData.items.map((item, index) => (
+                    <div key={index} className="grid grid-cols-3 gap-3 mb-2">
+                      <input
+                        type="text"
+                        value={item.description}
+                        onChange={(e) => {
+                          const newItems = [...invoiceData.items];
+                          newItems[index].description = e.target.value;
+                          setInvoiceData({...invoiceData, items: newItems});
+                        }}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Description"
+                      />
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const newItems = [...invoiceData.items];
+                          newItems[index].quantity = parseInt(e.target.value) || 0;
+                          setInvoiceData({...invoiceData, items: newItems});
+                        }}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Qty"
+                        min="1"
+                      />
+                      <input
+                        type="number"
+                        value={item.unit_price}
+                        onChange={(e) => {
+                          const newItems = [...invoiceData.items];
+                          newItems[index].unit_price = parseFloat(e.target.value) || 0;
+                          setInvoiceData({...invoiceData, items: newItems});
+                        }}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Unit Price"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  ))}
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoiceData({
+                        ...invoiceData,
+                        items: [...invoiceData.items, { description: '', quantity: 1, unit_price: 0 }]
+                      });
+                    }}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                  <input
+                    type="date"
+                    value={invoiceData.due_date}
+                    onChange={(e) => setInvoiceData({...invoiceData, due_date: e.target.value})}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                  <textarea
+                    value={invoiceData.notes}
+                    onChange={(e) => setInvoiceData({...invoiceData, notes: e.target.value})}
+                    rows={3}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Additional notes for the invoice..."
+                  />
+                </div>
+
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-gray-900">
+                      Total: ${invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                <button
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  onClick={() => {
+                    setShowInvoiceModal(false);
+                    setInvoiceData({
+                      items: [{ description: 'Tournament Entry Fee', quantity: 1, unit_price: 0 }],
+                      due_date: '',
+                      notes: ''
+                    });
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  onClick={handleCreateInvoice}
+                >
+                  Create Invoice
                 </button>
               </div>
             </div>

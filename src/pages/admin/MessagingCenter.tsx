@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { toast } from 'sonner';
+import axiosInstance from '../../utils/axios';
 import {
   MessageSquare,
   Megaphone,
@@ -24,26 +25,31 @@ import {
   BarChart3
 } from 'lucide-react';
 
-interface Announcement {
+interface AdminMessage {
   id: string;
   title: string;
   content: string;
   excerpt?: string;
-  category: string;
+  message_type: 'announcement' | 'notification' | 'alert' | 'reminder' | 'newsletter';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'draft' | 'published' | 'archived' | 'scheduled';
-  target_audience: string;
-  target_states?: string[];
-  author_name: string;
-  publish_date?: string;
-  expiry_date?: string;
-  view_count: number;
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+  target_audience: 'all_users' | 'players' | 'coaches' | 'clubs' | 'partners' | 'states' | 'players_coaches' | 'business_users' | 'specific_users' | 'by_location' | 'by_membership';
+  target_filters?: any;
+  sender_name: string;
+  scheduled_send_at?: string;
+  sent_at?: string;
+  expires_at?: string;
+  total_recipients: number;
+  sent_count: number;
+  read_count: number;
   click_count: number;
-  like_count: number;
   is_pinned: boolean;
-  send_notification: boolean;
+  send_via_email: boolean;
+  send_via_notification: boolean;
   action_button_text?: string;
   action_button_url?: string;
+  attachments?: any[];
+  tags?: string[];
   created_at: string;
 }
 
@@ -61,17 +67,18 @@ const MessagingCenter: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   
-  const [activeTab, setActiveTab] = useState<'announcements' | 'broadcast' | 'analytics'>('announcements');
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [activeTab, setActiveTab] = useState<'messages' | 'templates' | 'analytics'>('messages');
+  const [messages, setMessages] = useState<AdminMessage[]>([]);
   const [messageStats, setMessageStats] = useState<MessageStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<AdminMessage | null>(null);
   
   // Filters
   const [filters, setFilters] = useState({
     status: 'all',
-    category: 'all',
+    message_type: 'all',
+    target_audience: 'all',
     priority: 'all',
     search: ''
   });
@@ -81,84 +88,50 @@ const MessagingCenter: React.FC = () => {
     title: '',
     content: '',
     excerpt: '',
-    category: 'general',
+    message_type: 'announcement' as 'announcement' | 'notification' | 'alert' | 'reminder' | 'newsletter',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-    target_audience: 'all_members',
-    target_states: [],
-    publish_date: '',
-    expiry_date: '',
-    display_style: 'standard',
-    send_notification: false,
+    target_audience: 'all_users' as 'all_users' | 'players' | 'coaches' | 'clubs' | 'partners' | 'states' | 'players_coaches' | 'business_users' | 'specific_users' | 'by_location' | 'by_membership',
+    target_filters: {},
+    scheduled_send_at: '',
+    expires_at: '',
+    is_pinned: false,
+    send_via_email: false,
+    send_via_notification: true,
     action_button_text: '',
     action_button_url: '',
+    attachments: [],
     tags: []
   });
 
-  // Broadcast form data
-  const [broadcastData, setBroadcastData] = useState({
-    target_audience: 'all_members',
-    target_states: [],
-    subject: '',
-    content: '',
-    category: 'general',
-    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-    action_button_text: '',
-    action_button_url: ''
-  });
+  // Recipients preview data
+  const [recipientsPreview, setRecipientsPreview] = useState<{
+    total_recipients: number;
+    recipients: any[];
+    breakdown: Record<string, number>;
+  } | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   useEffect(() => {
-    fetchAnnouncements();
+    fetchMessages();
     fetchMessageStats();
   }, []);
 
-  const fetchAnnouncements = async () => {
+  const fetchMessages = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await dispatch(fetchAnnouncements()).unwrap();
-      // Mock data for now
-      const mockAnnouncements: Announcement[] = [
-        {
-          id: '1',
-          title: 'Spring Tournament Registration Open',
-          content: 'Registration for the 2024 Spring Championship is now open. This tournament will feature all skill levels.',
-          excerpt: 'Registration for the 2024 Spring Championship is now open.',
-          category: 'tournament',
-          priority: 'high',
-          status: 'published',
-          target_audience: 'all_members',
-          author_name: 'Tournament Director',
-          publish_date: '2024-03-20',
-          expiry_date: '2024-05-15',
-          view_count: 245,
-          click_count: 67,
-          like_count: 23,
-          is_pinned: true,
-          send_notification: true,
-          action_button_text: 'Register Now',
-          action_button_url: '/tournaments/spring-2024',
-          created_at: '2024-03-20T10:00:00Z'
-        },
-        {
-          id: '2', 
-          title: 'New Safety Guidelines',
-          content: 'Updated safety guidelines for all clubs and tournaments have been published.',
-          category: 'safety',
-          priority: 'medium',
-          status: 'draft',
-          target_audience: 'club_managers',
-          author_name: 'Safety Director',
-          view_count: 12,
-          click_count: 3,
-          like_count: 1,
-          is_pinned: false,
-          send_notification: false,
-          created_at: '2024-03-22T14:30:00Z'
+      const response = await axiosInstance.get('/admin/messages', {
+        params: {
+          status: filters.status !== 'all' ? filters.status : undefined,
+          message_type: filters.message_type !== 'all' ? filters.message_type : undefined,
+          target_audience: filters.target_audience !== 'all' ? filters.target_audience : undefined,
+          priority: filters.priority !== 'all' ? filters.priority : undefined,
+          limit: 50
         }
-      ];
-      setAnnouncements(mockAnnouncements);
+      });
+      setMessages(response.data.data.messages || []);
     } catch (error) {
-      toast.error('Failed to fetch announcements');
+      console.error('Error fetching messages:', error);
+      toast.error('Failed to fetch messages');
     } finally {
       setLoading(false);
     }
@@ -166,135 +139,122 @@ const MessagingCenter: React.FC = () => {
 
   const fetchMessageStats = async () => {
     try {
-      // TODO: Replace with actual API call
-      const mockStats: MessageStats = {
-        total_messages: 1247,
-        direct_messages: 892,
-        system_messages: 355,
-        unread_messages: 89,
-        read_rate: '92.8%',
-        messages_by_category: {
-          general: 456,
-          tournament: 234,
-          club: 187,
-          coaching: 123,
-          support: 89,
-          system: 158
-        },
-        messages_by_priority: {
-          low: 567,
-          medium: 489,
-          high: 156,
-          urgent: 35
-        }
-      };
-      setMessageStats(mockStats);
+      const response = await axiosInstance.get('/admin/messages/stats/overview');
+      const stats = response.data.data;
+      setMessageStats({
+        total_messages: stats.total_messages || 0,
+        direct_messages: 0, // Not applicable for admin messages
+        system_messages: stats.total_messages || 0,
+        unread_messages: 0, // Not applicable for admin messages
+        read_rate: '0%', // Will be calculated from individual message stats
+        messages_by_category: stats.message_counts || {},
+        messages_by_priority: stats.message_counts || {}
+      });
     } catch (error) {
-      toast.error('Failed to fetch message statistics');
+      console.error('Error fetching message stats:', error);
+      // Fallback to empty stats
+      setMessageStats({
+        total_messages: 0,
+        direct_messages: 0,
+        system_messages: 0,
+        unread_messages: 0,
+        read_rate: '0%',
+        messages_by_category: {},
+        messages_by_priority: {}
+      });
     }
   };
 
-  const handleCreateAnnouncement = async () => {
+  const handleCreateMessage = async () => {
     if (!formData.title || !formData.content) {
       toast.error('Title and content are required');
       return;
     }
 
     try {
-      // TODO: Replace with actual API call
-      // await dispatch(createAnnouncement(formData)).unwrap();
+      const response = await axiosInstance.post('/admin/messages', formData);
+      const newMessage = response.data.data.message;
       
-      const newAnnouncement: Announcement = {
-        id: Date.now().toString(),
-        ...formData,
-        author_name: user?.full_name || 'Admin',
-        view_count: 0,
-        click_count: 0,
-        like_count: 0,
-        status: 'draft',
-        is_pinned: false,
-        created_at: new Date().toISOString()
-      };
-      
-      setAnnouncements(prev => [newAnnouncement, ...prev]);
+      setMessages(prev => [newMessage, ...prev]);
       setShowCreateModal(false);
       resetForm();
-      toast.success('Announcement created successfully');
-    } catch (error) {
-      toast.error('Failed to create announcement');
+      toast.success('Message created successfully');
+    } catch (error: any) {
+      console.error('Error creating message:', error);
+      toast.error(error.response?.data?.message || 'Failed to create message');
     }
   };
 
-  const handleUpdateAnnouncement = async () => {
+  const handleUpdateMessage = async () => {
     if (!editingAnnouncement || !formData.title || !formData.content) {
       toast.error('Title and content are required');
       return;
     }
 
     try {
-      // TODO: Replace with actual API call
-      const updatedAnnouncement = { ...editingAnnouncement, ...formData };
-      setAnnouncements(prev => 
-        prev.map(a => a.id === editingAnnouncement.id ? updatedAnnouncement : a)
+      const response = await axiosInstance.put(`/admin/messages/${editingAnnouncement.id}`, formData);
+      const updatedMessage = response.data.data.message;
+      
+      setMessages(prev => 
+        prev.map(m => m.id === editingAnnouncement.id ? updatedMessage : m)
       );
       setEditingAnnouncement(null);
       setShowCreateModal(false);
       resetForm();
-      toast.success('Announcement updated successfully');
-    } catch (error) {
-      toast.error('Failed to update announcement');
+      toast.success('Message updated successfully');
+    } catch (error: any) {
+      console.error('Error updating message:', error);
+      toast.error(error.response?.data?.message || 'Failed to update message');
     }
   };
 
-  const handlePublishAnnouncement = async (id: string, sendNotification = false) => {
+  const handleSendMessage = async (id: string, sendImmediately = true) => {
     try {
-      // TODO: Replace with actual API call
-      setAnnouncements(prev =>
-        prev.map(a => 
-          a.id === id 
-            ? { ...a, status: 'published', publish_date: new Date().toISOString() }
-            : a
+      const response = await axiosInstance.post(`/admin/messages/${id}/send`, {
+        send_immediately: sendImmediately
+      });
+      
+      // Update message status in local state
+      setMessages(prev =>
+        prev.map(m => 
+          m.id === id 
+            ? { ...m, status: sendImmediately ? 'sent' : 'scheduled', sent_at: sendImmediately ? new Date().toISOString() : undefined }
+            : m
         )
       );
-      toast.success('Announcement published successfully');
-    } catch (error) {
-      toast.error('Failed to publish announcement');
+      toast.success(sendImmediately ? 'Message sent successfully' : 'Message scheduled successfully');
+    } catch (error: any) {
+      console.error('Error sending message:', error);
+      toast.error(error.response?.data?.message || 'Failed to send message');
     }
   };
 
-  const handleDeleteAnnouncement = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      // TODO: Replace with actual API call
-      setAnnouncements(prev => prev.filter(a => a.id !== id));
-      toast.success('Announcement deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete announcement');
+      await axiosInstance.delete(`/admin/messages/${id}`);
+      setMessages(prev => prev.filter(m => m.id !== id));
+      toast.success('Message deleted successfully');
+    } catch (error: any) {
+      console.error('Error deleting message:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete message');
     }
   };
 
-  const handleSendBroadcast = async () => {
-    if (!broadcastData.subject || !broadcastData.content) {
-      toast.error('Subject and content are required');
-      return;
-    }
-
+  const handlePreviewRecipients = async () => {
+    setPreviewLoading(true);
     try {
-      // TODO: Replace with actual API call
-      toast.success('Broadcast message sent successfully');
-      setBroadcastData({
-        target_audience: 'all_members',
-        target_states: [],
-        subject: '',
-        content: '',
-        category: 'general',
-        priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-        action_button_text: '',
-        action_button_url: ''
+      const response = await axiosInstance.post('/admin/messages/preview-recipients', {
+        target_audience: formData.target_audience,
+        target_filters: formData.target_filters
       });
-    } catch (error) {
-      toast.error('Failed to send broadcast message');
+      setRecipientsPreview(response.data.data);
+    } catch (error: any) {
+      console.error('Error previewing recipients:', error);
+      toast.error(error.response?.data?.message || 'Failed to preview recipients');
+    } finally {
+      setPreviewLoading(false);
     }
   };
 
@@ -303,29 +263,33 @@ const MessagingCenter: React.FC = () => {
       title: '',
       content: '',
       excerpt: '',
-      category: 'general',
+      message_type: 'announcement' as 'announcement' | 'notification' | 'alert' | 'reminder' | 'newsletter',
       priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-      target_audience: 'all_members',
-      target_states: [],
-      publish_date: '',
-      expiry_date: '',
-      display_style: 'standard',
-      send_notification: false,
+      target_audience: 'all_users' as 'all_users' | 'players' | 'coaches' | 'clubs' | 'partners' | 'states' | 'players_coaches' | 'business_users' | 'specific_users' | 'by_location' | 'by_membership',
+      target_filters: {},
+      scheduled_send_at: '',
+      expires_at: '',
+      is_pinned: false,
+      send_via_email: false,
+      send_via_notification: true,
       action_button_text: '',
       action_button_url: '',
+      attachments: [],
       tags: []
     });
+    setRecipientsPreview(null);
   };
 
-  const filteredAnnouncements = announcements.filter(announcement => {
-    const matchesStatus = filters.status === 'all' || announcement.status === filters.status;
-    const matchesCategory = filters.category === 'all' || announcement.category === filters.category;
-    const matchesPriority = filters.priority === 'all' || announcement.priority === filters.priority;
+  const filteredMessages = messages.filter(message => {
+    const matchesStatus = filters.status === 'all' || message.status === filters.status;
+    const matchesType = filters.message_type === 'all' || message.message_type === filters.message_type;
+    const matchesAudience = filters.target_audience === 'all' || message.target_audience === filters.target_audience;
+    const matchesPriority = filters.priority === 'all' || message.priority === filters.priority;
     const matchesSearch = !filters.search || 
-      announcement.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      announcement.content.toLowerCase().includes(filters.search.toLowerCase());
+      message.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+      message.content.toLowerCase().includes(filters.search.toLowerCase());
     
-    return matchesStatus && matchesCategory && matchesPriority && matchesSearch;
+    return matchesStatus && matchesType && matchesAudience && matchesPriority && matchesSearch;
   });
 
   const getPriorityColor = (priority: string) => {
@@ -340,41 +304,42 @@ const MessagingCenter: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-100 text-green-800 border-green-200';
+      case 'sent': return 'bg-green-100 text-green-800 border-green-200';
       case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
       case 'scheduled': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'archived': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'sending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const renderAnnouncementsTab = () => (
+  const renderMessagesTab = () => (
     <div className="space-y-6">
       {/* Header and Actions */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">Announcements</h2>
-          <p className="text-gray-600">Create and manage system announcements</p>
+          <h2 className="text-2xl font-semibold text-gray-900">Admin Messages</h2>
+          <p className="text-gray-600">Create and manage broadcast messages</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
           <Plus className="h-4 w-4 mr-2" />
-          New Announcement
+          New Message
         </button>
       </div>
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search announcements..."
+                placeholder="Search messages..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                 className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -385,37 +350,65 @@ const MessagingCenter: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               value={filters.status}
-              onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, status: e.target.value }));
+                fetchMessages();
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
-              <option value="published">Published</option>
               <option value="scheduled">Scheduled</option>
-              <option value="archived">Archived</option>
+              <option value="sending">Sending</option>
+              <option value="sent">Sent</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
             <select
-              value={filters.category}
-              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+              value={filters.message_type}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, message_type: e.target.value }));
+                fetchMessages();
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="all">All Categories</option>
-              <option value="general">General</option>
-              <option value="tournament">Tournament</option>
-              <option value="safety">Safety</option>
-              <option value="training">Training</option>
-              <option value="equipment">Equipment</option>
-              <option value="emergency">Emergency</option>
+              <option value="all">All Types</option>
+              <option value="announcement">Announcement</option>
+              <option value="notification">Notification</option>
+              <option value="alert">Alert</option>
+              <option value="reminder">Reminder</option>
+              <option value="newsletter">Newsletter</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Audience</label>
+            <select
+              value={filters.target_audience}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, target_audience: e.target.value }));
+                fetchMessages();
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Audiences</option>
+              <option value="all_users">All Users</option>
+              <option value="players">Players</option>
+              <option value="coaches">Coaches</option>
+              <option value="clubs">Clubs</option>
+              <option value="partners">Partners</option>
+              <option value="states">States</option>
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
             <select
               value={filters.priority}
-              onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, priority: e.target.value }));
+                fetchMessages();
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Priorities</option>
@@ -428,51 +421,68 @@ const MessagingCenter: React.FC = () => {
         </div>
       </div>
 
-      {/* Announcements List */}
+      {/* Messages List */}
       <div className="space-y-4">
-        {filteredAnnouncements.map((announcement) => (
-          <div key={announcement.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        {filteredMessages.map((message) => (
+          <div key={message.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
-                  {announcement.is_pinned && <Pin className="h-4 w-4 text-yellow-500" />}
-                  <h3 className="text-lg font-semibold text-gray-900">{announcement.title}</h3>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(announcement.priority)}`}>
-                    {announcement.priority}
+                  {message.is_pinned && <Pin className="h-4 w-4 text-yellow-500" />}
+                  <h3 className="text-lg font-semibold text-gray-900">{message.title}</h3>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(message.priority)}`}>
+                    {message.priority}
                   </span>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(announcement.status)}`}>
-                    {announcement.status}
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
+                    {message.status}
+                  </span>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                    {message.message_type}
                   </span>
                 </div>
                 
-                <p className="text-gray-700 mb-3">{announcement.excerpt || announcement.content.substring(0, 150)}...</p>
+                <p className="text-gray-700 mb-3">{message.excerpt || message.content.substring(0, 150)}...</p>
                 
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>Category: {announcement.category}</span>
-                  <span>Target: {announcement.target_audience.replace('_', ' ')}</span>
-                  <span>Author: {announcement.author_name}</span>
-                  {announcement.publish_date && (
-                    <span>Published: {new Date(announcement.publish_date).toLocaleDateString()}</span>
+                  <span>Target: {message.target_audience.replace(/_/g, ' ')}</span>
+                  <span>Author: {message.sender_name}</span>
+                  {message.sent_at && (
+                    <span>Sent: {new Date(message.sent_at).toLocaleDateString()}</span>
+                  )}
+                  {message.scheduled_send_at && !message.sent_at && (
+                    <span>Scheduled: {new Date(message.scheduled_send_at).toLocaleDateString()}</span>
                   )}
                 </div>
 
                 <div className="flex items-center space-x-6 mt-3 text-sm text-gray-600">
                   <div className="flex items-center space-x-1">
+                    <Users className="h-4 w-4" />
+                    <span>{message.total_recipients} recipients</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Send className="h-4 w-4" />
+                    <span>{message.sent_count} sent</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
                     <Eye className="h-4 w-4" />
-                    <span>{announcement.view_count} views</span>
+                    <span>{message.read_count} read</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <TrendingUp className="h-4 w-4" />
-                    <span>{announcement.click_count} clicks</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4" />
-                    <span>{announcement.like_count} likes</span>
-                  </div>
-                  {announcement.send_notification && (
+                  {message.click_count > 0 && (
+                    <div className="flex items-center space-x-1">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>{message.click_count} clicks</span>
+                    </div>
+                  )}
+                  {message.send_via_notification && (
                     <div className="flex items-center space-x-1 text-blue-600">
                       <Bell className="h-4 w-4" />
-                      <span>Notifications sent</span>
+                      <span>Notifications</span>
+                    </div>
+                  )}
+                  {message.send_via_email && (
+                    <div className="flex items-center space-x-1 text-green-600">
+                      <MessageSquare className="h-4 w-4" />
+                      <span>Email</span>
                     </div>
                   )}
                 </div>
@@ -480,155 +490,179 @@ const MessagingCenter: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex items-center space-x-2 ml-4">
-                {announcement.status === 'draft' && (
+                {(message.status === 'draft' || message.status === 'scheduled') && (
                   <button
-                    onClick={() => handlePublishAnnouncement(announcement.id)}
+                    onClick={() => handleSendMessage(message.id, true)}
                     className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                   >
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Publish
+                    <Send className="h-4 w-4 mr-1" />
+                    Send Now
                   </button>
                 )}
                 
-                <button
-                  onClick={() => {
-                    setEditingAnnouncement(announcement);
-                    setFormData({ ...formData, ...announcement });
-                    setShowCreateModal(true);
-                  }}
-                  className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </button>
+                {message.status === 'sent' && (
+                  <button
+                    onClick={() => {
+                      // TODO: Open analytics modal or navigate to analytics
+                      toast.info('Analytics view coming soon');
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-1" />
+                    Analytics
+                  </button>
+                )}
                 
-                <button
-                  onClick={() => handleDeleteAnnouncement(announcement.id)}
-                  className="inline-flex items-center px-3 py-1 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </button>
+                {(message.status === 'draft' || message.status === 'scheduled') && (
+                  <button
+                    onClick={() => {
+                      setEditingAnnouncement(message);
+                      setFormData({ ...formData, ...message });
+                      setShowCreateModal(true);
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </button>
+                )}
+                
+                {(message.status === 'draft' || message.status === 'scheduled') && (
+                  <button
+                    onClick={() => handleDeleteMessage(message.id)}
+                    className="inline-flex items-center px-3 py-1 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {filteredAnnouncements.length === 0 && (
+      {filteredMessages.length === 0 && (
         <div className="text-center py-12">
-          <Megaphone className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No announcements found</h3>
-          <p className="text-gray-600">Create your first announcement to get started.</p>
+          <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No messages found</h3>
+          <p className="text-gray-600">Create your first admin message to get started.</p>
         </div>
       )}
     </div>
   );
 
-  const renderBroadcastTab = () => (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900">Broadcast Messages</h2>
-        <p className="text-gray-600">Send direct messages to specific user groups</p>
-      </div>
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="space-y-6">
-          {/* Target Audience */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
-              <select
-                value={broadcastData.target_audience}
-                onChange={(e) => setBroadcastData(prev => ({ ...prev, target_audience: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all_members">All Members</option>
-                <option value="players">Players</option>
-                <option value="coaches">Coaches</option>
-                <option value="club_managers">Club Managers</option>
-                <option value="tournament_directors">Tournament Directors</option>
-                <option value="officials">Officials</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-              <select
-                value={broadcastData.priority}
-                onChange={(e) => setBroadcastData(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </div>
-          </div>
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const response = await axiosInstance.get('/admin/messages/templates');
+      setTemplates(response.data.data.templates || []);
+    } catch (error: any) {
+      console.error('Error fetching templates:', error);
+      toast.error('Failed to fetch templates');
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
 
-          {/* Subject */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-            <input
-              type="text"
-              placeholder="Message subject..."
-              value={broadcastData.subject}
-              onChange={(e) => setBroadcastData(prev => ({ ...prev, subject: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+  const useTemplate = (template: any) => {
+    setFormData({
+      title: template.title,
+      content: template.content,
+      excerpt: '',
+      message_type: template.message_type,
+      priority: template.priority,
+      target_audience: template.target_audience,
+      target_filters: {},
+      scheduled_send_at: '',
+      expires_at: '',
+      is_pinned: false,
+      send_via_email: false,
+      send_via_notification: true,
+      action_button_text: template.action_button_text || '',
+      action_button_url: '',
+      attachments: [],
+      tags: template.tags || []
+    });
+    setShowCreateModal(true);
+  };
 
-          {/* Content */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Message Content</label>
-            <textarea
-              placeholder="Enter your message content..."
-              value={broadcastData.content}
-              onChange={(e) => setBroadcastData(prev => ({ ...prev, content: e.target.value }))}
-              rows={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+  const renderTemplatesTab = () => {
+    if (templates.length === 0) {
+      fetchTemplates();
+    }
 
-          {/* Action Button */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Action Button Text (Optional)</label>
-              <input
-                type="text"
-                placeholder="e.g., Register Now, Learn More"
-                value={broadcastData.action_button_text}
-                onChange={(e) => setBroadcastData(prev => ({ ...prev, action_button_text: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Action Button URL (Optional)</label>
-              <input
-                type="url"
-                placeholder="https://example.com/action"
-                value={broadcastData.action_button_url}
-                onChange={(e) => setBroadcastData(prev => ({ ...prev, action_button_url: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Send Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleSendBroadcast}
-              disabled={!broadcastData.subject || !broadcastData.content}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Send Broadcast
-            </button>
-          </div>
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Message Templates</h2>
+          <p className="text-gray-600">Pre-built templates for common message scenarios</p>
         </div>
+
+        {loadingTemplates ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-gray-600 mt-2">Loading templates...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((template) => (
+              <div key={template.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{template.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{template.title}</p>
+                  <p className="text-sm text-gray-500 line-clamp-3">{template.content.substring(0, 120)}...</p>
+                </div>
+                
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex space-x-2">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(template.priority)}`}>
+                      {template.priority}
+                    </span>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                      {template.message_type}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="text-xs text-gray-500 mb-2">Target: {template.target_audience.replace(/_/g, ' ')}</div>
+                  {template.tags && template.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {template.tags.map((tag: string, index: number) => (
+                        <span key={index} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => useTemplate(template)}
+                  className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Use Template
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {templates.length === 0 && !loadingTemplates && (
+          <div className="text-center py-12">
+            <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates available</h3>
+            <p className="text-gray-600">Templates will help you create common message types quickly.</p>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderAnalyticsTab = () => (
     <div className="space-y-6">
@@ -734,26 +768,26 @@ const MessagingCenter: React.FC = () => {
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex space-x-8">
             <button
-              onClick={() => setActiveTab('announcements')}
+              onClick={() => setActiveTab('messages')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'announcements'
+                activeTab === 'messages'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              <Megaphone className="h-4 w-4 mr-2 inline" />
-              Announcements
+              <MessageSquare className="h-4 w-4 mr-2 inline" />
+              Messages
             </button>
             <button
-              onClick={() => setActiveTab('broadcast')}
+              onClick={() => setActiveTab('templates')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'broadcast'
+                activeTab === 'templates'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              <Send className="h-4 w-4 mr-2 inline" />
-              Broadcast
+              <Edit className="h-4 w-4 mr-2 inline" />
+              Templates
             </button>
             <button
               onClick={() => setActiveTab('analytics')}
@@ -770,17 +804,17 @@ const MessagingCenter: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'announcements' && renderAnnouncementsTab()}
-        {activeTab === 'broadcast' && renderBroadcastTab()}
+        {activeTab === 'messages' && renderMessagesTab()}
+        {activeTab === 'templates' && renderTemplatesTab()}
         {activeTab === 'analytics' && renderAnalyticsTab()}
 
-        {/* Create/Edit Announcement Modal */}
+        {/* Create/Edit Message Modal */}
         {showCreateModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div className="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
+                  {editingAnnouncement ? 'Edit Message' : 'Create New Message'}
                 </h3>
                 <button
                   onClick={() => {
@@ -801,7 +835,7 @@ const MessagingCenter: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                     <input
                       type="text"
-                      placeholder="Announcement title..."
+                      placeholder="Message title..."
                       value={formData.title}
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -809,18 +843,17 @@ const MessagingCenter: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Message Type</label>
                     <select
-                      value={formData.category}
-                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                      value={formData.message_type}
+                      onChange={(e) => setFormData(prev => ({ ...prev, message_type: e.target.value as 'announcement' | 'notification' | 'alert' | 'reminder' | 'newsletter' }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="general">General</option>
-                      <option value="tournament">Tournament</option>
-                      <option value="safety">Safety</option>
-                      <option value="training">Training</option>
-                      <option value="equipment">Equipment</option>
-                      <option value="emergency">Emergency</option>
+                      <option value="announcement">Announcement</option>
+                      <option value="notification">Notification</option>
+                      <option value="alert">Alert</option>
+                      <option value="reminder">Reminder</option>
+                      <option value="newsletter">Newsletter</option>
                     </select>
                   </div>
                   
@@ -843,7 +876,7 @@ const MessagingCenter: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
                   <textarea
-                    placeholder="Announcement content..."
+                    placeholder="Message content..."
                     value={formData.content}
                     onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                     rows={8}
@@ -852,45 +885,132 @@ const MessagingCenter: React.FC = () => {
                 </div>
 
                 {/* Targeting and Settings */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
                     <select
                       value={formData.target_audience}
-                      onChange={(e) => setFormData(prev => ({ ...prev, target_audience: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, target_audience: e.target.value as any }));
+                        setRecipientsPreview(null);
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="all_members">All Members</option>
+                      <option value="all_users">All Users</option>
                       <option value="players">Players</option>
                       <option value="coaches">Coaches</option>
-                      <option value="club_managers">Club Managers</option>
-                      <option value="tournament_directors">Tournament Directors</option>
+                      <option value="clubs">Clubs</option>
+                      <option value="partners">Partners</option>
+                      <option value="states">States</option>
+                      <option value="players_coaches">Players & Coaches</option>
+                      <option value="business_users">Business Users</option>
                     </select>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Scheduled Send (Optional)</label>
                     <input
-                      type="date"
-                      value={formData.expiry_date}
-                      onChange={(e) => setFormData(prev => ({ ...prev, expiry_date: e.target.value }))}
+                      type="datetime-local"
+                      value={formData.scheduled_send_at}
+                      onChange={(e) => setFormData(prev => ({ ...prev, scheduled_send_at: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Expires At (Optional)</label>
+                    <input
+                      type="datetime-local"
+                      value={formData.expires_at}
+                      onChange={(e) => setFormData(prev => ({ ...prev, expires_at: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
 
-                {/* Notification Settings */}
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="send_notification"
-                    checked={formData.send_notification}
-                    onChange={(e) => setFormData(prev => ({ ...prev, send_notification: e.target.checked }))}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="send_notification" className="ml-2 text-sm font-medium text-gray-700">
-                    Send push notifications to users
-                  </label>
+                {/* Action Button Settings */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Action Button Text (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Register Now, Learn More"
+                      value={formData.action_button_text}
+                      onChange={(e) => setFormData(prev => ({ ...prev, action_button_text: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Action Button URL (Optional)</label>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/action"
+                      value={formData.action_button_url}
+                      onChange={(e) => setFormData(prev => ({ ...prev, action_button_url: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Delivery Settings */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="send_via_notification"
+                        checked={formData.send_via_notification}
+                        onChange={(e) => setFormData(prev => ({ ...prev, send_via_notification: e.target.checked }))}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="send_via_notification" className="ml-2 text-sm font-medium text-gray-700">
+                        Send as in-app notification
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="send_via_email"
+                        checked={formData.send_via_email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, send_via_email: e.target.checked }))}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="send_via_email" className="ml-2 text-sm font-medium text-gray-700">
+                        Send via email
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="is_pinned"
+                        checked={formData.is_pinned}
+                        onChange={(e) => setFormData(prev => ({ ...prev, is_pinned: e.target.checked }))}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="is_pinned" className="ml-2 text-sm font-medium text-gray-700">
+                        Pin message
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {/* Recipients Preview */}
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      type="button"
+                      onClick={handlePreviewRecipients}
+                      disabled={previewLoading}
+                      className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      {previewLoading ? 'Loading...' : 'Preview Recipients'}
+                    </button>
+                    
+                    {recipientsPreview && (
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium">{recipientsPreview.total_recipients}</span> recipients will receive this message
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -906,11 +1026,11 @@ const MessagingCenter: React.FC = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={editingAnnouncement ? handleUpdateAnnouncement : handleCreateAnnouncement}
+                    onClick={editingAnnouncement ? handleUpdateMessage : handleCreateMessage}
                     disabled={!formData.title || !formData.content}
                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {editingAnnouncement ? 'Update' : 'Create'} Announcement
+                    {editingAnnouncement ? 'Update' : 'Create'} Message
                   </button>
                 </div>
               </div>
