@@ -14,7 +14,7 @@ interface PaymentFormProps {
   description: string;
   onSuccess?: (paymentId: string) => void;
   onCancel?: () => void;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 const PaymentForm = ({ 
@@ -76,7 +76,7 @@ const PaymentForm = ({
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof typeof prev] as any),
+          ...(prev[parent as keyof typeof prev] as Record<string, string>),
           [child]: value
         }
       }));

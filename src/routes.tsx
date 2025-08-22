@@ -18,6 +18,8 @@ import DigitalCredentialsManagement from "./pages/admin/DigitalCredentialsManage
 import CourtReservationDashboard from "./pages/admin/CourtReservationDashboard";
 import TournamentsManagementPage from "./pages/admin/TournamentsManagementPage";
 import CoachRefereeProfile from "./pages/coach/CoachRefereeProfile";
+import CoachFinder from "./components/CoachFinder";
+import CoachProfile from "./components/CoachProfile";
 
 // Common pages (accessible to all logged-in users)
 import ClubsPage from "./pages/common/ClubsPage";
@@ -45,7 +47,7 @@ import PlayerCredentials from "./pages/player/dashboard/Credentials";
 
 // Coach pages
 import CoachDashboard from "./pages/coach/dashboard";
-import CoachProfile from "./pages/coach/CoachProfile";
+import CoachProfilePage from "./pages/coach/CoachProfile";
 import Credentials from "./pages/coach/Credentials";
 import Students from "./pages/coach/Students";
 import Sessions from "./pages/coach/Sessions";
@@ -204,6 +206,18 @@ const routes = [
     element: <MessagePage />,
     public: true
   },
+  {
+    key: 'coach-finder',
+    path: '/coach-finder',
+    element: <CoachFinder />,
+    public: true
+  },
+  {
+    key: 'coach-profile',
+    path: '/coaches/:coachId/profile',
+    element: <CoachProfile />,
+    public: true
+  },
 
   // Player-specific routes
   {
@@ -247,7 +261,7 @@ const routes = [
   {
     key: 'coach-profile',
     path: '/coach/profile',
-    element: <CoachProfile />,
+    element: <CoachProfilePage />,
     public: false
   },
   {

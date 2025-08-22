@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { useErrorHandler } from '../hooks/useErrorHandler';
 import {
   Search,
   Filter,
@@ -62,6 +63,7 @@ interface SearchFilters {
 
 const CoachFinder: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const { handleError } = useErrorHandler();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,8 +109,7 @@ const CoachFinder: React.FC = () => {
         });
       }
     } catch (error) {
-      toast.error('Failed to search coaches');
-      console.error('Error searching coaches:', error);
+      handleError(error, 'Coach Search', 'Failed to search coaches');
     } finally {
       setLoading(false);
     }
