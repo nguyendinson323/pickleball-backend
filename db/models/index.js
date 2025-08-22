@@ -28,6 +28,9 @@ const CourtReservation = require('./CourtReservation');
 const DigitalCredential = require('./DigitalCredential');
 const CoachFinder = require('./CoachFinder');
 const Expense = require('./Expense');
+const AdminMessage = require('./AdminMessage');
+const Message = require('./Message');
+const Announcement = require('./Announcement');
 
 // Define associations
 
@@ -397,6 +400,49 @@ User.hasMany(Expense, {
   as: 'approvedExpenses'
 });
 
+// AdminMessage associations
+AdminMessage.belongsTo(User, {
+  foreignKey: 'sender_id',
+  as: 'sender'
+});
+
+User.hasMany(AdminMessage, {
+  foreignKey: 'sender_id',
+  as: 'sentAdminMessages'
+});
+
+// Message associations
+Message.belongsTo(User, {
+  foreignKey: 'sender_id',
+  as: 'sender'
+});
+
+Message.belongsTo(User, {
+  foreignKey: 'recipient_id',
+  as: 'recipient'
+});
+
+User.hasMany(Message, {
+  foreignKey: 'sender_id',
+  as: 'sentMessages'
+});
+
+User.hasMany(Message, {
+  foreignKey: 'recipient_id',
+  as: 'receivedMessages'
+});
+
+// Announcement associations
+Announcement.belongsTo(User, {
+  foreignKey: 'created_by',
+  as: 'creator'
+});
+
+User.hasMany(Announcement, {
+  foreignKey: 'created_by',
+  as: 'createdAnnouncements'
+});
+
 // Export all models
 module.exports = {
   sequelize,
@@ -416,5 +462,8 @@ module.exports = {
   CourtReservation,
   DigitalCredential,
   CoachFinder,
-  Expense
+  Expense,
+  AdminMessage,
+  Message,
+  Announcement
 }; 

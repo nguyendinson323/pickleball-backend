@@ -10,7 +10,7 @@
  */
 
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config');
+const { sequelize } = require('../../config/database');
 
 const Message = sequelize.define('Message', {
   id: {

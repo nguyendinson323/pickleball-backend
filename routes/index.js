@@ -30,6 +30,8 @@ const coachRoutes = require('./coaches');
 const adminMessageRoutes = require('./adminMessages');
 const micrositeRoutes = require('./microsites');
 const expenseRoutes = require('./expenses');
+const announcementRoutes = require('./announcements');
+const messageRoutes = require('./messages');
 
 // Define route prefixes
 const API_PREFIX = '/api/v1';
@@ -53,6 +55,8 @@ router.use(`${API_PREFIX}/coaches`, coachRoutes);
 router.use(`${API_PREFIX}/admin/messages`, adminMessageRoutes);
 router.use(`${API_PREFIX}/admin/microsites`, micrositeRoutes);
 router.use(`${API_PREFIX}/expenses`, expenseRoutes);
+router.use(`${API_PREFIX}/announcements`, announcementRoutes);
+router.use(`${API_PREFIX}/messages`, messageRoutes);
 
 // Health check endpoint
 router.get(`${API_PREFIX}/health`, (req, res) => {
