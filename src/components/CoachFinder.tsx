@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useErrorHandler } from '../hooks/useErrorHandler';
@@ -79,17 +79,7 @@ const CoachFinder: React.FC = () => {
     total: 0
   });
 
-  useEffect(() => {
-    searchCoaches();
-  }, [filters]);
-
-  useEffect(() => {
-    if (user?.id) {
-      loadSavedCoaches();
-    }
-  }, [user?.id]);
-
-  const searchCoaches = async (page = 1) => {
+  const searchCoaches = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       const searchParams: Record<string, string> = {
@@ -121,16 +111,26 @@ const CoachFinder: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, handleError]);
 
-  const loadSavedCoaches = () => {
+  const loadSavedCoaches = useCallback(() => {
     if (!user?.id) return;
     
     const saved = localStorage.getItem(`saved_coaches_${user.id}`);
     if (saved) {
       setSavedCoaches(JSON.parse(saved));
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    searchCoaches();
+  }, [searchCoaches]);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadSavedCoaches();
+    }
+  }, [user?.id, loadSavedCoaches]);
 
   const toggleSaveCoach = (coachId: string) => {
     if (!user?.id) return;

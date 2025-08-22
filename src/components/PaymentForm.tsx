@@ -1,39 +1,74 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { CreditCard, Lock, CheckCircle } from 'lucide-react';
 
 // UI Component definitions (temporary until proper UI library is set up)
-const Button = ({ children, type = 'button', onClick, className = '', disabled = false }: any) => (
+interface ButtonProps {
+  children: ReactNode;
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: () => void;
+  className?: string;
+  disabled?: boolean;
+  variant?: 'outline' | 'default';
+}
+
+const Button = ({ children, type = 'button', onClick, className = '', disabled = false }: ButtonProps) => (
   <button type={type} onClick={onClick} className={className} disabled={disabled}>
     {children}
   </button>
 );
 
-const Card = ({ children, className = '' }: any) => (
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const Card = ({ children, className = '' }: CardProps) => (
   <div className={className}>{children}</div>
 );
 
-const CardHeader = ({ children, className = '' }: any) => (
+const CardHeader = ({ children, className = '' }: CardProps) => (
   <div className={className}>{children}</div>
 );
 
-const CardTitle = ({ children, className = '' }: any) => (
+const CardTitle = ({ children, className = '' }: CardProps) => (
   <h3 className={className}>{children}</h3>
 );
 
-const CardDescription = ({ children }: any) => (
+interface CardDescriptionProps {
+  children: ReactNode;
+}
+
+const CardDescription = ({ children }: CardDescriptionProps) => (
   <p>{children}</p>
 );
 
-const CardContent = ({ children }: any) => (
+const CardContent = ({ children }: CardDescriptionProps) => (
   <div>{children}</div>
 );
 
-const Label = ({ children, htmlFor, className = '' }: any) => (
+interface LabelProps {
+  children: ReactNode;
+  htmlFor?: string;
+  className?: string;
+}
+
+const Label = ({ children, htmlFor, className = '' }: LabelProps) => (
   <label htmlFor={htmlFor} className={className}>{children}</label>
 );
 
-const Input = ({ id, type = 'text', placeholder, value, onChange, maxLength, required = false, className = '' }: any) => (
+interface InputProps {
+  id?: string;
+  type?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  maxLength?: number;
+  required?: boolean;
+  className?: string;
+}
+
+const Input = ({ id, type = 'text', placeholder, value, onChange, maxLength, required = false, className = '' }: InputProps) => (
   <input
     id={id}
     type={type}
@@ -46,21 +81,37 @@ const Input = ({ id, type = 'text', placeholder, value, onChange, maxLength, req
   />
 );
 
-const Select = ({ children, value, onValueChange }: any) => (
+interface SelectProps {
+  children: ReactNode;
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
+const Select = ({ children, value, onValueChange }: SelectProps) => (
   <select value={value} onChange={(e) => onValueChange(e.target.value)}>
     {children}
   </select>
 );
 
-const SelectTrigger = ({ children, className = '' }: any) => (
+interface SelectTriggerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const SelectTrigger = ({ children, className = '' }: SelectTriggerProps) => (
   <div className={className}>{children}</div>
 );
 
 const SelectValue = () => null;
 
-const SelectContent = ({ children }: any) => <>{children}</>;
+const SelectContent = ({ children }: CardDescriptionProps) => <>{children}</>;
 
-const SelectItem = ({ children, value }: any) => (
+interface SelectItemProps {
+  children: ReactNode;
+  value: string;
+}
+
+const SelectItem = ({ children, value }: SelectItemProps) => (
   <option value={value}>{children}</option>
 );
 
@@ -188,7 +239,7 @@ const PaymentForm = ({
           {/* Payment Method Selection */}
           <div className="space-y-2">
             <Label>Payment Method</Label>
-            <Select value={paymentMethod} onValueChange={(value: 'stripe' | 'paypal') => setPaymentMethod(value)}>
+            <Select value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as 'stripe' | 'paypal')}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

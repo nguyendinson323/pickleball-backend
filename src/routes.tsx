@@ -5,6 +5,7 @@ import OptionalFieldsPage from "./pages/auth/OptionalFieldsPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import VerifyCredential from "./pages/VerifyCredential";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 
   // Admin pages
@@ -225,25 +226,25 @@ const routes = [
   {
     key: 'player',
     path: '/player',
-    element: <PlayerDashboard />,
+    element: <ProtectedRoute allowedRoles={['player']}><PlayerDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'player-dashboard',
     path: '/player/dashboard',
-    element: <PlayerDashboard />,
+    element: <ProtectedRoute allowedRoles={['player']}><PlayerDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'player-profile',
     path: '/player/profile',
-    element: <PlayerProfile />,
+    element: <ProtectedRoute allowedRoles={['player']}><PlayerProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'player-credentials',
     path: '/player/credentials',
-    element: <PlayerCredentials />,
+    element: <ProtectedRoute allowedRoles={['player']}><PlayerCredentials /></ProtectedRoute>,
     public: false
   },
 
@@ -251,13 +252,13 @@ const routes = [
   {
     key: 'coach',
     path: '/coach',
-    element: <CoachDashboard />,
+    element: <ProtectedRoute allowedRoles={['coach']}><CoachDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'coach-dashboard',
     path: '/coach/dashboard',
-    element: <CoachDashboard />,
+    element: <ProtectedRoute allowedRoles={['coach']}><CoachDashboard /></ProtectedRoute>,
     public: false
   },
   {
@@ -427,19 +428,19 @@ const routes = [
   {
     key: 'admin-dashboard',
     path: '/admin/dashboard',
-    element: <AdminDashboard />,
+    element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-profile',
     path: '/admin/profile',
-    element: <AdminProfile />,
+    element: <ProtectedRoute allowedRoles={['admin']}><AdminProfile /></ProtectedRoute>,
     public: false
   },
   {
     key: 'admin-users',
     path: '/admin/users',
-    element: <UserManagement />,
+    element: <ProtectedRoute allowedRoles={['admin']}><UserManagement /></ProtectedRoute>,
     public: false
   },
   {

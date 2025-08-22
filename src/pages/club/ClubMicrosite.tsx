@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ReactNode, ChangeEvent } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import {
@@ -11,26 +11,54 @@ import {
   Star
 } from 'lucide-react';
 
+// UI Component Interfaces
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+}
+
+interface CardHeaderProps {
+  children: ReactNode;
+}
+
+interface CardTitleProps {
+  children: ReactNode;
+}
+
+interface CardContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
 // Simple UI component replacements
-const Card = ({ children, className = '' }: any) => (
+const Card = ({ children, className = '' }: CardProps) => (
   <div className={`bg-white rounded-lg shadow ${className}`}>{children}</div>
 );
-const CardHeader = ({ children }: any) => (
+const CardHeader = ({ children }: CardHeaderProps) => (
   <div className="px-6 py-4 border-b">{children}</div>
 );
-const CardTitle = ({ children }: any) => (
+const CardTitle = ({ children }: CardTitleProps) => (
   <h3 className="text-lg font-semibold">{children}</h3>
 );
-const CardContent = ({ children, className = '' }: any) => (
+const CardContent = ({ children, className = '' }: CardContentProps) => (
   <div className={`p-6 ${className}`}>{children}</div>
 );
 
-const Button = ({ children, variant = 'default', size = 'default', onClick, disabled = false, className = '' }: any) => {
-  const variants: any = {
+interface ButtonProps {
+  children: ReactNode;
+  variant?: 'default' | 'outline';
+  size?: 'default' | 'sm';
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+}
+
+const Button = ({ children, variant = 'default', size = 'default', onClick, disabled = false, className = '' }: ButtonProps) => {
+  const variants: Record<string, string> = {
     default: 'bg-blue-600 text-white hover:bg-blue-700',
     outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
   };
-  const sizes: any = {
+  const sizes: Record<string, string> = {
     default: 'px-4 py-2',
     sm: 'px-3 py-1 text-sm'
   };
@@ -45,7 +73,17 @@ const Button = ({ children, variant = 'default', size = 'default', onClick, disa
   );
 };
 
-const Input = ({ type = 'text', value, onChange, disabled = false, placeholder = '', id, className = '' }: any) => (
+interface InputProps {
+  type?: string;
+  value: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  placeholder?: string;
+  id?: string;
+  className?: string;
+}
+
+const Input = ({ type = 'text', value, onChange, disabled = false, placeholder = '', id, className = '' }: InputProps) => (
   <input
     type={type}
     id={id}
@@ -57,13 +95,38 @@ const Input = ({ type = 'text', value, onChange, disabled = false, placeholder =
   />
 );
 
-const Label = ({ children, htmlFor }: any) => (
+interface LabelProps {
+  children: ReactNode;
+  htmlFor?: string;
+}
+
+interface TextareaProps {
+  value: string;
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
+  disabled?: boolean;
+  placeholder?: string;
+  rows?: number;
+  id?: string;
+}
+
+interface BadgeProps {
+  children: ReactNode;
+  className?: string;
+}
+
+interface SwitchProps {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
+}
+
+const Label = ({ children, htmlFor }: LabelProps) => (
   <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 mb-1">
     {children}
   </label>
 );
 
-const Textarea = ({ value, onChange, disabled = false, placeholder = '', rows = 4, id }: any) => (
+const Textarea = ({ value, onChange, disabled = false, placeholder = '', rows = 4, id }: TextareaProps) => (
   <textarea
     id={id}
     value={value}
@@ -75,13 +138,13 @@ const Textarea = ({ value, onChange, disabled = false, placeholder = '', rows = 
   />
 );
 
-const Badge = ({ children, className = '' }: any) => (
+const Badge = ({ children, className = '' }: BadgeProps) => (
   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>
     {children}
   </span>
 );
 
-const Switch = ({ checked, onCheckedChange, disabled = false }: any) => (
+const Switch = ({ checked, onCheckedChange, disabled = false }: SwitchProps) => (
   <button
     type="button"
     role="switch"
@@ -100,7 +163,27 @@ const Switch = ({ checked, onCheckedChange, disabled = false }: any) => (
   </button>
 );
 
-const Select = ({ value, onValueChange, disabled = false, children }: any) => {
+interface SelectProps {
+  value: string;
+  onValueChange: (value: string) => void;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+interface SelectTriggerProps {
+  children: ReactNode;
+}
+
+interface SelectContentProps {
+  children: ReactNode;
+}
+
+interface SelectItemProps {
+  value: string;
+  children: ReactNode;
+}
+
+const Select = ({ value, onValueChange, disabled = false, children }: SelectProps) => {
   return (
     <select
       value={value}
@@ -113,10 +196,10 @@ const Select = ({ value, onValueChange, disabled = false, children }: any) => {
   );
 };
 
-const SelectTrigger = ({ children }: any) => <>{children}</>;
+const SelectTrigger = ({ children }: SelectTriggerProps) => <>{children}</>;
 const SelectValue = () => null;
-const SelectContent = ({ children }: any) => <>{children}</>;
-const SelectItem = ({ value, children }: any) => <option value={value}>{children}</option>;
+const SelectContent = ({ children }: SelectContentProps) => <>{children}</>;
+const SelectItem = ({ value, children }: SelectItemProps) => <option value={value}>{children}</option>;
 
 const ClubMicrosite = () => {
   const { user } = useSelector((state: RootState) => state.auth);

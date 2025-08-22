@@ -7,6 +7,7 @@ import Matches from './Matches';
 import Tournaments from './Tournaments';
 import Activity from './Activity';
 import Settings from './Settings';
+import AnnouncementBanner from '../../../components/AnnouncementBanner';
 
 const PlayerDashboard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -131,6 +132,11 @@ const PlayerDashboard = () => {
             Welcome back, {user?.username || 'Player'}!
           </h1>
           <p className="text-gray-600">Here's your pickleball journey overview and recent activity.</p>
+        </div>
+
+        {/* Announcements */}
+        <div className="mb-8">
+          <AnnouncementBanner maxAnnouncements={2} compact={true} />
         </div>
 
         {/* Main Content Tabs */}

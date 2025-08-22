@@ -43,7 +43,13 @@ interface CoachDetail {
   total_students: number;
   active_students: number;
   lesson_types_offered: string[];
-  coaching_schedule?: any;
+  coaching_schedule?: {
+    [dayOfWeek: string]: {
+      start_time: string;
+      end_time: string;
+      available: boolean;
+    }[];
+  };
   coaching_locations?: string[];
   website?: string;
   phone?: string;
@@ -83,7 +89,13 @@ const CoachProfile: React.FC = () => {
   const loadCoachProfile = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/coaches/${coachId}/profile`) as any;
+      interface CoachResponse {
+        success: boolean;
+        data: {
+          coach: CoachDetail;
+        };
+      }
+      const response = await api.get(`/coaches/${coachId}/profile`) as CoachResponse;
       
       if (response.success) {
         setCoach(response.data.coach);
@@ -118,10 +130,13 @@ const CoachProfile: React.FC = () => {
 
   const handleContact = async (message: string, contactMethod: string) => {
     try {
+      interface ContactResponse {
+        success: boolean;
+      }
       const response = await api.post(`/coaches/${coachId}/contact`, {
         message,
         contact_method: contactMethod
-      }) as any;
+      }) as ContactResponse;
 
       if (response.success) {
         toast.success('Contact request sent successfully!');
@@ -332,7 +347,7 @@ const CoachProfile: React.FC = () => {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as 'overview' | 'reviews' | 'schedule')}
                   className={`flex items-center space-x-2 py-4 border-b-2 transition-colors duration-200 ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
