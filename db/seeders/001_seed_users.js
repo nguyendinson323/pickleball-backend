@@ -7,15 +7,12 @@
  * @author Pickleball Federation Team  
  * @version 1.0.0
  */
-
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash('aaa!', saltRounds);
-
     const users = [
       // 1 Admin User
       {
@@ -29,13 +26,15 @@ module.exports = {
         state: 'CDMX',
         city: 'Ciudad de México',
         address: 'Av. Reforma 123, Col. Centro',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
         created_at: new Date(),
         updated_at: new Date()
       },
-
       // 5 Player Users
       {
         id: uuidv4(),
@@ -52,6 +51,10 @@ module.exports = {
         address: 'Calle Juárez 456, Col. Centro',
         skill_level: '4.0',
         curp: 'GORM850315MJCLRD01',
+        membership_status: 'basic',
+        can_be_found: true,
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -73,6 +76,10 @@ module.exports = {
         address: 'Av. Universidad 789, Col. San Nicolás',
         skill_level: '3.5',
         curp: 'MALC900722HNLRPR02',
+        membership_status: 'basic',
+        can_be_found: true,
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -94,6 +101,10 @@ module.exports = {
         address: 'Av. Tulum 321, SM 22',
         skill_level: '4.5',
         curp: 'ROHA881210MQTDRN03',
+        membership_status: 'basic',
+        can_be_found: true,
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -115,6 +126,11 @@ module.exports = {
         address: 'Calle 5 de Mayo 654, Centro Histórico',
         skill_level: '3.0',
         curp: 'HEGL920518HPLRRS04',
+        membership_status: 'free',
+        membership_status: 'basic',
+        can_be_found: true,
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -136,13 +152,17 @@ module.exports = {
         address: 'Blvd. Bernardo Quintana 987, Col. San Pablo',
         skill_level: '5.0',
         curp: 'LOMS870925MQTPRF05',
+        membership_status: 'elite',
+        membership_status: 'basic',
+        can_be_found: true,
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
         created_at: new Date(),
         updated_at: new Date()
       },
-
       // 5 Coach Users  
       {
         id: uuidv4(),
@@ -160,9 +180,12 @@ module.exports = {
         skill_level: '5.0',
         curp: 'RASR751108HJCMNT06',
         coaching_experience: 15,
+        specializations: JSON.stringify(['serve', 'volley', 'strategy', 'doubles']),
         hourly_rate: 500.00,
         available_for_lessons: true,
+        membership_status: 'premium',
         is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -185,9 +208,12 @@ module.exports = {
         skill_level: '4.5',
         curp: 'MOJP800412MMCRMT07',
         coaching_experience: 10,
+        specializations: JSON.stringify(['beginners', 'fundamentals']),
         hourly_rate: 450.00,
         available_for_lessons: true,
+        membership_status: 'premium',
         is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -210,9 +236,12 @@ module.exports = {
         skill_level: '5.0',
         curp: 'VARD830830HNLRGR08',
         coaching_experience: 12,
+        specializations: JSON.stringify(['advanced', 'tournament_prep']),
         hourly_rate: 600.00,
         available_for_lessons: true,
+        membership_status: 'premium',
         is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -235,9 +264,12 @@ module.exports = {
         skill_level: '4.5',
         curp: 'TOVE780117MBCRLN09',
         coaching_experience: 8,
+        specializations: JSON.stringify(['youth', 'women']),
         hourly_rate: 400.00,
         available_for_lessons: true,
+        membership_status: 'premium',
         is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -259,17 +291,20 @@ module.exports = {
         address: 'Av. Ávila Camacho 678, Col. Centro',
         skill_level: '5.0',
         curp: 'GUMF820603HVZTNR10',
+        membership_status: 'elite',
         coaching_experience: 18,
+        specializations: JSON.stringify(['professional', 'biomechanics']),
         hourly_rate: 550.00,
         available_for_lessons: true,
+        membership_status: 'premium',
         is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
         created_at: new Date(),
         updated_at: new Date()
       },
-
       // 5 Club Users
       {
         id: uuidv4(),
@@ -286,7 +321,11 @@ module.exports = {
         address: 'Av. Patria 3456, Col. Jardines del Bosque',
         website: 'https://www.elitepickleball.mx',
         rfc: 'EPC240101ABC',
+        membership_status: 'premium',
         job_title: 'Director General',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -308,7 +347,11 @@ module.exports = {
         address: 'Av. Insurgentes Sur 4567, Col. Del Valle',
         website: 'https://www.metrosports.mx',
         rfc: 'MSC240102DEF',
+        membership_status: 'premium',
         job_title: 'Gerente de Operaciones',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -330,7 +373,11 @@ module.exports = {
         address: 'Av. Constitución 5678, Col. Centro',
         website: 'https://www.regioclub.mx',
         rfc: 'RPC240103GHI',
+        membership_status: 'premium',
         job_title: 'Director Deportivo',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -352,7 +399,9 @@ module.exports = {
         address: 'Blvd. Kukulcán Km 15, Zona Hotelera',
         website: 'https://www.playacourts.mx',
         rfc: 'PCC240104JKL',
-        job_title: 'Coordinadora General',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -374,14 +423,15 @@ module.exports = {
         address: 'Carretera a Celaya 6789, Col. Juriquilla',
         website: 'https://www.bajiopickleball.mx',
         rfc: 'BPA240105MNO',
-        job_title: 'Director Académico',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
         created_at: new Date(),
         updated_at: new Date()
       },
-
       // 5 Partner Users
       {
         id: uuidv4(),
@@ -398,7 +448,9 @@ module.exports = {
         address: 'Parque Industrial El Álamo, Nave 15',
         website: 'https://www.deportex.mx',
         rfc: 'DTM240106PQR',
-        job_title: 'Director de Ventas',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -420,7 +472,9 @@ module.exports = {
         address: 'Eje Central Lázaro Cárdenas 890, Col. Centro',
         website: 'https://www.equipmentpro.mx',
         rfc: 'EPS240107STU',
-        job_title: 'Gerente Comercial',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -442,7 +496,9 @@ module.exports = {
         address: 'Parque Industrial Finsa, Bodega 23',
         website: 'https://www.nortesports.mx',
         rfc: 'NSD240108VWX',
-        job_title: 'Director de Distribución',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -464,7 +520,9 @@ module.exports = {
         address: 'Av. Constituyentes 1234, Col. Ejidal',
         website: 'https://www.caribegear.mx',
         rfc: 'CGE240109YZA',
-        job_title: 'Coordinadora de Ventas',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -486,14 +544,15 @@ module.exports = {
         address: 'Zona Industrial San Juan, Lote 45',
         website: 'https://www.centralsupplies.mx',
         rfc: 'CSM240110BCD',
-        job_title: 'Gerente General',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
         created_at: new Date(),
         updated_at: new Date()
       },
-
       // 5 State Users
       {
         id: uuidv4(),
@@ -510,7 +569,9 @@ module.exports = {
         address: 'Av. Américas 2580, Col. Providencia',
         website: 'https://www.jaliscopickleball.mx',
         rfc: 'FPJ240111EFG',
-        job_title: 'Presidenta',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -532,7 +593,9 @@ module.exports = {
         address: 'Paseo de la Reforma 3691, Col. Polanco',
         website: 'https://www.cdmxpickleball.mx',
         rfc: 'APC240112HIJ',
-        job_title: 'Director Ejecutivo',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -554,7 +617,9 @@ module.exports = {
         address: 'Av. Garza Sada 4702, Col. Tecnológico',
         website: 'https://www.nuevoleonpickleball.mx',
         rfc: 'CEP240113KLM',
-        job_title: 'Secretario General',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -576,7 +641,9 @@ module.exports = {
         address: 'Av. Bonampak 5813, SM 10',
         website: 'https://www.qrpickleball.mx',
         rfc: 'FPQ240114NOP',
-        job_title: 'Coordinadora General',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish', 'English']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -598,7 +665,9 @@ module.exports = {
         address: 'Blvd. Bernardo Quintana 6924, Col. Lomas de Querétaro',
         website: 'https://www.queretaropickleball.mx',
         rfc: 'LQP240115QRS',
-        job_title: 'Presidente',
+        membership_status: 'premium',
+        is_findable: true,
+        coaching_languages: JSON.stringify(['Spanish']),
         is_active: true,
         is_verified: true,
         email_verified: true,
@@ -606,12 +675,10 @@ module.exports = {
         updated_at: new Date()
       }
     ];
-
     await queryInterface.bulkInsert('users', users, {});
     console.log('✅ Successfully seeded users: 1 admin, 5 players, 5 coaches, 5 clubs, 5 partners, 5 state federations');
   },
-
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete('users', null, {});
     console.log('🗑️ All seeded users have been removed');
   }
