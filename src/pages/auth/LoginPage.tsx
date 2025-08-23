@@ -1,173 +1,291 @@
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, Link } from 'react-router-dom'
-import { AppDispatch, RootState } from '../../store'
-import { loginUser } from '../../store/slices/authSlice'
-import { toast } from 'sonner'
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { AppDispatch, RootState } from '../../store';
+import { loginUser, clearError } from '../../store/slices/authSlice';
+import { toast } from 'sonner';
+import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-  })
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
-  const { loading, error, user, isAuthenticated } = useSelector((state: RootState) => state.auth)
-  const { pending } = useSelector((state: RootState) => state.pending)
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { loading, error, user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
+  const from = location.state?.from?.pathname || '/';
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const redirectPath = getRedirectPath(user.user_type);
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setFormData(prev => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
+
+  const getRedirectPath = (userType: string): string => {
+    if (from && from !== '/login' && from !== '/') {
+      return from;
+    }
+
+    switch (userType) {
+      case 'player':
+        return '/player/dashboard';
+      case 'coach':
+        return '/coach/dashboard';
+      case 'club':
+        return '/club/dashboard';
+      case 'partner':
+        return '/partner/dashboard';
+      case 'state':
+        return '/state/dashboard';
+      case 'admin':
+        return '/admin/dashboard';
+      default:
+        return '/';
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (!formData.email) {
+      toast.error('Please enter your email');
+      return false;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    
+    if (!formData.password) {
+      toast.error('Please enter your password');
+      return false;
+    }
+    
+    if (formData.password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
     
     try {
-      const result = await dispatch(loginUser(formData))
+      const result = await dispatch(loginUser(formData)).unwrap();
       
-      // Check if login was successful by examining the result
-      // The result is a Redux action object with { type, payload, meta }
-      const loginResult = result as any;
-      console.log('Login result:', loginResult);
-      
-      // Extract the actual API response data from the payload
-      const apiResponse = loginResult?.payload;
-      console.log('API response from payload:', apiResponse);
-      
-      // Check if the API response contains user and tokens data
-      if (apiResponse?.data?.user && apiResponse?.data?.tokens) {
-        // Login successful - show success message and navigate
-        toast.success('Login successful!')
-        console.log('Login successful, navigating to dashboard for user type:', apiResponse.data.user.user_type);
-        
-        // Navigate to appropriate dashboard based on user type
-        const userType = apiResponse.data.user.user_type;
-        console.log('Attempting to navigate to dashboard for user type:', userType);
-        
-        switch (userType) {
-          case 'player':
-            console.log('Navigating to player dashboard');
-            navigate('/player/dashboard')
-            break
-          case 'coach':
-            console.log('Navigating to coach dashboard');
-            navigate('/coach/dashboard')
-            break
-          case 'club':
-            console.log('Navigating to club dashboard');
-            navigate('/club/dashboard')
-            break
-          case 'partner':
-            console.log('Navigating to partner dashboard');
-            navigate('/partner/dashboard')
-            break
-          case 'state':
-            console.log('Navigating to state dashboard');
-            navigate('/state/dashboard')
-            break
-          case 'admin':
-            console.log('Navigating to admin dashboard');
-            navigate('/admin/dashboard')
-            break
-          default:
-            console.log('Unknown user type, defaulting to player dashboard');
-            navigate('/player/dashboard')
+      if (result?.data?.user && result?.data?.tokens) {
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', formData.email);
+        } else {
+          localStorage.removeItem('rememberedEmail');
         }
-              } else {
-          // Login failed - show error and stay on login page
-          toast.error('Login failed - Invalid response from server')
-          console.error('Login failed - Invalid response structure:', apiResponse)
-        }
-    } catch (err) {
-      // Login failed - show error and stay on login page
-      toast.error(error || 'Login failed')
-      console.error('Login error:', err)
+        
+        toast.success('Welcome back!');
+        
+        const redirectPath = getRedirectPath(result.data.user.user_type);
+        navigate(redirectPath, { replace: true });
+      } else {
+        toast.error('Invalid server response');
+      }
+    } catch (err: any) {
+      const errorMessage = err || 'Login failed. Please try again.';
+      toast.error(errorMessage);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  // Check if any action is pending
-  const isAnyActionPending = pending
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div>
-        <div className="animate-on-scroll w-full max-w-md bg-white rounded-lg shadow-lg border border-gray-200">
-          <div className="p-6 space-y-1">
-            <div>
-              <h1 className="animate-on-scroll text-2xl font-bold text-center text-gray-900">
-                Sign in to your account
-              </h1>
-            </div>
-            <div>
-              <p className="animate-on-scroll text-center text-gray-600">
-                Enter your credentials to access your account
-              </p>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6">
+            <h1 className="text-3xl font-bold text-center text-white">
+              Welcome Back
+            </h1>
+            <p className="text-center text-blue-100 mt-2">
+              Sign in to continue to your account
+            </p>
           </div>
-          <div className="p-6">
-            <form 
-              onSubmit={handleSubmit} 
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <label htmlFor="email" className="animate-on-scroll block text-sm font-medium text-gray-700">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
-                  disabled={isAnyActionPending}
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="password" className="animate-on-scroll block text-sm font-medium text-gray-700">Password</label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent animate-on-scroll"
-                  disabled={isAnyActionPending}
-                />
-              </div>
+          
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <button 
-                  type="submit" 
-                  className="animate-on-scroll w-full h-10 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed" 
-                  disabled={loading || isAnyActionPending}
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                    Remember me
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
                 >
-                  {loading || isAnyActionPending ? 'Signing in...' : 'Sign in'}
+                  Forgot password?
                 </button>
               </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign in'
+                )}
+              </button>
             </form>
-            <div className="mt-4 text-center">
-              <p className="animate-on-scroll text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link 
-                  to="/register/select-type" 
-                  className="text-blue-600 hover:text-blue-500 hover:scale-105 transition-transform duration-300 animate-on-scroll"
-                  style={{ pointerEvents: isAnyActionPending ? 'none' : 'auto' }}
-                >
-                  Sign up
-                </Link>
-              </p>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or</span>
+                </div>
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <Link
+                    to="/register/select-type"
+                    className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+                  >
+                    Sign up now
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
+        <div className="mt-4 text-center">
+          <Link
+            to="/"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage 
+export default LoginPage;

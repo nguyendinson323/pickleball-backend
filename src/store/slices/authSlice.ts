@@ -1,107 +1,265 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { api } from '../../lib/api';
-import { LoginRequest, RegisterRequest, ProfileResponse, LoginResponse, RegisterResponse } from '../../types/api';
 
-// Action creators that manage pending state
-export const loginUser = createAsyncThunk(
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  user_type: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  profile_photo?: string;
+  verification_documents?: string[];
+  is_active: boolean;
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+  membership_type?: string;
+  membership_expiry?: string;
+  skill_level?: string;
+  play_frequency?: string;
+  preferred_play_time?: string;
+  coach_certification?: string;
+  coach_experience?: string;
+  club_name?: string;
+  club_type?: string;
+  club_address?: string;
+  partner_business_name?: string;
+  partner_business_type?: string;
+  state_organization_name?: string;
+  state_region?: string;
+}
+
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  refresh_token: string | null;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  email: string;
+  password: string;
+  username: string;
+  user_type: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
+}
+
+interface ProfileResponse {
+  success: boolean;
+  message: string;
+  data: User;
+}
+
+export const loginUser = createAsyncThunk<AuthResponse, LoginCredentials>(
   'auth/loginUser',
-  async (credentials: LoginRequest) => {
-    const response = await api.post<LoginResponse>('/auth/login', credentials);
-    return response;
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.login(credentials);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Login failed';
+      return rejectWithValue(message);
+    }
   }
 );
 
-export const registerUser = createAsyncThunk(
+export const registerUser = createAsyncThunk<AuthResponse, RegisterData | FormData>(
   'auth/registerUser',
-  async (userData: RegisterRequest | FormData) => {
-    const response = await api.post<RegisterResponse>('/auth/register', userData);
-    return response;
+  async (userData, { rejectWithValue }) => {
+    try {
+      const data = userData instanceof FormData ? 
+        Object.fromEntries(userData.entries()) as unknown as RegisterData : 
+        userData;
+      const response = await api.auth.register(data as RegisterData);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Registration failed';
+      return rejectWithValue(message);
+    }
   }
 );
 
-export const getProfile = createAsyncThunk(
+export const getProfile = createAsyncThunk<ProfileResponse>(
   'auth/getProfile',
-  async () => {
-    const response = await api.get<ProfileResponse>('/auth/profile');
-    return response;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.getProfile();
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to get profile';
+      return rejectWithValue(message);
+    }
   }
 );
 
-export const refreshUserData = createAsyncThunk(
+export const refreshUserData = createAsyncThunk<ProfileResponse>(
   'auth/refreshUserData',
-  async () => {
-    const response = await api.get<ProfileResponse>('/auth/profile');
-    return response;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.getProfile();
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to refresh user data';
+      return rejectWithValue(message);
+    }
   }
 );
 
-export const restoreAuthState = createAsyncThunk(
+export const restoreAuthState = createAsyncThunk<ProfileResponse>(
   'auth/restoreAuthState',
-  async () => {
+  async (_, { rejectWithValue }) => {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('refresh_token');
     
-    if (token && refreshToken) {
-      try {
-        const response = await api.get<ProfileResponse>('/auth/profile');
-        return response;
-      } catch (error) {
-        // Token is invalid, clear it
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
-        throw error;
-      }
-    } else {
-      throw new Error('No authentication tokens found');
+    if (!token || !refreshToken) {
+      return rejectWithValue('No authentication tokens found');
+    }
+    
+    try {
+      const response = await api.auth.getProfile();
+      return response;
+    } catch (error: any) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      const message = error.response?.data?.message || error.message || 'Session expired';
+      return rejectWithValue(message);
     }
   }
 );
 
-export const logoutUser = createAsyncThunk(
+export const logoutUser = createAsyncThunk<void>(
   'auth/logoutUser',
   async () => {
     try {
-      await api.post('/auth/logout', {});
-    } catch (error) {
-      // Even if the API call fails, we still want to clear local state
+      await api.auth.logout();
+    } catch (error: any) {
       console.error('Logout API call failed:', error);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
     }
-    // Clear tokens from localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh_token');
-    return null;
   }
 );
 
-export const updateProfile = createAsyncThunk(
+export const updateProfile = createAsyncThunk<ProfileResponse, Partial<User>>(
   'auth/updateProfile',
-  async (profileData: any) => {
-    const response = await api.put<ProfileResponse>('/auth/profile', profileData);
-    return response;
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.updateProfile(profileData);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to update profile';
+      return rejectWithValue(message);
+    }
   }
 );
 
-export const refreshToken = createAsyncThunk(
+export const refreshToken = createAsyncThunk<AuthResponse>(
   'auth/refreshToken',
-  async () => {
+  async (_, { rejectWithValue }) => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
-      throw new Error('No refresh token found');
+      return rejectWithValue('No refresh token found');
     }
     
-    const response = await api.post('/auth/refresh-token', { refreshToken });
-    return response;
+    try {
+      const response = await api.auth.refreshToken(refreshToken);
+      return response;
+    } catch (error: any) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      const message = error.response?.data?.message || error.message || 'Token refresh failed';
+      return rejectWithValue(message);
+    }
   }
 );
 
-// Initial state
-const initialState = {
-  user: null as any,
-  token: null as string | null,
-  refresh_token: null as string | null,
+export const verifyEmail = createAsyncThunk<any, string>(
+  'auth/verifyEmail',
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.verifyEmail(token);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Email verification failed';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const requestPasswordReset = createAsyncThunk<any, string>(
+  'auth/requestPasswordReset',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.requestPasswordReset(email);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to request password reset';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk<any, { token: string; password: string }>(
+  'auth/resetPassword',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await api.auth.resetPassword(data);
+      return response;
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Failed to reset password';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+const initialState: AuthState = {
+  user: null,
+  token: localStorage.getItem('token'),
+  refresh_token: localStorage.getItem('refresh_token'),
   loading: false,
-  error: null as string | null,
-  isAuthenticated: false,
+  error: null,
+  isAuthenticated: !!localStorage.getItem('token'),
 };
 
 const authSlice = createSlice({
@@ -113,179 +271,150 @@ const authSlice = createSlice({
       state.token = null;
       state.refresh_token = null;
       state.isAuthenticated = false;
+      state.error = null;
       localStorage.removeItem('token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
     },
     clearError: (state) => {
       state.error = null;
     },
-    setToken: (state, action) => {
+    setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
       localStorage.setItem('token', action.payload);
     },
-    updateUser: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
+        state.error = null;
         
-        // Backend sends: { success: true, message: "...", data: { user: {...}, tokens: { accessToken, refreshToken } } }
-        if (payload?.data?.user && payload?.data?.tokens) {
-          state.user = payload.data.user;
-          state.token = payload.data.tokens.accessToken;
-          state.refresh_token = payload.data.tokens.refreshToken;
+        if (action.payload?.data?.user && action.payload?.data?.tokens) {
+          state.user = action.payload.data.user;
+          state.token = action.payload.data.tokens.accessToken;
+          state.refresh_token = action.payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
           
-          // Store tokens in localStorage
-          localStorage.setItem('token', payload.data.tokens.accessToken);
-          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
-          
-          console.log('Login successful - User and tokens stored in Redux:', {
-            user: payload.data.user,
-            hasToken: !!payload.data.tokens.accessToken,
-            hasRefreshToken: !!payload.data.tokens.refreshToken,
-            profilePhoto: payload.data.user.profile_photo,
-            verificationDocuments: payload.data.user.verification_documents
-          });
-        } else {
-          console.error('Invalid login response structure:', payload);
-          state.error = 'Invalid response from server';
+          localStorage.setItem('token', action.payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', action.payload.data.tokens.refreshToken);
+          localStorage.setItem('user', JSON.stringify(action.payload.data.user));
         }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Login failed';
+        state.error = action.payload as string;
         state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.refresh_token = null;
       })
-      // Register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
+        state.error = null;
         
-        // Backend sends: { success: true, message: "...", data: { user: {...}, tokens: { accessToken, refreshToken } } }
-        if (payload?.data?.user && payload?.data?.tokens) {
-          state.user = payload.data.user;
-          state.token = payload.data.tokens.accessToken;
-          state.refresh_token = payload.data.tokens.refreshToken;
+        if (action.payload?.data?.user && action.payload?.data?.tokens) {
+          state.user = action.payload.data.user;
+          state.token = action.payload.data.tokens.accessToken;
+          state.refresh_token = action.payload.data.tokens.refreshToken;
           state.isAuthenticated = true;
           
-          // Store tokens in localStorage
-          localStorage.setItem('token', payload.data.tokens.accessToken);
-          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
-          
-          console.log('Registration successful - User and tokens stored in Redux:', {
-            user: payload.data.user,
-            hasToken: !!payload.data.tokens.accessToken,
-            hasRefreshToken: !!payload.data.tokens.refreshToken,
-            profilePhoto: payload.data.user.profile_photo,
-            verificationDocuments: payload.data.user.verification_documents
-          });
-        } else {
-          console.error('Invalid register response structure:', payload);
-          state.error = 'Invalid response from server';
+          localStorage.setItem('token', action.payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', action.payload.data.tokens.refreshToken);
+          localStorage.setItem('user', JSON.stringify(action.payload.data.user));
         }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Registration failed';
+        state.error = action.payload as string;
         state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.refresh_token = null;
       })
-      // Get Profile
       .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
-        if (payload?.data) {
-          state.user = payload.data;
+        state.error = null;
+        
+        if (action.payload?.data) {
+          state.user = action.payload.data;
           state.isAuthenticated = true;
-          
-          console.log('Profile retrieved successfully:', {
-            user: payload.data,
-            profilePhoto: payload.data.profile_photo,
-            verificationDocuments: payload.data.verification_documents
-          });
+          localStorage.setItem('user', JSON.stringify(action.payload.data));
         }
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Failed to get profile';
-        state.isAuthenticated = false;
+        state.error = action.payload as string;
       })
-      // Restore Auth State
       .addCase(restoreAuthState.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(restoreAuthState.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
+        state.error = null;
         
-        if (payload?.data) {
-          state.user = payload.data;
+        if (action.payload?.data) {
+          state.user = action.payload.data;
           state.isAuthenticated = true;
           
-          // Ensure tokens are set in Redux state from localStorage
           const storedToken = localStorage.getItem('token');
           const storedRefreshToken = localStorage.getItem('refresh_token');
           
           if (storedToken) state.token = storedToken;
           if (storedRefreshToken) state.refresh_token = storedRefreshToken;
           
-          console.log('Auth state restored successfully:', {
-            user: payload.data,
-            hasToken: !!storedToken,
-            hasRefreshToken: !!storedRefreshToken,
-            profilePhoto: payload.data.profile_photo,
-            verificationDocuments: payload.data.verification_documents
-          });
+          localStorage.setItem('user', JSON.stringify(action.payload.data));
         }
       })
       .addCase(restoreAuthState.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Failed to restore authentication';
+        state.error = action.payload as string;
         state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.refresh_token = null;
       })
-      // Refresh User Data
       .addCase(refreshUserData.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(refreshUserData.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
+        state.error = null;
         
-        if (payload?.data) {
-          state.user = payload.data;
+        if (action.payload?.data) {
+          state.user = action.payload.data;
           state.isAuthenticated = true;
-          console.log('User data refreshed successfully:', {
-            user: payload.data,
-            profilePhoto: payload.data.profile_photo,
-            verificationDocuments: payload.data.verification_documents
-          });
+          localStorage.setItem('user', JSON.stringify(action.payload.data));
         }
       })
       .addCase(refreshUserData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Failed to refresh user data';
+        state.error = action.payload as string;
       })
-      // Logout User
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
@@ -294,56 +423,95 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = null;
       })
-      // Update Profile
       .addCase(updateProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
-        if (payload?.data) {
-          state.user = { ...state.user, ...payload.data };
-          console.log('Profile updated successfully:', payload.data);
+        state.error = null;
+        
+        if (action.payload?.data) {
+          state.user = { ...state.user, ...action.payload.data } as User;
+          localStorage.setItem('user', JSON.stringify(state.user));
         }
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Failed to update profile';
+        state.error = action.payload as string;
       })
-      // Refresh Token
       .addCase(refreshToken.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload as any;
+        state.error = null;
         
-        if (payload?.data?.tokens) {
-          state.token = payload.data.tokens.accessToken;
-          state.refresh_token = payload.data.tokens.refreshToken;
+        if (action.payload?.data?.tokens) {
+          state.token = action.payload.data.tokens.accessToken;
+          state.refresh_token = action.payload.data.tokens.refreshToken;
           
-          // Store tokens in localStorage
-          localStorage.setItem('token', payload.data.tokens.accessToken);
-          localStorage.setItem('refresh_token', payload.data.tokens.refreshToken);
-          
-          console.log('Token refreshed successfully');
+          localStorage.setItem('token', action.payload.data.tokens.accessToken);
+          localStorage.setItem('refresh_token', action.payload.data.tokens.refreshToken);
+        }
+        
+        if (action.payload?.data?.user) {
+          state.user = action.payload.data.user;
+          localStorage.setItem('user', JSON.stringify(action.payload.data.user));
         }
       })
       .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || 'Token refresh failed';
+        state.error = action.payload as string;
         state.isAuthenticated = false;
-        
-        // Clear tokens on refresh failure
         state.token = null;
         state.refresh_token = null;
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
+        state.user = null;
+      })
+      .addCase(verifyEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyEmail.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+        
+        if (state.user) {
+          state.user.is_verified = true;
+          localStorage.setItem('user', JSON.stringify(state.user));
+        }
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { logout, clearError, setToken, updateUser } = authSlice.actions;
-export default authSlice.reducer; 
+export const { logout, clearError, setToken, updateUser, setUser } = authSlice.actions;
+export default authSlice.reducer;
